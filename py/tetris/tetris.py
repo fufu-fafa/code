@@ -95,7 +95,7 @@ class TetrisGame:
         for y, row in enumerate(self.grid):
             for x, cell in enumerate(row):
                 pygame.draw.rect(self.screen, cell, (x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE))
-                pygame.draw.rect(self.screen, WHITE, (x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE), 1)
+                pygame.draw.rect(self.screen, BLACK, (x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE), 1)
 
     def draw_tetromino(self, tetromino):
         for y, row in enumerate(tetromino.shape):
