@@ -82,7 +82,7 @@ class TetrisGame:
     
     def draw_hold_tetromino(self):
         if self.hold_tetromino:
-            start_x = -5  # Position to the left of the play area
+            start_x = -5  
             start_y = 0
             for y, row in enumerate(self.hold_tetromino.shape):
                 for x, cell in enumerate(row):
@@ -221,6 +221,7 @@ class TetrisGame:
                         self.clear_lines()
                         self.current_tetromino = self.next_tetrominos.pop(0)
                         self.next_tetrominos.append(self.generate_tetromino())
+                        self.hold_used = False
                         if not self.valid_move(self.current_tetromino, 0, 0):
                             self.running = False
                     drop_timer = 0
