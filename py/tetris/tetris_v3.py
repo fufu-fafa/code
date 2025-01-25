@@ -85,8 +85,8 @@ class TetrisGame:
     def draw_hold_tetromino(self):
         if self.hold_tetromino:
             # Positioning the hold tetromino
-            start_x = (SCREEN_WIDTH // GRID_SIZE) + 3  
-            start_y = (SCREEN_HEIGHT // GRID_SIZE) - len(self.hold_tetromino.shape) - 2   
+            start_x = (SCREEN_WIDTH // GRID_SIZE) + 1
+            start_y = (SCREEN_HEIGHT // GRID_SIZE) - len(self.hold_tetromino.shape) - 1
             
             for y, row in enumerate(self.hold_tetromino.shape):
                 for x, cell in enumerate(row):
