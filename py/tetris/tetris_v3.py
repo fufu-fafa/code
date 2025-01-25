@@ -143,7 +143,7 @@ class TetrisGame:
     def draw_score(self):
         font = pygame.font.SysFont(["helvetica", "arial", "sans-serif"], 15)
         score_text = font.render(f"Score: {self.score}", True, WHITE)
-        self.screen.blit(score_text, (SCREEN_WIDTH + 10, 10))
+        self.screen.blit(score_text, (SCREEN_WIDTH - 290, 10))
 
     def draw_grid(self):
         for y in range(20):
