@@ -68,6 +68,7 @@ class TetrisGame:
         self.paused = False
         self.hold_tetromino = None
         self.hold_used = False
+        self.score = 0
 
 
     def hold_current_tetromino(self):
@@ -134,6 +135,16 @@ class TetrisGame:
             new_grid.insert(0, [BLACK for _ in range(10)])
         self.grid = new_grid
 
+        # Scoring
+        if lines_cleared > 0:
+            points = {1: 100, 2: 300, 3: 500, 4: 800}  
+            self.score += points.get(lines_cleared, 0)
+
+    def draw_score(self):
+        font = pygame.font.SysFont(["helvetica", "arial", "sans-serif"], 15)
+        score_text = font.render(f"Score: {self.score}", True, WHITE)
+        self.screen.blit(score_text, (SCREEN_WIDTH + 10, 10))
+
     def draw_grid(self):
         for y in range(20):
             for x in range(10):
@@ -170,9 +181,8 @@ class TetrisGame:
                         )
   
     def draw_pause_menu(self):
-        font_path = os.path.expanduser("Downloads/Fonts/conthrax/conthrax-sb.otf")
-        font1 = pygame.font.Font(font_path, 28)
-        font2 = pygame.font.Font(font_path, 20)
+        font1 = pygame.font.SysFont(["helvetica", "arial", "sans-serif"], 28)
+        font2 = pygame.font.SysFont(["helvetica", "arial", "sans-serif"], 20)
         pause_text = font1.render("Paused", True, WHITE)
         quit_text = font2.render("Press Q to Quit", True, WHITE)
         continue_text = font2.render("Press C to Continue", True, WHITE)
@@ -242,6 +252,7 @@ class TetrisGame:
             self.draw_tetromino(self.current_tetromino)
             self.draw_next_tetrominos()
             self.draw_hold_tetromino()
+            self.draw_score()
             if self.paused:
                 self.draw_pause_menu()
             pygame.display.flip()
