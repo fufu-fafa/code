@@ -189,16 +189,16 @@ class TetrisGame:
 
         # Calculate the background rectangle
         rect_width = max(pause_text.get_width(), quit_text.get_width(), continue_text.get_width()) + 20
-        rect_height = pause_text.get_height() + quit_text.get_height() + continue_text.get_height() + 60
+        rect_height = pause_text.get_height() + quit_text.get_height() + continue_text.get_height() + 80
         rect_x = 75 + SCREEN_WIDTH // 2 - rect_width // 2
-        rect_y = SCREEN_HEIGHT // 3 - 7
+        rect_y = SCREEN_HEIGHT // 3 - 9
 
         # Draw the gray background
         pygame.draw.rect(self.screen, (50, 50, 50), (rect_x, rect_y, rect_width, rect_height), border_radius=20)
 
         # Render and display the text on top of the background
-        self.screen.blit(pause_text, (75 + SCREEN_WIDTH // 2 - pause_text.get_width() // 2, SCREEN_HEIGHT // 3))
-        self.screen.blit(quit_text, (75 + SCREEN_WIDTH // 2 - quit_text.get_width() // 2, SCREEN_HEIGHT // 3 + 50))
+        self.screen.blit(pause_text, (75 + SCREEN_WIDTH // 2 - pause_text.get_width() // 2, SCREEN_HEIGHT // 3 + 10))
+        self.screen.blit(quit_text, (75 + SCREEN_WIDTH // 2 - quit_text.get_width() // 2, SCREEN_HEIGHT // 3 + 60))
         self.screen.blit(continue_text, (75 + SCREEN_WIDTH // 2 - continue_text.get_width() // 2, SCREEN_HEIGHT // 3 + 100))
 
     def run(self):
