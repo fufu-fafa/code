@@ -235,7 +235,7 @@ class TetrisGame:
             # Skip the game logic if paused
             if not self.paused:
                 drop_timer += self.clock.get_rawtime()
-                if drop_timer > 25:
+                if drop_timer > 35:
                     if self.valid_move(self.current_tetromino, 0, 1):
                         self.current_tetromino.y += 1
                     else:
