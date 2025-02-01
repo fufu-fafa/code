@@ -51,7 +51,7 @@ class Connect4GUI:
         self.board = create_board()
         self.turn = 0
 
-        self.canvas = tk.Canvas(self.root, width=700, height=600, bg="#05029e")
+        self.canvas = tk.Canvas(self.root, width=700, height=600, bg="#147df5")
         self.canvas.pack()
 
         self.draw_board()
@@ -66,12 +66,12 @@ class Connect4GUI:
                 y0 = (5 - row) * 100
                 x1 = x0 + 100
                 y1 = y0 + 100
-                color = "#000000"
+                color = "#001524"
                 if self.board[row, col] == 1:
-                    color = "#9E0000"
+                    color = "#E00000"
                 elif self.board[row, col] == 2:
-                    color = "#00926A"
-                self.canvas.create_oval(x0 + 10, y0 + 10, x1 - 10, y1 - 10, fill=color)
+                    color = "#D9FA00"
+                self.canvas.create_oval(x0 + 10, y0 + 10, x1 - 10, y1 - 10, fill=color, outline="#147df5")
 
     def handle_click(self, event):
         col = event.x // 100
