@@ -58,6 +58,7 @@ class Tetromino:
 
 class TetrisGame:
     def __init__(self):
+        pygame.display.set_caption("Tetris")
         self.screen = pygame.display.set_mode((SCREEN_WIDTH + 150, SCREEN_HEIGHT))  # Extra space for next blocks
         self.clock = pygame.time.Clock()
         self.grid = [[BLACK for _ in range(10)] for _ in range(20)]
