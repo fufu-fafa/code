@@ -20,10 +20,12 @@ public class BreakoutGame extends JPanel implements KeyListener, Runnable {
     private int ballY = HEIGHT / 2 - BALL_SIZE / 2; // Start in the middle
     private int ballSpeedX;
     private int ballSpeedY;
+    private int remainingBricks = BRICK_COLS * BRICK_ROWS;
 
     private boolean[][] bricks = new boolean[BRICK_ROWS][BRICK_COLS];
     private boolean paddleMovingLeft = false;
     private boolean paddleMovingRight = false;
+    private boolean gameWon = false;
     private Random random = new Random();
 
     // Define colors
@@ -59,26 +61,45 @@ public class BreakoutGame extends JPanel implements KeyListener, Runnable {
 
     private void randomizeBallDirection() {
         // Randomize the ball's initial direction
-        double angle = random.nextDouble() * 2 * Math.PI; // Random angle in radians
-        int speed = 8; // Base speed
-        ballSpeedX = (int) (speed * Math.cos(angle));
-        ballSpeedY = (int) (speed * Math.sin(angle));
+        double angle; // Random angle in radians
+        int speed = 11; // Base speed
 
-        // Ensure the ball isn't moving too slowly horizontally
-        if (Math.abs(ballSpeedX) < 2) {
-            ballSpeedX = ballSpeedX < 0 ? -2 : 2;
-        }
+        do {
+            angle = random.nextDouble() * (Math.PI / 2) + Math.PI / 4;
+            ballSpeedX = (int) (speed * Math.cos(angle));
+        } while (Math.abs(ballSpeedX) < 2);   
+        ballSpeedY = -(int) (speed * Math.sin(angle));
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Draw paddle
+        if (gameWon) {
+            g.setColor(Color.GREEN);
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            String winMessage = "Game Won!";
+            int textWidth = g.getFontMetrics().stringWidth(winMessage);
+            g.drawString(winMessage, (WIDTH - textWidth) / 2, HEIGHT / 2);
+            return; // Stop drawing other elements
+        }
+
+        int edgeWidth = PADDLE_WIDTH / 5;
+
+        // Left side
+        g.setColor(Color.GRAY);
+        g.fillRect(paddleX, HEIGHT - 50, edgeWidth, PADDLE_HEIGHT);
+
+        // Middle
         g.setColor(Color.WHITE);
-        g.fillRect(paddleX, HEIGHT - 50, PADDLE_WIDTH, PADDLE_HEIGHT);
+        g.fillRect(paddleX + edgeWidth, HEIGHT - 50, PADDLE_WIDTH - 2 * edgeWidth, PADDLE_HEIGHT);
+
+        // Right side
+        g.setColor(Color.GRAY);
+        g.fillRect(paddleX + PADDLE_WIDTH - edgeWidth, HEIGHT - 50, edgeWidth, PADDLE_HEIGHT);
 
         // Draw ball
+        g.setColor(Color.WHITE);
         g.fillOval(ballX, ballY, BALL_SIZE, BALL_SIZE);
 
         // Draw bricks
@@ -126,10 +147,13 @@ public class BreakoutGame extends JPanel implements KeyListener, Runnable {
     @Override
     public void run() {
         while (true) {
-            movePaddle();
-            moveBall();
-            checkCollisions();
-            repaint();
+            if (!gameWon) {
+                movePaddle();
+                moveBall();
+                checkCollisions();
+                repaint();
+            }
+
             try {
                 Thread.sleep(16); // ~60 FPS
             } catch (InterruptedException e) {
@@ -160,14 +184,20 @@ public class BreakoutGame extends JPanel implements KeyListener, Runnable {
         }
 
         // Ball collision with paddle
-        if (ballY >= HEIGHT - 50 - BALL_SIZE && ballX >= paddleX && ballX <= paddleX + PADDLE_WIDTH) {
-            ballSpeedY = -ballSpeedY;
-
-            // Adjust ball speed based on paddle movement
-            if (paddleMovingLeft) {
-                ballSpeedX -= 1; // Tighter angle to the left
-            } else if (paddleMovingRight) {
-                ballSpeedX += 1; // Tighter angle to the right
+        if (ballY + BALL_SIZE >= HEIGHT - 50 && ballX + BALL_SIZE >= paddleX && ballX <= paddleX + PADDLE_WIDTH) {
+            ballSpeedY = -ballSpeedY; // Always reverse Y-direction
+            
+            // Calculate hit position (-1: far left, 0: center, 1: far right)
+            double hitPosition = ((ballX + BALL_SIZE / 2) - (paddleX + PADDLE_WIDTH / 2)) / (PADDLE_WIDTH / 2);
+        
+            // Only adjust ballSpeedX if it's outside the center range (e.g., ±0.3 allows slight variation)
+            if (Math.abs(hitPosition) > 0.3) {
+                ballSpeedX += (int) (hitPosition * 4); // Adjust X speed based on hit location
+            }
+        
+            // Prevent ball from going completely horizontal
+            if (Math.abs(ballSpeedX) < 4) {
+                ballSpeedX = ballSpeedX > 0 ? 4 : -4;
             }
         }
 
@@ -189,16 +219,37 @@ public class BreakoutGame extends JPanel implements KeyListener, Runnable {
                 if (bricks[i][j]) {
                     int brickX = j * BRICK_WIDTH;
                     int brickY = i * BRICK_HEIGHT;
+    
+                    if (ballX + BALL_SIZE > brickX && ballX < brickX + BRICK_WIDTH &&
+                        ballY + BALL_SIZE > brickY && ballY < brickY + BRICK_HEIGHT) {
+                        
+                        // Calculate distances to each edge
+                        int fromLeft = Math.abs(ballX + BALL_SIZE - brickX);
+                        int fromRight = Math.abs(ballX - (brickX + BRICK_WIDTH));
+                        int fromTop = Math.abs(ballY + BALL_SIZE - brickY);
+                        int fromBottom = Math.abs(ballY - (brickY + BRICK_HEIGHT));
+    
+                        // Find the smallest penetration (the likely collision direction)
+                        int minDistance = Math.min(Math.min(fromLeft, fromRight), Math.min(fromTop, fromBottom));
+    
+                        if (minDistance == fromLeft || minDistance == fromRight) {
+                            ballSpeedX = -ballSpeedX; // Reverse X direction
+                        } else {
+                            ballSpeedY = -ballSpeedY; // Reverse Y direction
+                        }
+    
+                        bricks[i][j] = false; // Remove brick
+                        remainingBricks--;
 
-                    if (ballX + BALL_SIZE >= brickX && ballX <= brickX + BRICK_WIDTH &&
-                        ballY + BALL_SIZE >= brickY && ballY <= brickY + BRICK_HEIGHT) {
-                        bricks[i][j] = false;
-                        ballSpeedY = -ballSpeedY;
+                        if (remainingBricks == 0) {
+                            gameWon = true;
+                        }
+                        return; // Exit loop to prevent multiple collisions per frame
                     }
                 }
             }
         }
-    }
+    }    
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Breakout Game");
