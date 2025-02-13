@@ -117,6 +117,13 @@ class SnakeGame:
             next_pos = path[0]
             if self.flood_fill_check(next_pos):
                 self.direction = (next_pos[0] - self.snake[0][0], next_pos[1] - self.snake[0][1])
+        else:
+            # No path found, enter "wait mode" by making a safe move
+            for direction in DIRECTIONS:
+                next_pos = (self.snake[0][0] + direction[0], self.snake[0][1] + direction[1])
+                if next_pos not in self.snake and 0 <= next_pos[0] < WIDTH // GRID_SIZE and 0 <= next_pos[1] < HEIGHT // GRID_SIZE:
+                    self.direction = direction
+                    break
 
     def draw(self):
         screen.fill(BLACK)
