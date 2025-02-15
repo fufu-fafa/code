@@ -45,6 +45,7 @@ class SnakeGame:
         
         # Check collision
         if (head in self.snake or head[0] < 0 or head[1] < 0 or head[0] >= WIDTH // GRID_SIZE or head[1] >= HEIGHT // GRID_SIZE):
+            print(len(game.snake))
             self.running = False
             return
         
