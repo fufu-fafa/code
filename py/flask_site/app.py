@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
@@ -26,6 +26,10 @@ def calculate(num1, operator, num2):
         return {"result": result}
     except ValueError:
         return {"error": "Please enter valid numbers."}
+    
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/calculate', methods=['POST'])
 def handle_calculation():
