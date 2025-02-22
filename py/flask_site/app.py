@@ -37,5 +37,5 @@ def handle_calculation():
     return jsonify(calculate(data["num1"], data["operator"], data["num2"]))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8203, debug=True)
+    app.run(host='0.0.0.0', port=8203, debug=False)
 
