@@ -32,13 +32,13 @@ else:
     try:
         x = int(sys.argv[1])
         y = int(sys.argv[2])
-        if x > 100 or x < 0 or y > 100 or y < 1:
+        if x > 100 or x < 1 or y > 100 or y < 1:
             print_color("input a number from 1-100", "red")
             sys.exit(1)
         else:
             checker(x, y, rand_x, rand_y)
     except ValueError: 
-        print_color("input a round number", "red")
+        print_color("input invalid", "red")
         sys.exit(1)
 
    
