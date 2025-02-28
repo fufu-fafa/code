@@ -1,7 +1,7 @@
 public class bin {
     public static void main(String[] args) {
         if (args.length != 2) {
-            System.out.println("Usage: java BinConverter <encode|decode> \"text\"");
+            System.out.println("Usage: java bin.java <encode|decode> \"text\"");
             return;
         }
         
