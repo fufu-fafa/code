@@ -43,6 +43,7 @@ def main():
             print_color("invalid color input, input 'red', 'black', or 'green'", "red")
             sys.exit(1)
         checker(roulette, col_roulette, col_pick, num_pick)
+        print_color(f"roulette result: {roulette} {col_roulette}", "yellow")
         
     except ValueError:
         print_color("invalid number input, input ranges from 0-36", "red")
