@@ -13,19 +13,25 @@ def to_base64(text):
     return base64.b64encode(temp).decode('utf-8')
 
 def from_base64(encoded):
+    padding = len(encoded) % 4
+    if padding:
+        encoded += '=' * (4 - padding)
     encoded_bytes = base64.b64decode(encoded)
     return encoded_bytes.decode('utf-8')
 
-options = input("'encode' or 'decode': ").strip().lower()
-if options not in ('encode', 'decode'):
-    print_color("invalid input", "red")
-elif options == "encode":
-    enc = input("input the text to encode: ")
-    temp = to_bin(enc)
-    result = to_base64(temp)
-    print(result)
-else:
-    decode = input("input the text to decode: ")
-    temp = from_base64(decode)
-    result = from_bin(temp)
-    print(result)
+try:
+    options = input("'encode' or 'decode': ").strip().lower()
+    if options not in ('encode', 'decode'):
+        print_color("invalid input", "red")
+    elif options == "encode":
+        enc = input("input the text to encode: ")
+        temp = to_bin(enc)
+        result = to_base64(temp)
+        print(result)
+    else:
+        decode = input("input the text to decode: ")
+        temp = from_base64(decode)
+        result = from_bin(temp)
+        print(result)
+except Exception as e:
+    print_color(f"err: {e}", "red")
