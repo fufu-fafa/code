@@ -22,7 +22,7 @@ public class httpServer {
 class StaticFileHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        System.out.println("Received request: " + exchange.getRequestMethod() + " " + exchange.getRequestURI());
+        System.out.println(exchange.getRequestMethod() + " " + exchange.getRequestURI() + " from " + exchange.getRemoteAddress());
         String uriPath = exchange.getRequestURI().getPath();
         if (uriPath.equals("/")) {
             uriPath = "/index.html"; 
