@@ -27,7 +27,7 @@ while True:
         print("invalid unit")
         continue
     elif first_unit == second_unit:
-        print(f"result: {input_unit}")
+        print("NaN")
         continue
     try:
         input_unit = float(input("input the measurement: "))
