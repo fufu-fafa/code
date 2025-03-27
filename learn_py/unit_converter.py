@@ -1,4 +1,5 @@
 from cust_col import print_color
+import sys
 
 valid_units = ["kilometer", "meter", "centimeter", "miles", "foot", "inch"]
 
@@ -10,23 +11,28 @@ def convert_unit(first_unit, second_unit, unit_value):
     return result
 
 def validate_unit(which_unit):
-    prompt = "enter the unit to convert from: " if which_unit == "first" else "enter the unit to convert into"
+    prompt = "enter the unit to convert from: " if which_unit == "first" else "enter the unit to convert into: "
     while True:
         temp = input(prompt).lower().strip()
+        if temp == "exit":
+            sys.exit(1)
         if temp not in valid_units:
             print_color("invalid unit", "red")
             continue
         return temp
 
 def get_int(first_unit):
-    try:
-        return float(input(f"enter the value in {first_unit}: "))
-    except ValueError:
-        print("invalid number")
+    while True:
+        try:
+            temp = float(input(f"enter the value in {first_unit}: "))
+            if temp == "exit":
+                sys.exit(1)
+            return temp
+        except ValueError:
+            print_color("invalid number", "red")
 
 print_color(f"valid units: {valid_units}", "green")
-while True:
-    first_unit = validate_unit("first")
-    second_unit = validate_unit("second")
-    unit_value = get_int(first_unit)
-    print(f"{convert_unit(first_unit, second_unit, unit_value)} {second_unit}")
+first_unit = validate_unit("first")
+second_unit = validate_unit("second")
+unit_value = get_int(first_unit)
+print_color(f"{convert_unit(first_unit, second_unit, unit_value)} {second_unit}", "green")
