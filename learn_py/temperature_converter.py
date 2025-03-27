@@ -18,7 +18,7 @@ def convert_unit(input_unit, first_unit, second_unit):
             return (input_unit - 273.15) * 9/5 + 32
 
 val_unit = ["celsius", "fahrenheit", "kelvin"]
-print(f"valid units: {val_unit}")
+print_color(f"valid units: {val_unit}", "red")
 while True:
     first_unit = input("the unit of the input: ").lower().strip()
     if first_unit not in val_unit:
