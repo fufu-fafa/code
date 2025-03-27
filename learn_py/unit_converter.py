@@ -24,10 +24,7 @@ def validate_unit(which_unit):
 def get_int(first_unit):
     while True:
         try:
-            temp = float(input(f"enter the value in {first_unit}: "))
-            if temp == "exit":
-                sys.exit(1)
-            return temp
+            return float(input(f"enter the value in {first_unit}: "))
         except ValueError:
             print_color("invalid number", "red")
 
