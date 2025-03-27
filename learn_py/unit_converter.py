@@ -11,21 +11,21 @@ def validate_unit(in_unit):
     if in_unit not in valid_units:
         print("invalid unit")
         print(f"valid units: {valid_units}")
-        return False
+        return True
 
 def get_int(first_unit):
     try:
-        return float(input(f"enter the value in {first unit}"))
+        return float(input(f"enter the value in {first_unit}"))
     except ValueError:
         print("invalid number")
 
 print(f"valid units: {valid_units}")
 while True:
     first_unit = input("enter the unit to convert from: ").lower().strip()
-    if not validate_unit(first_unit):
+    if validate_unit(first_unit):
         continue
     second_unit = input("enter the unit to convert into: ").lower().strip()
-    if not validate_unit(second_unit):
+    if validate_unit(second_unit):
         continue
     unit_value = get_int(first_unit)
-    convert_units(first_unit, second_unit, unit_value)
+    print(convert_unit(first_unit, second_unit, unit_value))

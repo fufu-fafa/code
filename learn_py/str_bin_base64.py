@@ -1,5 +1,6 @@
 import base64
-from colored import print_color
+from cust_col import print_color
+
 def to_bin(text):
     return ' '.join(format(ord(x), '08b') for x in text)
 

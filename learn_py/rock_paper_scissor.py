@@ -1,5 +1,5 @@
 import random
-from colored import print_color
+from cust_col import print_color
 
 win_condition = {
     "rock": "scissor",

@@ -1,4 +1,4 @@
-from colored import print_color
+from cust_col import print_color
 
 def guess_subtract(low, mid):
     return low, mid - 1
