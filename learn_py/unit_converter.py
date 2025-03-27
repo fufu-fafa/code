@@ -1,9 +1,11 @@
 valid_units = ["kilometer", "meter", "centimeter", "miles", "foot", "inch"]
-eu_units = ["kilometer", "meter", "centimeter"]
 
 def convert_unit(first_unit, second_unit, unit_value):
     conversion_factors = {"kilometer": 1000, "meter": 1, "centimeter": 0.01,
 "miles": 1603.34, "foot": 0.3048, "inch": 0.0254}
+    value_in_meters = unit_value * conversion_factors[first_unit]
+    result = value_in_meters / conversion_factors[second_unit]
+    return result
 
 def validate_unit(in_unit):
     if in_unit not in valid_units:
@@ -26,3 +28,4 @@ while True:
     if not validate_unit(second_unit):
         continue
     unit_value = get_int(first_unit)
+    convert_units(first_unit, second_unit, unit_value)
