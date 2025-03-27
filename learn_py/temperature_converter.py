@@ -1,3 +1,5 @@
+from cust_col import print_color
+
 def convert_unit(input_unit, first_unit, second_unit):
     if first_unit == "celsius":
         if second_unit == "fahrenheit":
@@ -20,19 +22,19 @@ print(f"valid units: {val_unit}")
 while True:
     first_unit = input("the unit of the input: ").lower().strip()
     if first_unit not in val_unit:
-        print("invalid unit")
+        print_color("invalid unit", "red")
         continue
     second_unit = input("the unit to convert into: ").lower().strip()
     if second_unit not in val_unit:
-        print("invalid unit")
+        print_color("invalid unit", "red")
         continue
     elif first_unit == second_unit:
-        print("NaN")
+        print_color("NaN", "red")
         continue
     try:
         input_unit = float(input("input the measurement: "))
         result = convert_unit(input_unit, first_unit, second_unit)
-        print(f"{second_unit}: {result}")
+        print_color(f"{second_unit}: {result}", "green")
         break
     except ValueError:
-        print("invalid input")
+        print_color("invalid input", "red")
