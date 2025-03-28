@@ -18,7 +18,7 @@ const char* morseAlphabet[] = {
 };
 
 // Message to send in Morse code
-const char message[] = "SOS HELP";
+const char message[] = "atnynsas";
 
 void setup() {
   // Set dot and dash pins as outputs
