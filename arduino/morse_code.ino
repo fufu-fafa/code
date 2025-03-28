@@ -1,4 +1,4 @@
-#define DOT_DURATION 200  // Duration of a dot in milliseconds
+#define DOT_DURATION 150  // Duration of a dot in milliseconds
 #define DASH_DURATION (DOT_DURATION * 3)  // Duration of a dash
 #define PAUSE_DURATION DOT_DURATION  // Pause between symbols
 #define LETTER_PAUSE (DOT_DURATION * 3)  // Pause between letters
