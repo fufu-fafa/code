@@ -11,7 +11,7 @@ void setup() {
 void loop() {
   for (int count = 0; count <= 255; count++) { // Count up from 0 to 255
     displayBinary(count);
-    delay(1000); // 1-second delay
+    delay(500);
   }
 }
 
