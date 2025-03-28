@@ -1,11 +1,14 @@
 #define DOT_DURATION 200  // Duration of a dot in milliseconds
 #define DASH_DURATION (DOT_DURATION * 3)  // Duration of a dash
-#define PAUSE_DURATION DOT_DURATION  // Pause between dots/dashes
+#define PAUSE_DURATION DOT_DURATION  // Pause between symbols
 #define LETTER_PAUSE (DOT_DURATION * 3)  // Pause between letters
 #define WORD_PAUSE (DOT_DURATION * 7)  // Pause between words
 
-const int outputPins[] = {2, 3, 4, 5, 6, 7, 8, 9};  // Define pins to be used
-const int pinCount = sizeof(outputPins) / sizeof(outputPins[0]); // Count of pins
+const int dotPins[] = {5, 6};  // Pins for dots
+const int dashPins[] = {2, 3, 4, 5, 6, 7, 8, 9};  // Pins for dashes
+
+const int dotPinCount = sizeof(dotPins) / sizeof(dotPins[0]);
+const int dashPinCount = sizeof(dashPins) / sizeof(dashPins[0]);
 
 // Morse code dictionary (dot = '.', dash = '-')
 const char* morseAlphabet[] = {
@@ -18,8 +21,12 @@ const char* morseAlphabet[] = {
 const char message[] = "SOS HELP";
 
 void setup() {
-  for (int i = 0; i < pinCount; i++) {
-    pinMode(outputPins[i], OUTPUT);
+  // Set dot and dash pins as outputs
+  for (int i = 0; i < dotPinCount; i++) {
+    pinMode(dotPins[i], OUTPUT);
+  }
+  for (int i = 0; i < dashPinCount; i++) {
+    pinMode(dashPins[i], OUTPUT);
   }
 }
 
@@ -58,10 +65,10 @@ void sendMorseLetter(char letter) {
 void sendMorseCode(const char* code) {
   for (int i = 0; code[i] != '\0'; i++) {
     if (code[i] == '.') {
-      turnOnPins();
+      turnOnDotPins();
       delay(DOT_DURATION);
     } else if (code[i] == '-') {
-      turnOnPins();
+      turnOnDashPins();
       delay(DASH_DURATION);
     }
     turnOffPins();
@@ -69,17 +76,27 @@ void sendMorseCode(const char* code) {
   }
 }
 
-// Function to turn on all pins
-void turnOnPins() {
-  for (int i = 0; i < pinCount; i++) {
-    digitalWrite(outputPins[i], HIGH);
+// Function to turn on only dot pins (5 & 6)
+void turnOnDotPins() {
+  for (int i = 0; i < dotPinCount; i++) {
+    digitalWrite(dotPins[i], HIGH);
+  }
+}
+
+// Function to turn on all dash pins (2 to 9)
+void turnOnDashPins() {
+  for (int i = 0; i < dashPinCount; i++) {
+    digitalWrite(dashPins[i], HIGH);
   }
 }
 
 // Function to turn off all pins
 void turnOffPins() {
-  for (int i = 0; i < pinCount; i++) {
-    digitalWrite(outputPins[i], LOW);
+  for (int i = 0; i < dotPinCount; i++) {
+    digitalWrite(dotPins[i], LOW);
+  }
+  for (int i = 0; i < dashPinCount; i++) {
+    digitalWrite(dashPins[i], LOW);
   }
 }
 
