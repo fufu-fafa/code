@@ -7,3 +7,13 @@ def print_color(text, color="reset"):
         "blue": "\033[94m",
     }
     print(f"{colors[color]}{text}{colors['reset']}")
+
+if __name__ == '__main__':
+    valid_col = ["red", "green", "blue", "yellow"]
+    text = input("input the text to print: ")
+    col = input("input the color of the text output: ").strip().lower()
+    if col not in valid_col:
+        print_color("invalid color choice", "red")
+        print(f"valid colors: {valid_col}")
+        exit()
+    print_color(text, col)
