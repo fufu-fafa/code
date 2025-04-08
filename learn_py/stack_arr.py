@@ -13,6 +13,12 @@ def view(stack):
         return
     print_color(f"stack: {stack}", "blue")
 
+def peek(stack):
+    if not stack:
+        print_color("stack is empty", "red")
+        return
+    print_color(f"top: {stack[-1]}")
+
 def pop(stack):
     if not stack:
         print_color("stack is empty", "red")
@@ -26,15 +32,17 @@ def pop(stack):
 
 def run_stack_man():
     arr_stack = []
-    options = ["add", "peek", "pop", "exit"]
+    options = ["add", "peek", "view", "pop", "exit"]
     display_options(options)
     
     while True:
         choice = input("input one of the valid options: ").strip().lower()
         if choice == "add":
             add(arr_stack)
-        elif choice == "peek":
+        elif choice == "view":
             view(arr_stack)
+        elif choice == "peek":
+            peek(arr_stack)
         elif choice == "pop":
             pop(arr_stack)
         elif choice == "exit":
