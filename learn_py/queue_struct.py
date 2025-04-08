@@ -30,7 +30,7 @@ def run_queue_man():
         choice = input("input one of the valid options: ").strip().lower()
         if choice == "add":
             add(queue_struct)
-        elif choice in ("peek", "peek", "view", "pop") and not queue_struct:
+        elif choice in ("peek", "view", "pop") and not queue_struct:
             print_color("queue is empty", "red")
         elif choice == "peek":
             peek(queue_struct)
