@@ -32,8 +32,6 @@ def run_queue_man():
             add(queue_struct)
         elif choice in ("peek", "peek", "view", "pop") and not queue_struct:
             print_color("queue is empty", "red")
-        elif choice == "add":
-            add(queue_struct)
         elif choice == "peek":
             peek(queue_struct)
         elif choice == "view":
