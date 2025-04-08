@@ -14,7 +14,7 @@ def peek(queue_struct):
     print_color(f"front: {queue_struct[0]}")
 
 def pop(queue_struct):
-    confirm = input("are you sure to remove {queue_struct[0]}: <y/n> ").strip().lower()
+    confirm = input(f"are you sure to remove {queue_struct[0]}: <y/n> ").strip().lower()
     if confirm == "y":
         popped = queue_struct.pop()
         print_color(f"popped element: {popped}", "red")
