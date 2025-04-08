@@ -16,7 +16,7 @@ def peek(queue_struct):
 def pop(queue_struct):
     confirm = input(f"are you sure to remove {queue_struct[0]}: <y/n> ").strip().lower()
     if confirm == "y":
-        popped = queue_struct.pop()
+        popped = queue_struct.pop(0)
         print_color(f"popped element: {popped}", "red")
     else:
         print_color("no changes made", "yellow")
@@ -40,6 +40,9 @@ def run_queue_man():
             pop(queue_struct)
         elif choice == "exit":
             break
+        else:
+            print_color("invalid option", "red")
+            display_options(options)
 
 if __name__ == '__main__':
     run_queue_man()
