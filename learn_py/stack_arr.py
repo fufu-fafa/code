@@ -18,4 +18,4 @@ while True:
     elif choice == "exit":
         break
     else:
-        print("invalid options")
+        print_color("invalid options", "red")
