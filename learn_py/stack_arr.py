@@ -8,7 +8,10 @@ def add(stack):
     stack.append(item)
 
 def view(stack):
-    print(f"stack: {stack}")
+    if not stack:
+        print_color("stack is empty", "red")
+        return
+    print_color(f"stack: {stack}", "blue")
 
 def pop(stack):
     if not stack:
@@ -17,23 +20,23 @@ def pop(stack):
     confirm = input(f"are you sure to remove {stack[-1]}: <y/n> ").strip().lower()
     if confirm == "y":
         popped = stack.pop()
-        print(f"popped element: {popped}")
+        print_color(f"popped element: {popped}", "red")
     else:
         print_color("no changes made", "yellow")
 
 def run_stack_man():
-    stack = []
-    options = ["add", "view", "pop", "exit"]
+    arr_stack = []
+    options = ["add", "peek", "pop", "exit"]
     display_options(options)
     
     while True:
         choice = input("input one of the valid options: ").strip().lower()
         if choice == "add":
-            add(stack)
-        elif choice == "view":
-            view(stack)
+            add(arr_stack)
+        elif choice == "peek":
+            view(arr_stack)
         elif choice == "pop":
-            pop(stack)
+            pop(arr_stack)
         elif choice == "exit":
             break
         else:
