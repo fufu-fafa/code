@@ -20,7 +20,7 @@ dict_morse = {
     " ": "/"
 }
 
-def morse_to_latin():
+def latin_to_morse():
     text = input("convert to morse: ").strip().lower()
     result = []
     for char in text:
@@ -30,7 +30,7 @@ def morse_to_latin():
             result.append("?")
     print(" ".join(result))
 
-def latin_to_morse():
+def morse_to_latin():
     morse_input = input("Convert to text: ").strip().split()
     result = []
 
@@ -48,5 +48,16 @@ def latin_to_morse():
 
 
 if __name__ == '__main__':
-    morse_to_latin()
-    latin_to_morse()
+    while True:
+        print("1. morse to latin")
+        print("2. latin to morse")
+        print("3. exit")
+        choice = input("input one of the valid options: ").strip().lower()
+        if choice == "1":
+            morse_to_latin()
+        elif choice == "2":
+            latin_to_morse()
+        elif choice == "3" or choice == "exit":
+            break
+        else:
+            print("invalid option")
