@@ -1,4 +1,4 @@
-int pins[] = {21, 19, 18, 5, 17, 16, 4, 13};
+int ledPins[] = {21, 19, 18, 5, 17, 16, 4, 13};
 
 void setup() {
   // Set LED pins as output
