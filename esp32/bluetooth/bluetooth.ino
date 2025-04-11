@@ -23,7 +23,7 @@ void setup() {
     lcd.backlight();
     
     updateLCD();
-    Serial.println("Bluetooth is ready. Send '1:text' or '2:text' to update LCD.");
+    Serial.println("Bluetooth is ready. Send '1.text' or '2.text' to update LCD.");
 }
 
 void loop() {
@@ -31,10 +31,10 @@ void loop() {
         String receivedText = SerialBT.readStringUntil('\n'); // Read until newline
         receivedText.trim(); // Remove whitespace
 
-        if (receivedText.startsWith("1:")) {
+        if (receivedText.startsWith("1.")) {
             var1 = receivedText.substring(2); // Extract new value for var1
             Serial.println("Updated var1: " + var1);
-        } else if (receivedText.startsWith("2:")) {
+        } else if (receivedText.startsWith("2.")) {
             var2 = receivedText.substring(2); // Extract new value for var2
             Serial.println("Updated var2: " + var2);
         }
