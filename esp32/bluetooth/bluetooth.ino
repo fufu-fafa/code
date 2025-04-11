@@ -5,8 +5,8 @@
 BluetoothSerial SerialBT;
 LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD with I2C address 0x27
 
-String var1 = "Hello";  // First line text
-String var2 = "World";  // Second line text
+String var1 = "config with BT:";
+String var2 = "ESP32_LCD_BT"; 
 
 void updateLCD() {
     lcd.clear();
