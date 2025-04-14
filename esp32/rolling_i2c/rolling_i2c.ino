@@ -2,8 +2,8 @@
 #include <LiquidCrystal_I2C.h>
 
 // === Customizable Settings ===
-const char* text = "@atnynsas";  // Text to scroll
-const int scrollSpeed = 300;        // Delay between scrolls (ms)
+const char* text = "very very long long text text";  // Text to scroll
+const int scrollSpeed = 500;        // Delay between scrolls (ms)
 const bool loopScroll = true;       // Repeat the scroll animation?
 
 const int lcdAddress = 0x27;        // I2C address
