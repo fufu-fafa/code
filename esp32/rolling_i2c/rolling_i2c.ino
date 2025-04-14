@@ -1,16 +1,12 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-// === Customizable Settings ===
-const char header = "rolling text";
+const char* header = "rolling text:";
 const char* text = "very very long long text text";  // Text to scroll
-const int scrollSpeed = 500;        // Delay between scrolls (ms)
-const bool loopScroll = true;       // Repeat the scroll animation?
-
-const int lcdAddress = 0x27;        // I2C address
+const int scrollSpeed = 500;
+const int lcdAddress = 0x27;
 const int lcdCols = 16;
 const int lcdRows = 2;
-// ==============================
 
 LiquidCrystal_I2C lcd(lcdAddress, lcdCols, lcdRows);
 
@@ -21,38 +17,33 @@ void setup() {
     lcd.print(header);
 }
 
-void scrollTextRight() {
+void scrollTextRightOnRow1() {
     int len = strlen(text);
     for (int x = 0; x <= lcdCols; x++) {
-        lcd.clear();
-        lcd.setCursor(0, 0);
-
+        lcd.setCursor(0, 1); 
         String var = "";
         for (int i = 0; i < x; i++) {
             var += " ";
         }
         var += text;
-        lcd.print(var.substring(0, lcdCols));  // Ensure it doesn't overflow
+        lcd.print(var.substring(0, lcdCols));
         delay(scrollSpeed);
     }
 }
 
-void appearTextLeft() {
+void appearTextLeftOnRow1() {
     int len = strlen(text);
     for (int i = len - 1; i >= 0; i--) {
-        lcd.clear();
-        lcd.setCursor(0, 0);
+        lcd.setCursor(0, 1); 
+        lcd.print("                "); // Clear row 1 manually
+        lcd.setCursor(0, 1);
         lcd.print(String(text).substring(i, i + lcdCols));
         delay(scrollSpeed);
     }
 }
 
 void loop() {
-    scrollTextRight();
-    appearTextLeft();
-
-    if (!loopScroll) {
-        while (true); // Halt
-    }
+    scrollTextRightOnRow1();
+    appearTextLeftOnRow1();
 }
 
