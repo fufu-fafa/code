@@ -5,7 +5,7 @@
 // === Default Settings ===
 String header = "default:";
 String text = "edit using bt on ESP32-LCD";
-const int scrollSpeed = 500;
+int scrollSpeed = 450;
 const bool loopScroll = true;
 
 const int lcdAddress = 0x27;
@@ -55,8 +55,18 @@ void handleBluetoothInput() {
         } else if (input.startsWith("2.")) {
             text = input.substring(2);
             SerialBT.println("line 2 updated.");
+        } else if (input.startsWith("3.")) {
+            int newSpeed = input.substring(2).toInt();
+            if (newSpeed > 0) {
+                scrollSpeed = newSpeed;
+                SerialBT.print("Scroll speed updated to ");
+                SerialBT.print(scrollSpeed);
+                SerialBT.println(" ms.");
+            } else {
+                SerialBT.println("Invalid scroll speed.");
+            }
         } else {
-            SerialBT.println("Use 1. or 2.");
+            SerialBT.println("Use 1. or 2. or 3.");
         }
     }
 }
