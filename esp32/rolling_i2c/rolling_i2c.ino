@@ -28,7 +28,7 @@ String padLeft(String str, int totalLength) {
 }
 
 void scrollTextLeft() {
-    String paddedText = String("                ") + text + "                ";
+    String paddedText = String("               ") + text + "               ";
     int len = paddedText.length();
 
     for (int i = 0; i < len - lcdCols + 1; i++) {
