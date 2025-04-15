@@ -5,7 +5,7 @@
 // === Default Settings ===
 String header = "default:";
 String text = "edit using bt on ESP32-LCD";
-int scrollSpeed = 450;
+int scrollSpeed = 460;
 const bool loopScroll = true;
 
 const int lcdAddress = 0x27;
