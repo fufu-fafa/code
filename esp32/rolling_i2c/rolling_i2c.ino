@@ -11,7 +11,7 @@ String scrollText;
 int scrollIndex = 0;
 
 unsigned long previousMillis = 0;
-int scrollSpeed = 460; // Default scroll interval
+int scrollSpeed = 485; // Default scroll interval
 
 void setup() {
   Serial.begin(115200);
