@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <limits>
-#include <cstdlib>
 #include <set>
 using namespace std;
 
@@ -50,7 +49,7 @@ int main() {
     num2 = get_float("second");
     if (num2 == 0 && chosen_op == "/") {
         cout << "unable to divide by zero" << endl;
-        exit(1);
+        return 1;
     }
     result = calculate(num1, num2, chosen_op);
     cout << "result: " << result << endl;
