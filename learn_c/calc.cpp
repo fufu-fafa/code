@@ -2,6 +2,7 @@
 #include <string>
 #include <limits>
 #include <cstdlib>
+#include <set>
 using namespace std;
 
 float get_float(string var) {
@@ -21,19 +22,14 @@ float get_float(string var) {
 }
 
 string get_operator() {
+    const set<string> valid_op = {"+", "-", "*", "/"};
     string temp;
     while (true) {
-        cout << "input one of the valid operator: <+, -, *, /> ";
+        cout << "input an operator: <+, -, *, /> ";
         cin >> temp;
-        if (temp != "+" && temp != "-" && temp != "*" && temp != "/") {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "invalid operator" << endl;
-        } else {
-            break;
-        }
+        if (valid_op.count(temp)) return temp;
+        else cout << "invalid operator" << endl; 
     }
-    return temp;
 }
 
 int check(float num2, string op) {
