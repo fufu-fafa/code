@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <limits>
+#include <cstdlib>
 using namespace std;
 
 float get_float(string var) {
@@ -18,42 +20,51 @@ float get_float(string var) {
     return temp;
 }
 
-float calculate(float num1, float num2) {
+string get_operator() {
+    string temp;
+    while (true) {
+        cout << "input one of the valid operator: <+, -, *, /> ";
+        cin >> temp;
+        if (temp != "+" && temp != "-" && temp != "*" && temp != "/") {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "invalid operator" << endl;
+        } else {
+            break;
+        }
+    }
+    return temp;
+}
 
+int check(float num2, string op) {
+    int valid = 1;
+    if (num2 == 0 && op == "/") valid = 0;
+    return valid;
+}
+
+float calculate(float num1, float num2, string op) {
+    float result;
+    if (op == "+") result = num1 + num2;
+    else if (op == "-") result = num1 - num2;
+    else if (op == "*") result = num1 * num2;
+    else if (op == "/") result = num1 / num2;
+    return result;
 }
 
 int main() {
+    int val;
     float num1, num2, result;
     string chosen_op;
     num1 = get_float("first");
-
-    cout << "input one of the valid operator: <+, -, *, /> ";
-    cin >> chosen_op;
-
-    if (chosen_op != "+" && chosen_op != "-" && chosen_op != "*" && chosen_op != "/") {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "invalid operator" << endl;
-        cout << "input one of the valid operator: <+, -, *, /> "
-        cin >> chosen_op;
-    }
-
+    chosen_op = get_operator();
     num2 = get_float("second");
-
-    if (chosen_op == "+") {
-        result = num1 + num2;
-        cout << "result: " << result << endl;
-    } else if (chosen_op == "-") {
-        result = num1 - num2;
-        cout << "result: " << result << endl;
-    } else if (chosen_op == "*") {
-        result = num1 * num2;
-        cout << "result: " << result << endl;
-    } else if (chosen_op == "/") {
-        result = num1 / num2;
-        cout << "result: " << result << endl;
-    } else {
-        cout << "invalid operator" << endl;
+    val = check(num2, chosen_op);
+    if (val != 1) {
+        cout << "unable to divide by zero" << endl;
+        exit(1);
     }
+    result = calculate(num1, num2, chosen_op);
+    cout << "result: " << result << endl;
+
     return 0;
 }
