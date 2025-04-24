@@ -32,12 +32,6 @@ string get_operator() {
     }
 }
 
-int check(float num2, string op) {
-    int valid = 1;
-    if (num2 == 0 && op == "/") valid = 0;
-    return valid;
-}
-
 float calculate(float num1, float num2, string op) {
     float result;
     if (op == "+") result = num1 + num2;
@@ -54,8 +48,7 @@ int main() {
     num1 = get_float("first");
     chosen_op = get_operator();
     num2 = get_float("second");
-    val = check(num2, chosen_op);
-    if (val != 1) {
+    if (num2 == 0 && chosen_op == "/") {
         cout << "unable to divide by zero" << endl;
         exit(1);
     }
