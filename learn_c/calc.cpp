@@ -7,7 +7,7 @@ float get_num(std::string which_num) {
         std::cout << "input the " << which_num << " number: ";
         std::cin >> temp;
         if (std::cin.fail()) {
-            std::cout << "invalid number";
+            std::cout << "invalid number" << '\n';
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else return temp;
