@@ -19,7 +19,7 @@ std::string get_op() {
     while (true) {
         std::cout << "input a valid operator: (+, -, *, /) ";
         std::cin >> temp;
-        if (temp != "+" || temp == "-" || temp == "*" || temp == "/") return temp;
+        if (temp == "+" || temp == "-" || temp == "*" || temp == "/") return temp;
         else std::cout << "invalid operator" << std::endl;
     }
 }
