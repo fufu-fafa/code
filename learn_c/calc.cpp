@@ -1,8 +1,8 @@
 #include <iostream>
 #include <limits>
 
-float get_num(std::string which_num) {
-    float temp;
+double get_num(std::string which_num) {
+    double temp;
     while (true) {
         std::cout << "input the " << which_num << " number: ";
         std::cin >> temp;
@@ -24,8 +24,8 @@ std::string get_op() {
     }
 }
 
-float calculate(float num1, float num2, std::string op) {
-    float result;
+double calculate(double num1, double num2, std::string op) {
+    double result;
     if (op == "+") result = num1 + num2;
     else if (op == "-") result = num1 - num2;
     else if (op == "*") result = num1 * num2;
@@ -34,7 +34,7 @@ float calculate(float num1, float num2, std::string op) {
 }
 
 int main() {
-    float num1, num2, result;
+    double num1, num2, result;
     std::string chosen_op;
     num1 = get_num("first");
     chosen_op = get_op();
