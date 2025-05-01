@@ -1,58 +1,46 @@
 #include <iostream>
-#include <string>
 #include <limits>
-#include <set>
-using namespace std;
 
-float get_float(string var) {
+float get_num(std::string which_num) {
     float temp;
     while (true) {
-        cout << "enter the " << var << " number: ";
-        cin >> temp;
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "invalid number" << endl;
-        } else {
-            break;
-        }
+        std::cout << "input the " << which_num << " number: ";
+        std::cin >> temp;
+        if (std::cin.fail()) {
+            std::cout << "invalid number";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        } else return temp;
     }
-    return temp;
 }
 
-string get_operator() {
-    const set<string> valid_op = {"+", "-", "*", "/"};
-    string temp;
+std::string get_op() {
+    std::string temp;
     while (true) {
-        cout << "input an operator: <+, -, *, /> ";
-        cin >> temp;
-        if (valid_op.count(temp)) return temp;
-        else cout << "invalid operator" << endl; 
+        std::cout << "input a valid operator: (+, -, *, /) ";
+        std::cin >> temp;
+        if (temp != "+" || temp == "-" || temp == "*" || temp == "/") return temp;
+        else std::cout << "invalid operator" << std::endl;
     }
 }
 
-float calculate(float num1, float num2, string op) {
+float calculate(float num1, float num2, std::string op) {
     float result;
     if (op == "+") result = num1 + num2;
     else if (op == "-") result = num1 - num2;
     else if (op == "*") result = num1 * num2;
-    else if (op == "/") result = num1 / num2;
+    else result = num1 / num2;
     return result;
 }
 
 int main() {
-    int val;
     float num1, num2, result;
-    string chosen_op;
-    num1 = get_float("first");
-    chosen_op = get_operator();
-    num2 = get_float("second");
-    if (num2 == 0 && chosen_op == "/") {
-        cout << "unable to divide by zero" << endl;
-        return 1;
-    }
+    std::string chosen_op;
+    num1 = get_num("first");
+    chosen_op = get_op();
+    num2 = get_num("second");
+    if (chosen_op == "/" && num2 == 0) return 1;
     result = calculate(num1, num2, chosen_op);
-    cout << "result: " << result << endl;
-
+    std::cout << "result: " << result << std::endl;
     return 0;
 }
