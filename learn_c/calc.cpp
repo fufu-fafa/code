@@ -20,7 +20,7 @@ std::string get_op() {
         std::cout << "input a valid operator: (+, -, *, /) ";
         std::cin >> temp;
         if (temp == "+" || temp == "-" || temp == "*" || temp == "/") return temp;
-        else std::cout << "invalid operator" << std::endl;
+        else std::cout << "invalid operator" << '\n';
     }
 }
 
@@ -41,6 +41,6 @@ int main() {
     num2 = get_num("second");
     if (chosen_op == "/" && num2 == 0) return 1;
     result = calculate(num1, num2, chosen_op);
-    std::cout << "result: " << result << std::endl;
+    std::cout << "result: " << result << '\n';
     return 0;
 }
