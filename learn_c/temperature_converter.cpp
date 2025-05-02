@@ -2,9 +2,9 @@
 
 double get_num(std::string temperature) {
     double temp;
-    std::cout << "enter the temperature in " << temperature << ": ";
-    std::cin >> temp;
     while (true){
+        std::cout << "enter the temperature in " << temperature << ": ";
+        std::cin >> temp;
         if (std::cin.fail()) {
             std::cout << "invalid number" << '\n';
             std::cin.clear();
