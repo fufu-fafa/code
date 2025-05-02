@@ -1,0 +1,37 @@
+#include <iostream>
+
+double get_num(std::string temperature) {
+    double temp;
+    std::cout << "enter the temperature in " << temperature << ": ";
+    std::cin >> temp;
+    if (std::cin.fail()) {
+        std::cout << "invalid number" << '\n';
+        std::cin.clear();
+        std::cin.ignore(100000, '\n');
+    } else {
+        std::cin.ignore(100000, '\n');
+        return temp;
+    }
+}
+
+std::string get_temperature(std::string which) {
+    std::string temperature;
+    while (true) {
+        std::cout << "enter the temperature to " << which << ": ";
+        std::cin >> temperature;
+        if (temp == "celcius" || temp == "fahrenheit" || temp == "kelvin") return temperature;
+        else {
+            std::cout << "not a valid temperature (case sensitive)" << '\n'
+                      << "valid temperature: celcius, fahrenheit, kelvin" << '\n';
+        }
+    }
+}
+
+int main() {
+    std::string first_temperature, second_temperature;
+    double input_measurement, output_measurement;
+    first_temperature = get_temperature("convert from");
+    second_temperature = get_temperature("convert into");
+    first_measurement = get_num(first_temperature);
+    return 0;
+}
