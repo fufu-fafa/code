@@ -23,6 +23,7 @@ std::string get_temperature(std::string which) {
         std::cin >> temperature;
         if (temperature == "celcius" || temperature == "fahrenheit" || temperature == "kelvin") return temperature;
         else {
+            std::cin.ignore(100000, '\n');
             std::cout << "not a valid temperature (case sensitive)" << '\n'
                       << "valid temperature: celcius, fahrenheit, kelvin" << '\n';
         }
