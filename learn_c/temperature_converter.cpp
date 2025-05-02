@@ -24,8 +24,7 @@ std::string get_temperature(std::string which) {
         if (temperature == "celsius" || temperature == "fahrenheit" || temperature == "kelvin") return temperature;
         else {
             std::cin.ignore(100000, '\n');
-            std::cout << "not a valid temperature (case sensitive)" << '\n'
-                      << "valid temperature: celsius, fahrenheit, kelvin" << '\n';
+            std::cout << "input one of the valid measurement: 'celsius', 'fahrenheit', 'kelvin'" << '\n';
         }
     }
 }
