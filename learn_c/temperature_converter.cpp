@@ -32,7 +32,7 @@ std::string get_temperature(std::string which) {
     }
 }
 
-double calculate(std::string convert_from, std::string convert_into, double input_value, temp_limits limit_in, temp_limits limit_out ) {
+double calculate(double input_value, temp_limits limit_in, temp_limits limit_out) {
     double celsius_value, output_value;
     celsius_value = ((input_value - limit_in.freeze) / (limit_in.boil - limit_in.freeze) * 100);
     output_value = ((limit_out.boil - limit_out.freeze) / 100) * celsius_value + limit_out.freeze;
@@ -68,7 +68,7 @@ int main() {
     std::cout << "input the value in " << convert_from << ": ";
     input_value = get_num();
 
-    output_value = calculate(convert_from, convert_into, input_value, limit_in, limit_out);
+    output_value = calculate(input_value, limit_in, limit_out);
     std::cout << "result: " << output_value << '\n';
     return 0;
 }
