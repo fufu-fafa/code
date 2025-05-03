@@ -51,6 +51,7 @@ temp_limits parser(std::string user_in) {
             std::cout << "enter the freezing point in that unit: ";
             range.freeze = get_num();
             if (range.boil > range.freeze) return range;
+            std::cout << "invalid range" << '\n';
         }
     }
     return range;
