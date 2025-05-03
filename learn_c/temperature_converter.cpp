@@ -42,7 +42,7 @@ double calculate(double input_value, temp_limits limit_in, temp_limits limit_out
 temp_limits parser(std::string user_in) {
     temp_limits range;
     if (user_in == "celsius") range = {100.0, 0.0};
-    else if (user_in == "fahrenheit") range = {212, 32.0}; 
+    else if (user_in == "fahrenheit") range = {212.0, 32.0}; 
     else if (user_in == "kelvin") range = {373.15, 273.15};
     else {
         while (true) {
