@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include <cctype>
 
 struct temp_limits {
     double boil, freeze;
@@ -21,12 +23,14 @@ double get_num() {
 
 std::string get_temperature(std::string which) {
     std::string temp_unit;
-    std::cout << "valid temperature: 'celsius', 'fahrenheit', 'kelvin', 'custom'"
     while (true) {
         std::cout << "enter the temperature to " << which << ": ";
         std::cin >> temp_unit;
-        if (temp_unit == "celsius" || temp_unit == "fahrenheit" || temp_unit == "kelvin" || temp_unit == "custom") return temp_unit;
-        else {
+        std::transform(temp_unit.begin(), temp_unit.end(), temp_unit.begin(), [](unsigned char x) {return std::tolower(x);});
+        if (temp_unit == "celsius" || temp_unit == "fahrenheit" || temp_unit == "kelvin" || temp_unit == "custom") {
+            std::cin.ignore(100000, '\n');
+            return temp_unit;
+        } else {
             std::cin.ignore(100000, '\n');
             std::cout << "input one of the valid measurement: 'celsius', 'fahrenheit', 'kelvin', 'custom'" << '\n';
         }
@@ -62,6 +66,7 @@ int main() {
     std::string convert_from, convert_into;
     double input_value, output_value;
 
+    std::cout << "valid temperatures: celsius, fahrenheit, kelvin, 'custom'" << '\n';
     convert_from = get_temperature("convert from");
     temp_limits limit_in = parser(convert_from);
     convert_into = get_temperature("convert into");
