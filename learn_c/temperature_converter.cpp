@@ -29,32 +29,33 @@ std::string get_temperature(std::string which) {
     }
 }
 
-double calculate(std::string first_temperature, std::string second_temperature, double input_measurement) {
-    double output_measurement;
-    if (first_temperature == "celsius") {
-        if (second_temperature == "fahrenheit") output_measurement = input_measurement * 9.0/5.0 + 32;
-        else if (second_temperature == "kelvin") output_measurement = input_measurement + 273.15;
-        else output_measurement = input_measurement;
-    } else if (first_temperature == "fahrenheit") {
-        if (second_temperature == "celsius") output_measurement = (input_measurement - 32) * 5.0/9.0;
-        else if (second_temperature == "kelvin") output_measurement = (input_measurement - 32) * 5.0/9.0 + 273.15;
-        else output_measurement = input_measurement;
-    } else {
-        if (second_temperature == "celsius") output_measurement = input_measurement - 273.15;
-        else if (second_temperature == "fahrenheit") output_measurement = (input_measurement - 273.15) * 9.0/5.0 + 32;
-        else output_measurement = input_measurement;
-    }
-    return output_measurement;
+double into_celsius(std::string convert_from, double input_value) {
+    if (convert_from == "celsius") return input_value;
+    else if (convert_from == "fahrenheit") return (input_value - 32) * 5.0/9.0;
+    else if (convert_from == "kelvin") return input_value - 273.15;
+}
+
+double from_celsius(std::string convert_into, double celsius_value) {
+    if (convert_into == "celsius") return celsius_value;
+    else if (convert_into == "fahrenheit") return (celsius_value * 9.0/5.0) + 32;
+    else if (convert_into == "kelvin") return celsius_value + 273.15;
+}
+
+double calculate(std::string convert_from, std::string convert_into, double input_value) {
+    double celsius_value, output_value;
+    celsius_value = into_celsius(convert_from, input_value);
+    output_value = from_celsius(convert_into, celsius_value);
+    return output_value;
 }
 
 int main() {
-    std::string first_temperature, second_temperature;
-    double input_measurement, output_measurement;
-    first_temperature = get_temperature("convert from");
-    second_temperature = get_temperature("convert into");
+    std::string convert_from, convert_into;
+    double input_value, output_value;
+    convert_from = get_temperature("convert from");
+    convert_into = get_temperature("convert into");
 
-    input_measurement = get_num(first_temperature);
-    output_measurement = calculate(first_temperature, second_temperature, input_measurement);
-    std::cout << "result: " << output_measurement << '\n';
+    input_value = get_num(convert_from);
+    output_value = calculate(convert_from, convert_into, input_value);
+    std::cout << "result: " << output_value << '\n';
     return 0;
 }
