@@ -21,6 +21,7 @@ double get_num() {
 
 std::string get_temperature(std::string which) {
     std::string temp_unit;
+    std::cout << "valid temperature: 'celsius', 'fahrenheit', 'kelvin', 'custom'"
     while (true) {
         std::cout << "enter the temperature to " << which << ": ";
         std::cin >> temp_unit;
