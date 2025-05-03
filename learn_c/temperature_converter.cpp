@@ -34,7 +34,7 @@ std::string get_temperature(std::string which) {
 
 double calculate(double input_value, temp_limits limit_in, temp_limits limit_out) {
     double celsius_value, output_value;
-    celsius_value = ((input_value - limit_in.freeze) / (limit_in.boil - limit_in.freeze) * 100);
+    celsius_value = ((input_value - limit_in.freeze) / (limit_in.boil - limit_in.freeze)) * 100;
     output_value = ((limit_out.boil - limit_out.freeze) / 100) * celsius_value + limit_out.freeze;
     return output_value;
 }
