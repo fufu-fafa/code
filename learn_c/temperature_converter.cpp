@@ -20,11 +20,11 @@ double get_num() {
 }
 
 std::string get_temperature(std::string which) {
-    std::string temperature;
+    std::string temp_unit;
     while (true) {
         std::cout << "enter the temperature to " << which << ": ";
-        std::cin >> temperature;
-        if (temperature == "celsius" || temperature == "fahrenheit" || temperature == "kelvin" || temperature == "custom") return temperature;
+        std::cin >> temp_unit;
+        if (temp_unit == "celsius" || temp_unit == "fahrenheit" || temp_unit == "kelvin" || temp_unit == "custom") return temp_unit;
         else {
             std::cin.ignore(100000, '\n');
             std::cout << "input one of the valid measurement: 'celsius', 'fahrenheit', 'kelvin', 'custom'" << '\n';
@@ -50,7 +50,7 @@ temp_limits parser(std::string user_in) {
             range.boil = get_num();
             std::cout << "enter the freezing point in that unit: ";
             range.freeze = get_num();
-            if (range.boil >= range.freeze) return range;
+            if (range.boil > range.freeze) return range;
         }
     }
     return range;
