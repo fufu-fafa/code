@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 
 double get_num() {
     double temp;
@@ -8,9 +9,9 @@ double get_num() {
         if (std::cin.fail()) {
             std::cout << "invalid number" << '\n';
             std::cin.clear();
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return temp;
         }
     }
