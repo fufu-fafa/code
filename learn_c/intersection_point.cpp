@@ -33,6 +33,7 @@ vec2 calculate(vec2 coordinate1, vec2 coordinate2, double gradient1, double grad
 
     result.x = (offset2 - offset1) / (gradient1 - gradient2);
     result.y = gradient1 * result.x + offset1;
+    return result;
 }
 
 double get_gradient(vec2 start, vec2 end) {
@@ -49,7 +50,7 @@ int main() {
     std::cout << "enter the second coordinate (format: x y): " << '\n';
     vec2 line1_end = get_vec();
     if (line1_start.x == line1_end.x && line1_start.y == line1_end.y) return 1;
-    else double line1_gradient = get_gradient(line1_start, line1_end);
+    double line1_gradient = get_gradient(line1_start, line1_end);
 
     std::cout << '\n' << "for the second line" << '\n';
     std::cout << "enter the first coordinate (format: x y): " << '\n';
@@ -57,10 +58,10 @@ int main() {
     std::cout << "enter the second coordinate (format: x y): " << '\n';
     vec2 line2_end = get_vec();
     if (line2_start.x == line2_end.x && line2_start.y == line2_end.y) return 1;
-    else double line2_gradient = get_gradient(line2_start, line2_end);
+    double line2_gradient = get_gradient(line2_start, line2_end);
 
     vec2 result = calculate(line1_start, line2_start, line1_gradient, line2_gradient);
-    std::cout << "result: (" << result.x << ", " << result.y << '\n';
+    std::cout << "result: (" << result.x << ", " << result.y << ")" << '\n';
 
     return 0;
 }
