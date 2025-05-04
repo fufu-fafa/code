@@ -75,7 +75,7 @@ int main() {
 
     vec2 result = calculate(line1_start, line2_start, line1_gradient, line2_gradient);
     if (std::isnan(result.x) || std::isnan(result.y)) std::cout << "lines do not intersect" << '\n';
-    else std::cout << "result: (" << result.x << ", " << result.y << ")" << '\n';
+    else std::cout << "intersection point: (" << result.x << ", " << result.y << ")" << '\n';
 
     return 0;
 }
