@@ -39,7 +39,7 @@ std::string validate_input(const std::set<std::string>& valid_units) {
     }
 }
 
-double into_meter(std::string input_unit, double value_in) {
+double into_meter(const std::string& input_unit, double value_in) {
     if (input_unit == "meter") return value_in;
     else if (input_unit == "kilometer") return value_in * 1000;
     else if (input_unit == "centimeter") return value_in * 0.01;
@@ -50,7 +50,7 @@ double into_meter(std::string input_unit, double value_in) {
     else return 0.0;
 }
 
-double from_meter(std::string output_unit, double in_meter) {
+double from_meter(const std::string& output_unit, double in_meter) {
     if (output_unit == "meter") return in_meter;
     else if (output_unit == "kilometer") return in_meter / 1000;
     else if (output_unit == "centimeter") return in_meter / 0.01;
@@ -61,7 +61,7 @@ double from_meter(std::string output_unit, double in_meter) {
     else return 0.0;
 }
 
-double calculate(unit_struct unit, double value_in) {
+double calculate(const unit_struct& unit, double value_in) {
     double in_meter = into_meter(unit.in, value_in);
     double result = from_meter(unit.out, in_meter);
     return result;
