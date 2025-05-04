@@ -29,7 +29,7 @@ vec2 calculate(vec2 coordinate1, vec2 coordinate2, double gradient1, double grad
     } else if (std::isinf(gradient1)) {
         offset2 = coordinate2.y - gradient2 * coordinate2.x;
         result.x = coordinate1.x;
-        result.y = gradient2 * result.x + offset2
+        result.y = gradient2 * result.x + offset2;
         return result;
     } else if (std::isinf(gradient2)) {
         offset1 = coordinate1.y - gradient1 * coordinate1.x;
