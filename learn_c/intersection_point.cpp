@@ -12,9 +12,9 @@ vec2 get_vec() {
         if (std::cin.fail()) {
             std::cout << "invalid number" << '\n';
             std::cin.clear();
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return temp;
         }
     } 
@@ -36,7 +36,6 @@ vec2 calculate(vec2 coordinate1, vec2 coordinate2, double gradient1, double grad
     } else {
         offset1 = coordinate1.y - gradient1 * coordinate1.x;
         offset2 = coordinate2.y - gradient2 * coordinate2.x; 
-
         result.x = (offset2 - offset1) / (gradient1 - gradient2);
         result.y = gradient1 * result.x + offset1;
     }

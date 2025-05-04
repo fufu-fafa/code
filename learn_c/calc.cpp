@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 
 double get_num(std::string which_num) {
     double temp;
@@ -8,9 +9,9 @@ double get_num(std::string which_num) {
         if (std::cin.fail()) {
             std::cout << "invalid number" << '\n';
             std::cin.clear();
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return temp;
         }
     }
@@ -41,7 +42,10 @@ int main() {
     num1 = get_num("first");
     chosen_op = get_op();
     num2 = get_num("second");
-    if (chosen_op == "/" && num2 == 0) return 1;
+    if (chosen_op == "/" && num2 == 0) {
+        std::cout << "unable to divide by zero" << '\n';
+        return 1;
+    }
     result = calculate(num1, num2, chosen_op);
     std::cout << "result: " << result << '\n';
     return 0;
