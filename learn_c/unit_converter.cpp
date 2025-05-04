@@ -79,8 +79,8 @@ int main() {
     unit.out = validate_input(valid_units);
     std::cout << "enter the value in " << unit.in << ": ";
     value_in = get_num();
-    result = calculate(unit, value_in);
-    std::cout << "result in " << unit.out << ": " << result << '\n';
+    value_out = calculate(unit, value_in);
+    std::cout << "result in " << unit.out << ": " << value_out << '\n';
 
     return 0;
 }
