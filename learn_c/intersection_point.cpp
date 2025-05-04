@@ -22,18 +22,27 @@ vec2 get_vec() {
 
 vec2 calculate(vec2 coordinate1, vec2 coordinate2, double gradient1, double gradient2) {
     vec2 result;
+    double offset1, offset2;
     if (gradient1 == gradient2) {
-        result.x = std::numeric_limits<double>::quiet_NaN();
-        result.y = std::numeric_limits<double>::quiet_NaN();
+        result.x = result.y = std::numeric_limits<double>::quiet_NaN();
+        return result;
+    } else if (std::isinf(gradient1)) {
+        offset2 = coordinate2.y - gradient2 * coordinate2.x;
+        result.x = coordinate1.x;
+        result.y = gradient2 * result.x + offset2
+        return result;
+    } else if (std::isinf(gradient2)) {
+        offset1 = coordinate1.y - gradient1 * coordinate1.x;
+        result.x = coordinate2.x;
+        result.y = gradient1 * result.x + offset1;
+    } else {
+        offset1 = coordinate1.y - gradient1 * coordinate1.x;
+        offset2 = coordinate2.y - gradient2 * coordinate2.x; 
+
+        result.x = (offset2 - offset1) / (gradient1 - gradient2);
+        result.y = gradient1 * result.x + offset1;
         return result;
     }
-
-    double offset1 = coordinate1.y - gradient1 * coordinate1.x;
-    double offset2 = coordinate2.y - gradient2 * coordinate2.x; 
-
-    result.x = (offset2 - offset1) / (gradient1 - gradient2);
-    result.y = gradient1 * result.x + offset1;
-    return result;
 }
 
 double get_gradient(vec2 start, vec2 end) {
