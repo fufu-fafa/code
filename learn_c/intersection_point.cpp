@@ -56,7 +56,10 @@ int main() {
     vec2 line1_start = get_vec();
     std::cout << "enter the second coordinate (format: x y): " << '\n';
     vec2 line1_end = get_vec();
-    if (line1_start.x == line1_end.x && line1_start.y == line1_end.y) return 1;
+    if (line1_start.x == line1_end.x && line1_start.y == line1_end.y) {
+        std::cout << "first and second coordinate must be different" << '\n';
+        return 1;
+    }
     double line1_gradient = get_gradient(line1_start, line1_end);
 
     std::cout << '\n' << "for the second line" << '\n';
@@ -64,11 +67,15 @@ int main() {
     vec2 line2_start = get_vec();
     std::cout << "enter the second coordinate (format: x y): " << '\n';
     vec2 line2_end = get_vec();
-    if (line2_start.x == line2_end.x && line2_start.y == line2_end.y) return 1;
+    if (line2_start.x == line2_end.x && line2_start.y == line2_end.y) {
+        std::cout << "first and second coordinate must be different" << '\n';
+        return 1;
+    }
     double line2_gradient = get_gradient(line2_start, line2_end);
 
     vec2 result = calculate(line1_start, line2_start, line1_gradient, line2_gradient);
-    std::cout << "result: (" << result.x << ", " << result.y << ")" << '\n';
+    if (std::isnan(result.x) || std::isnan(result.y)) std::cout << "lines do not intersect" << '\n';
+    else std::cout << "result: (" << result.x << ", " << result.y << ")" << '\n';
 
     return 0;
 }
