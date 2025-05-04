@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <limits>
 using namespace std;
 
 class TicTacToe {
@@ -21,20 +22,16 @@ private:
     }
 
     bool checkWin() {
-        // Check rows and columns
         for (int i = 0; i < 3; i++) {
             if ((board[i][0] == currentPlayer && board[i][1] == currentPlayer && board[i][2] == currentPlayer) ||
                 (board[0][i] == currentPlayer && board[1][i] == currentPlayer && board[2][i] == currentPlayer)) {
                 return true;
             }
         }
-
-        // Check diagonals
         if ((board[0][0] == currentPlayer && board[1][1] == currentPlayer && board[2][2] == currentPlayer) ||
             (board[0][2] == currentPlayer && board[1][1] == currentPlayer && board[2][0] == currentPlayer)) {
             return true;
         }
-
         return false;
     }
 
@@ -57,7 +54,13 @@ public:
         while (!gameOver) {
             printBoard();
             cout << "Player " << currentPlayer << "'s turn. Enter row and column (1-3): ";
-            cin >> row >> col;
+
+            if (!(cin >> row >> col)) {
+                cout << "Invalid input. Please enter two numbers.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
 
             row--;
             col--;
@@ -89,3 +92,4 @@ int main() {
     game.play();
     return 0;
 }
+
