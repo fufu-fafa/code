@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cctype>
+#include <limits>
 
 struct temp_limits {
     double boil, freeze;
@@ -13,9 +14,9 @@ double get_num() {
         if (std::cin.fail()) {
             std::cout << "invalid number" << '\n';
             std::cin.clear();
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return temp;
         }
     }
@@ -28,10 +29,10 @@ std::string get_temperature(std::string which) {
         std::cin >> temp_unit;
         std::transform(temp_unit.begin(), temp_unit.end(), temp_unit.begin(), [](unsigned char x) {return std::tolower(x);});
         if (temp_unit == "celsius" || temp_unit == "fahrenheit" || temp_unit == "kelvin" || temp_unit == "custom") {
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return temp_unit;
         } else {
-            std::cin.ignore(100000, '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "input one of the valid measurement: 'celsius', 'fahrenheit', 'kelvin', 'custom'" << '\n';
         }
     }
