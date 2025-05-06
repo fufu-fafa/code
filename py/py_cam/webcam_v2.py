@@ -18,6 +18,8 @@ while True:
 
     # Detect faces
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+    face_count = len(faces)
+    eye_count = 0
 
     # Draw rectangles around detected faces
     for (x, y, w, h) in faces:
@@ -26,8 +28,13 @@ while True:
         roi_color = frame[y:y + h, x:x + w]
 
         eyes = eye_cascade.detectMultiScale(roi_gray)
+        eye_count += len(eyes)
+
         for (ex, ey, ew, eh) in eyes:
             cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (255, 128, 0), 2)
+
+    cv2.putText(frame, f'Face, Eye: {face_count}, {eye_count}', (10, 30),
+    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
 
     cv2.imshow('Webcam Feed (Face Detection)', frame)
 
