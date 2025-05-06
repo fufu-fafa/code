@@ -3,6 +3,9 @@ import dlib
 from scipy.spatial import distance
 from imutils import face_utils
 
+# Mirror?
+mirror = True
+
 def eye_aspect_ratio(eye):
     A = distance.euclidean(eye[1], eye[5])
     B = distance.euclidean(eye[2], eye[4])
@@ -25,6 +28,8 @@ cap = cv2.VideoCapture(0)
 
 while True:
     ret, frame = cap.read()
+    if mirror:
+        frame = cv2.flip(frame, 1)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     faces = detector(gray)
