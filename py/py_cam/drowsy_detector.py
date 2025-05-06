@@ -53,8 +53,6 @@ while True:
             cv2.putText(frame, "not sleepy", (10, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-
-        # Draw eyes (optional)
         leftHull = cv2.convexHull(leftEye)
         rightHull = cv2.convexHull(rightEye)
         cv2.drawContours(frame, [leftHull], -1, (0, 255, 0), 1)
