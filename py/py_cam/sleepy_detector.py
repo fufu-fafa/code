@@ -43,9 +43,12 @@ while True:
             counter += 1
             if counter >= CONSEC_FRAMES:
                 cv2.putText(frame, "SLEEPY!", (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         else:
             counter = 0
+            cv2.putText(frame, "not sleepy", (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
 
         # Draw eyes (optional)
         leftHull = cv2.convexHull(leftEye)
