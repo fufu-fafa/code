@@ -33,8 +33,10 @@ while True:
         for (ex, ey, ew, eh) in eyes:
             cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (255, 128, 0), 2)
 
-    cv2.putText(frame, f'Face, Eye: {face_count}, {eye_count}', (10, 30),
-    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(frame, f'Face: {face_count}', (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(frame, f'Eye: {eye_count}', (10, 60),
+        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
 
     cv2.imshow('Webcam Feed (Face Detection)', frame)
 
