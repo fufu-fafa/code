@@ -41,6 +41,8 @@ while True:
 
         if ear < EAR_THRESHOLD:
             counter += 1
+            cv2.putText(frame, "possibly sleepy", (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
             if counter >= CONSEC_FRAMES:
                 cv2.putText(frame, "SLEEPY!", (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
