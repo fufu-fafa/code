@@ -20,26 +20,26 @@ coordinate get_coordinate() {
     while (true) {
         std::cin >> temp.x >> temp.y;
         if (std::cin.fail()) {
-            std::cout << "invalid number, reinput the coordinate (format: x y): " >> '\n';
+            std::cout << "invalid number, reinput the coordinate (format: x y): " << '\n';
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max, '\n'); 
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
         } else {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max, '\n');
-            return temp
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return temp;
         }
     }
 }
 
 int main() {
-    line line1
+    line line1;
     std::cout << "enter the first coordinate for the line: " << '\n';
     line1.start = get_coordinate();
     std::cout << "enter the second coordinate for the line: " << '\n';
     line1.end = get_coordinate();
-    line1.gradient = get_gradient();
+    line1.gradient = get_gradient(line1.start, line1.end);
     line1.offset = line1.start.y - line1.gradient * line1.start.x;
 
     if (line1.offset > 0) std::cout << "y = " << line1.gradient << "x +" << line1.offset << '\n';
-    else if (line1.offset = 0) std::cout << "y = " << line1.gradient << '\n';
+    else if (line1.offset == 0) std::cout << "y = " << line1.gradient << '\n';
     else std::cout << "y = " << line1.gradient << "x " << line1.offset << '\n';
 }
