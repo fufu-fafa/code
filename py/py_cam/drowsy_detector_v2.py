@@ -7,6 +7,7 @@ from imutils import face_utils
 mirror = True
 verbose_eye = True
 verbose_mouth = True
+file_location = './shape_predictor_68_face_landmarks.dat'
 
 def eye_aspect_ratio(eye):
     A = distance.euclidean(eye[1], eye[5])
@@ -33,7 +34,7 @@ ear = 0
 mar = 0
 
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+predictor = dlib.shape_predictor(file_location)
 
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
