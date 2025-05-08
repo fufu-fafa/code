@@ -11,7 +11,6 @@ struct line {
 };
 
 double get_gradient(vec2 start, vec2 end) {
-    double gradient;
     if (end.x == start.x) return std::numeric_limits<double>::infinity();
     else return (end.y - start.y) / (end.x - start.x);
 }
