@@ -5,7 +5,7 @@ from imutils import face_utils
 
 # config
 mirror = True
-verbose_eye = True
+verbose_eye = False
 verbose_mouth = True
 file_location = './shape_predictor_68_face_landmarks.dat'
 
@@ -64,26 +64,28 @@ while True:
         mouth = shape[mStart:mEnd]
         mar = mouth_aspect_ratio(mouth)
 
-        if ear < EAR_THRESHOLD:
-            counter += 1
-            if counter >= CONSEC_FRAMES:
-                cv2.putText(frame, "SLEEPY!", (10, 60),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        if verbose_eye:
+            if ear < EAR_THRESHOLD:
+                counter += 1
+                if counter >= CONSEC_FRAMES:
+                    cv2.putText(frame, "SLEEPY!", (10, 90),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                else:
+                    cv2.putText(frame, "possibly sleepy", (10, 90),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
             else:
-                cv2.putText(frame, "possibly sleepy", (10, 60),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-        else:
-            counter = 0
-            cv2.putText(frame, "not sleepy", (10, 60),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                counter = 0
+                cv2.putText(frame, "not sleepy", (10, 90),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-        if mar > MAR_THRESHOLD:
-            yawn_counter += 1
-            if yawn_counter >= YAWN_FRAMES:
-                cv2.putText(frame, "YAWNING!", (10, 90),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        else:
-            yawn_counter = 0
+        if verbose_mouth:
+            if mar > MAR_THRESHOLD:
+                yawn_counter += 1
+                if yawn_counter >= YAWN_FRAMES:
+                    cv2.putText(frame, "YAWNING!", (10, 60),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            else:
+                yawn_counter = 0
 
         cv2.putText(frame, f"EAR: {ear:.2f}", (10, 30),
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
