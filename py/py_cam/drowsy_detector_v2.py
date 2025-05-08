@@ -8,14 +8,12 @@ mirror = True
 verbose_eye = True
 verbose_mouth = True
 
-# EAR - Eye Aspect Ratio
 def eye_aspect_ratio(eye):
     A = distance.euclidean(eye[1], eye[5])
     B = distance.euclidean(eye[2], eye[4])
     C = distance.euclidean(eye[0], eye[3])
     return (A + B) / (2.0 * C)
 
-# MAR - Mouth Aspect Ratio (yawn detection)
 def mouth_aspect_ratio(mouth):
     A = distance.euclidean(mouth[13], mouth[19])
     B = distance.euclidean(mouth[14], mouth[18])
@@ -65,7 +63,6 @@ while True:
         mouth = shape[mStart:mEnd]
         mar = mouth_aspect_ratio(mouth)
 
-        # Drowsiness detection
         if ear < EAR_THRESHOLD:
             counter += 1
             if counter >= CONSEC_FRAMES:
@@ -79,7 +76,6 @@ while True:
             cv2.putText(frame, "not sleepy", (10, 60),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-        # Yawning detection
         if mar > MAR_THRESHOLD:
             yawn_counter += 1
             if yawn_counter >= YAWN_FRAMES:
@@ -88,7 +84,6 @@ while True:
         else:
             yawn_counter = 0
 
-        # Display EAR and MAR values
         cv2.putText(frame, f"EAR: {ear:.2f}", (10, 30),
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
         cv2.putText(frame, f"MAR: {mar:.2f}", (200, 30),
