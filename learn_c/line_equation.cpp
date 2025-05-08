@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <limits>
 
 struct coordinate {
@@ -37,9 +38,15 @@ int main() {
     std::cout << "enter the second coordinate for the line: " << '\n';
     line1.end = get_coordinate();
     line1.gradient = get_gradient(line1.start, line1.end);
-    line1.offset = line1.start.y - line1.gradient * line1.start.x;
 
-    if (line1.offset > 0) std::cout << "y = " << line1.gradient << "x +" << line1.offset << '\n';
-    else if (line1.offset == 0) std::cout << "y = " << line1.gradient << '\n';
-    else std::cout << "y = " << line1.gradient << "x " << line1.offset << '\n';
+    if (std::isinf(line1.gradient)) {
+        std::cout << "x = " << line1.start.x << '\n';
+    } else {
+        line1.offset = line1.start.y - line1.gradient * line1.start.x;
+        std::cout << std::fixed << std::setprecision(2);
+        if (line1.offset > 0) std::cout << "y = " << line1.gradient << "x + " << line1.offset << '\n';
+        else if (line1.offset == 0) std::cout << "y = " << line1.gradient << "x" << '\n';
+        else std::cout << "y = " << line1.gradient << "x - " << -line1.offset << '\n';
+    }
+    return 0;
 }
