@@ -5,6 +5,11 @@ struct vec2 {
     double x, y;
 };
 
+struct line {
+    vec2 start, end;
+    double gradient;
+};
+
 vec2 get_vec() {
     vec2 temp;
     while (true) {
@@ -20,24 +25,24 @@ vec2 get_vec() {
     } 
 }
 
-vec2 calculate(vec2 coordinate1, vec2 coordinate2, double gradient1, double gradient2) {
+vec2 calculate(line line1, line line2) {
     vec2 result;
     double offset1, offset2;
-    if (gradient1 == gradient2) {
+    if (line1.gradient == line2.gradient) {
         result.x = result.y = std::numeric_limits<double>::quiet_NaN();
-    } else if (std::isinf(gradient1)) {
-        offset2 = coordinate2.y - gradient2 * coordinate2.x;
-        result.x = coordinate1.x;
-        result.y = gradient2 * result.x + offset2;
-    } else if (std::isinf(gradient2)) {
-        offset1 = coordinate1.y - gradient1 * coordinate1.x;
-        result.x = coordinate2.x;
-        result.y = gradient1 * result.x + offset1;
+    } else if (std::isinf(line1.gradient)) {
+        offset2 = line2.start.y - line2.gradient * line2.start.x;
+        result.x = line1.start.x;
+        result.y = line2.gradient * result.x + offset2;
+    } else if (std::isinf(line2.gradient)) {
+        offset1 = line1.start.y - line1.gradient * line1.start.x;
+        result.x = line2.start.x;
+        result.y = line1.gradient * result.x + offset1;
     } else {
-        offset1 = coordinate1.y - gradient1 * coordinate1.x;
-        offset2 = coordinate2.y - gradient2 * coordinate2.x; 
-        result.x = (offset2 - offset1) / (gradient1 - gradient2);
-        result.y = gradient1 * result.x + offset1;
+        offset1 = line1.start.y - line1.gradient * line1.start.x;
+        offset2 = line2.start.y - line2.gradient * line2.start.x; 
+        result.x = (offset2 - offset1) / (line1.gradient - line2.gradient);
+        result.y = line1.gradient * result.x + offset1;
     }
     return result;
 }
@@ -59,7 +64,7 @@ int main() {
         std::cout << "first and second coordinate must be different" << '\n';
         return 1;
     }
-    double line1_gradient = get_gradient(line1_start, line1_end);
+    line line1 = {line1_start, line1_end, get_gradient(line1_start, line1_end)};
 
     std::cout << '\n' << "for the second line" << '\n';
     std::cout << "enter the first coordinate (format: x y): " << '\n';
@@ -70,9 +75,9 @@ int main() {
         std::cout << "first and second coordinate must be different" << '\n';
         return 1;
     }
-    double line2_gradient = get_gradient(line2_start, line2_end);
+    line line2 = {line2_start, line2_end, get_gradient(line2_start, line2_end)};
 
-    vec2 result = calculate(line1_start, line2_start, line1_gradient, line2_gradient);
+    vec2 result = calculate(line1, line2);
     if (std::isnan(result.x) || std::isnan(result.y)) std::cout << "lines do not intersect" << '\n';
     else std::cout << "intersection point: (" << result.x << ", " << result.y << ")" << '\n';
 
