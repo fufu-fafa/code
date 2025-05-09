@@ -144,6 +144,8 @@ int main() {
     else {
         std::cout << "not a valid option" << '\n';
         return 1;
+    }
+
     equation = get_equation(result);
     std::cout << "circle equation: " << equation << '\n';
     return 0;
