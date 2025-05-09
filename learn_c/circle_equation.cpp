@@ -12,11 +12,22 @@ struct circle {
     coordinate center;
 };
 
+struct line {
+    double gradient;
+    double offset = 0;
+    coordinate midpoint;
+};
+
 std::string format_double(double value) {
     std::ostringstream temp;
     if (value < 0) temp << "+ " << -value;
     else temp << "- " << value;
     return temp.str();
+}
+
+double get_gradient(coordinate start, coordinate end) {
+    if (end.x == start.x) return std::numeric_limits<double>::infinity();
+    else return (end.y - start.y) / (end.x - start.x);
 }
 
 std::string get_equation(circle result) {
@@ -56,6 +67,41 @@ coordinate get_coordinate() {
     }
 }
 
+coordinate get_intersection(line line1, line line2) {
+    coordinate result;
+    if (std::isinf(line1.gradient)) {
+        line2.offset = line2.midpoint.y - line2.gradient * line2.midpoint.x;
+        result.x = line1.midpoint.x;
+        result.y = line2.gradient * result.x + line2.offset;
+    } else if (std::isinf(line2.gradient)) {
+        line1.offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
+        result.x = line2.midpoint.x;
+        result.y = line1.gradient * result.x + line1.offset;
+    } else {
+        line1.offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
+        line2.offset = line2.midpoint.y - line2.gradient * line2.midpoint.x; 
+        result.x = (line2.offset - line1.offset) / (line1.gradient - line2.gradient);
+        result.y = line1.gradient * result.x + line1.offset;
+    }
+    return result;
+}
+
+line get_perpendicular(line input) {
+    line temp;
+    temp.midpoint = input.midpoint;
+
+    if (std::isinf(input.gradient)) {
+        temp.gradient = 0;
+        temp.offset = 0;
+    } else if (input.gradient == 0) {
+        temp.gradient = std::numeric_limits<double>::infinity();
+    } else {
+        temp.gradient = -1 / input.gradient;
+        temp.offset = temp.midpoint.y - temp.gradient * temp.midpoint.x;
+    }
+    return temp;
+}
+
 circle option1() {
     circle temp;
     std::cout << "enter the center point coordinate (format: x y):" << '\n';
@@ -67,29 +113,30 @@ circle option1() {
 
 circle option2() {
     circle temp;
-    coordinate p1, p2, p3;
-    double determinant, p1_sq, p2_sq, p3_sq;
+    coordinate a, b, c, result;
+    line ab, bc, perp_ab, perp_bc;
 
     std::cout << "enter the first point (format: x y):" << '\n';
-    p1 = get_coordinate();
+    a = get_coordinate();
     std::cout << "enter the second point (format: x y):" << '\n';
-    p2 = get_coordinate();
+    b = get_coordinate();
     std::cout << "enter the third point (format: x y):" << '\n';
-    p3 = get_coordinate();
+    c = get_coordinate();
 
-    determinant = 2 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y));
-    if (determinant == 0) {
-        std::cout << "points are collinear, cannot form a circle" << '\n';
-        exit(1);
-    }
+    ab.midpoint = {(a.x + b.x) / 2, (a.y + b.y) / 2};
+    ab.gradient = get_gradient(a, b);
+    if (std::isinf(ab.gradient)) ab.offset = 0;
+    else ab.offset = ab.midpoint.y - ab.gradient * ab.midpoint.x;
+    perp_ab = get_perpendicular(ab);
 
-    p1_sq = std::pow(p1.x, 2) + std::pow(p1.y, 2);
-    p2_sq = std::pow(p2.x, 2) + std::pow(p2.y, 2);
-    p3_sq = std::pow(p3.x, 2) + std::pow(p3.y, 2);
+    bc.midpoint = {(b.x + c.x) / 2, (b.y + c.y) / 2};
+    bc.gradient = get_gradient(b, c);
+    if (std::isinf(bc.gradient)) bc.offset = 0;
+    else bc.offset = bc.midpoint.y - bc.gradient * bc.midpoint.x;
+    perp_bc = get_perpendicular(bc);
 
-    temp.center.x = (p1_sq * (p2.y - p3.y) + p2_sq * (p3.y - p1.y) + p3_sq * (p1.y - p2.y)) / determinant;
-    temp.center.y = (p1_sq * (p3.x - p2.x) + p2_sq * (p1.x - p3.x) + p3_sq * (p2.x - p3.x)) / determinant;
-    temp.r = std::sqrt(std::pow(p1.x - temp.center.x, 2) + std::pow(p1.y - temp.center.y, 2));
+    temp.center = get_intersection(perp_ab, perp_bc);
+    temp.r = sqrt(std::pow(a.x - temp.center.x, 2) + std::pow(a.y - temp.center.y, 2));
     return temp;
 }
 
@@ -137,10 +184,8 @@ int main() {
     choice = static_cast<int>(std::floor(get_num()));
 
     if (choice == 1) result = option1();
-    else if (choice == 2) {
-        std::cout << "not finished" << '\n';
-        return 1;
-    } else if (choice == 3) result = option3();
+    else if (choice == 2) result = option2();
+    else if (choice == 3) result = option3();
     else if (choice == 4) result = option4();
     else if (choice == 5) return 0;
     else {
