@@ -12,17 +12,17 @@ struct circle {
     coordinate center;
 };
 
-std::string double_to_str(double value) {
+std::string format_double(double value) {
     std::ostringstream temp;
-    if (value > 0) temp << "+ " << -value;
+    if (value < 0) temp << "+ " << -value;
     else temp << "- " << value;
     return temp.str();
 }
 
 std::string get_equation(circle result) {
     std::ostringstream temp;
-    temp << "(x " << double_to_str(result.center.x) << ")^2 + " 
-         << "(y " << double_to_str(result.center.x) << ")^2 = " << std::pow(result.r, 2);
+    temp << "(x " << format_double(result.center.x) << ")^2 + " 
+         << "(y " << format_double(result.center.y) << ")^2 = " << std::pow(result.r, 2);
     return temp.str();
 }
 
