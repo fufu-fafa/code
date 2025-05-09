@@ -24,16 +24,16 @@ std::string format_double(double value) {
     return temp.str();
 }
 
-double get_gradient(coordinate start, coordinate end) {
-    if (end.x == start.x) return std::numeric_limits<double>::infinity();
-    else return (end.y - start.y) / (end.x - start.x);
-}
-
 std::string get_equation(circle result) {
     std::ostringstream temp;
     temp << "(x " << format_double(result.center.x) << ")^2 + " 
          << "(y " << format_double(result.center.y) << ")^2 = " << std::pow(result.r, 2);
     return temp.str();
+}
+
+double get_gradient(coordinate start, coordinate end) {
+    if (end.x == start.x) return std::numeric_limits<double>::infinity();
+    else return (end.y - start.y) / (end.x - start.x);
 }
 
 double get_num() {
