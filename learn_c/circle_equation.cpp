@@ -69,7 +69,18 @@ circle option3() {
     return temp;
 }
 
-cirlce option4() {}
+cirlce option4() {
+    circle temp;
+    coordinate endpoint1 endpoint2;
+    std::cout << "enter the first diameter endpoint (format: x y): " << '\n';
+    endpoint1 = get_coordinate();
+    std::cout << "enter the second diameter endpoint (format: x y): " << '\n';
+    endpoint2 = get_coordinate();
+    temp.center.x = (endpoint1.x + endpoint2.x) / 2;
+    temp.center.y = (endpoint1.y + endpoint2.y) / 2;
+    temp.r = sqrt(pow(endpoint2.x - endpoint1.x, 2) + pow(endpoint2.y - endpoint1.y, 2)) / 2;
+    return temp;
+}
 
 int main() {
     int choice;
