@@ -19,6 +19,7 @@ struct line {
 
 std::string format_double(double value) {
     std::ostringstream temp;
+    // reversed to directly input into the equation
     if (value < 0) temp << "+ " << -value;
     else temp << "- " << value;
     return temp.str();
