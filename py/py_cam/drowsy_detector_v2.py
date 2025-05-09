@@ -65,6 +65,11 @@ while True:
         mar = mouth_aspect_ratio(mouth)
 
         if verbose_eye:
+            leftHull = cv2.convexHull(leftEye)
+            rightHull = cv2.convexHull(rightEye)
+            cv2.drawContours(frame, [leftHull], -1, (0, 255, 0), 1)
+            cv2.drawContours(frame, [rightHull], -1, (0, 255, 0), 1)
+
             if ear < EAR_THRESHOLD:
                 counter += 1
                 if counter >= CONSEC_FRAMES:
@@ -79,6 +84,9 @@ while True:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         if verbose_mouth:
+            mouthHull = cv2.convexHull(mouth)
+            cv2.drawContours(frame, [mouthHull], -1, (0, 255, 255), 1)
+
             if mar > MAR_THRESHOLD:
                 yawn_counter += 1
                 if yawn_counter >= YAWN_FRAMES:
@@ -91,16 +99,6 @@ while True:
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
         cv2.putText(frame, f"MAR: {mar:.2f}", (200, 30),
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-
-        if verbose_eye: 
-            leftHull = cv2.convexHull(leftEye)
-            rightHull = cv2.convexHull(rightEye)
-            cv2.drawContours(frame, [leftHull], -1, (0, 255, 0), 1)
-            cv2.drawContours(frame, [rightHull], -1, (0, 255, 0), 1)
-
-        if verbose_mouth:
-            mouthHull = cv2.convexHull(mouth)
-            cv2.drawContours(frame, [mouthHull], -1, (0, 255, 255), 1)
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
