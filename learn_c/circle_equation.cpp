@@ -62,16 +62,16 @@ circle option3() {
 
     if (temp.center.x == edge.x && temp.center.y == edge.y) {
         std::cout << "both coordinate must be different" << '\n';
-        exit();
+        exit(1);
     }
 
     temp.r = sqrt(pow(edge.x - temp.center.x, 2) + pow(edge.y - temp.center.y, 2));
     return temp;
 }
 
-cirlce option4() {
+circle option4() {
     circle temp;
-    coordinate endpoint1 endpoint2;
+    coordinate endpoint1, endpoint2;
     std::cout << "enter the first diameter endpoint (format: x y): " << '\n';
     endpoint1 = get_coordinate();
     std::cout << "enter the second diameter endpoint (format: x y): " << '\n';
