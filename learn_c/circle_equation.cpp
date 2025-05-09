@@ -60,7 +60,7 @@ circle option1() {
     circle temp;
     std::cout << "enter the center point coordinate (format: x y):" << '\n';
     temp.center = get_coordinate();
-    std::cout << "enter the radius of the circle:";
+    std::cout << "enter the radius of the circle: ";
     temp.r = get_num();
     return temp;
 }
@@ -98,7 +98,7 @@ circle option3() {
     coordinate edge;
     std::cout << "enter the center point coordinate (format: x y):" << '\n';
     temp.center = get_coordinate();
-    std::cout << "enter the coordinate of a point on the circle:";
+    std::cout << "enter the coordinate of a point on the circle:" << '\n';
     edge = get_coordinate();
 
     if (temp.center.x == edge.x && temp.center.y == edge.y) {
