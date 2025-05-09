@@ -9,6 +9,9 @@ verbose_eye = False
 verbose_mouth = True
 file_location = './shape_predictor_68_face_landmarks.dat'
 
+def line(number):
+    return number * 30
+
 def eye_aspect_ratio(eye):
     A = distance.euclidean(eye[1], eye[5])
     B = distance.euclidean(eye[2], eye[4])
@@ -73,14 +76,14 @@ while True:
             if ear < EAR_THRESHOLD:
                 counter += 1
                 if counter >= CONSEC_FRAMES:
-                    cv2.putText(frame, "SLEEPY!", (10, 90),
+                    cv2.putText(frame, "SLEEPY!", (10, line(4)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                 else:
-                    cv2.putText(frame, "possibly sleepy", (10, 90),
+                    cv2.putText(frame, "possibly sleepy", (10, line(4)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
             else:
                 counter = 0
-                cv2.putText(frame, "not sleepy", (10, 90),
+                cv2.putText(frame, "not sleepy", (10, line(4)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         if verbose_mouth:
@@ -90,14 +93,14 @@ while True:
             if mar > MAR_THRESHOLD:
                 yawn_counter += 1
                 if yawn_counter >= YAWN_FRAMES:
-                    cv2.putText(frame, "YAWNING!", (10, 60),
+                    cv2.putText(frame, "YAWNING!", (10, line(2)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             else:
                 yawn_counter = 0
 
-        cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, 30),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-        cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (200, 30),
+        cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (10, line(1)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+        cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, line(3)),
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
     cv2.imshow("Drowsy Detector", frame)
