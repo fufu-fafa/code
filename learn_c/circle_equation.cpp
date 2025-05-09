@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <limits>
 #include <cmath>
 
@@ -10,6 +11,20 @@ struct circle {
     double r;
     coordinate center;
 };
+
+std::string double_to_str(double value) {
+    std::ostringstream temp;
+    if (value > 0) temp << "+ " << -value;
+    else temp << "- " << value;
+    return temp.str();
+}
+
+std::string get_equation(circle result) {
+    std::ostringstream temp;
+    temp << "(x " << double_to_str(result.center.x) << ")^2 + " 
+         << "(y " << double_to_str(result.center.x) << ")^2 = " << std::pow(result.r, 2);
+    return temp.str();
+}
 
 double get_num() {
     double temp;
@@ -109,18 +124,27 @@ circle option4() {
 }
 
 int main() {
+    circle result;
     int choice;
+    std::string equation;
     std::cout << "1. center point and radius" << '\n'
               << "2. three points on the circle" << '\n'
               << "3. center and one point on the circle" << '\n'
               << "4. diameter endpoints" << '\n'
+              << "5. exit" << '\n'
               << "enter one of the option above: ";
 
     choice = static_cast<int>(std::floor(get_num()));
 
-    if (choice != 1 && choice != 2 && choice != 3 && choice !=4) {
+    if (choice == 1) result = option1();
+    else if (choice == 2) result = option2();
+    else if (choice == 3) result = option3();
+    else if (choice == 4) result = option4();
+    else if (choice == 5) return 0;
+    else {
         std::cout << "not a valid option" << '\n';
         return 1;
-    }
+    equation = get_equation(result);
+    std::cout << "circle equation: " << equation << '\n';
     return 0;
 }
