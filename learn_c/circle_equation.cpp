@@ -173,9 +173,9 @@ circle option4() {
 }
 
 int main() {
+    std::string equation;
     circle result;
     int choice;
-    std::string equation;
     std::cout << "1. center point and radius" << '\n'
               << "2. three points on the circle" << '\n'
               << "3. center and one point on the circle" << '\n'
