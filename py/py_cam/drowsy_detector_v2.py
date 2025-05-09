@@ -72,6 +72,8 @@ while True:
             rightHull = cv2.convexHull(rightEye)
             cv2.drawContours(frame, [leftHull], -1, (0, 255, 0), 1)
             cv2.drawContours(frame, [rightHull], -1, (0, 255, 0), 1)
+            cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, line(3)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
             if ear < EAR_THRESHOLD:
                 counter += 1
@@ -89,6 +91,8 @@ while True:
         if verbose_mouth:
             mouthHull = cv2.convexHull(mouth)
             cv2.drawContours(frame, [mouthHull], -1, (0, 255, 255), 1)
+            cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (10, line(1)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
             if mar > MAR_THRESHOLD:
                 yawn_counter += 1
@@ -97,11 +101,6 @@ while True:
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             else:
                 yawn_counter = 0
-
-        cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (10, line(1)),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-        cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, line(3)),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
