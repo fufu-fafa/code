@@ -33,9 +33,9 @@ coordinate get_coordinate() {
 
 int main() {
     line line1;
-    std::cout << "enter the first coordinate for the line: " << '\n';
+    std::cout << "enter the first coordinate for the line (format: x y): " << '\n';
     line1.start = get_coordinate();
-    std::cout << "enter the second coordinate for the line: " << '\n';
+    std::cout << "enter the second coordinate for the line (format: x y): " << '\n';
     line1.end = get_coordinate();
     line1.gradient = get_gradient(line1.start, line1.end);
 
