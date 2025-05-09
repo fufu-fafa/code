@@ -137,8 +137,10 @@ int main() {
     choice = static_cast<int>(std::floor(get_num()));
 
     if (choice == 1) result = option1();
-    else if (choice == 2) result = option2();
-    else if (choice == 3) result = option3();
+    else if (choice == 2) {
+        std::cout << "not finished" << '\n';
+        return 1;
+    } else if (choice == 3) result = option3();
     else if (choice == 4) result = option4();
     else if (choice == 5) return 0;
     else {
