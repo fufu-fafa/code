@@ -14,7 +14,6 @@ struct circle {
 
 struct line {
     double gradient;
-    double offset = 0;
     coordinate midpoint;
 };
 
@@ -69,19 +68,20 @@ coordinate get_coordinate() {
 
 coordinate get_intersection(line line1, line line2) {
     coordinate result;
+    double offset1, offset2;
     if (std::isinf(line1.gradient)) {
-        line2.offset = line2.midpoint.y - line2.gradient * line2.midpoint.x;
+        offset2 = line2.midpoint.y - line2.gradient * line2.midpoint.x;
         result.x = line1.midpoint.x;
-        result.y = line2.gradient * result.x + line2.offset;
+        result.y = line2.gradient * result.x + offset2;
     } else if (std::isinf(line2.gradient)) {
-        line1.offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
+        offset1 = line1.midpoint.y - line1.gradient * line1.midpoint.x;
         result.x = line2.midpoint.x;
-        result.y = line1.gradient * result.x + line1.offset;
+        result.y = line1.gradient * result.x + offset1;
     } else {
-        line1.offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
-        line2.offset = line2.midpoint.y - line2.gradient * line2.midpoint.x; 
-        result.x = (line2.offset - line1.offset) / (line1.gradient - line2.gradient);
-        result.y = line1.gradient * result.x + line1.offset;
+        offset1 = line1.midpoint.y - line1.gradient * line1.midpoint.x;
+        offset2 = line2.midpoint.y - line2.gradient * line2.midpoint.x; 
+        result.x = (offset2 - offset1) / (line1.gradient - line2.gradient);
+        result.y = line1.gradient * result.x + offset1;
     }
     return result;
 }
@@ -90,14 +90,10 @@ line get_perpendicular(line input) {
     line temp;
     temp.midpoint = input.midpoint;
 
-    if (std::isinf(input.gradient)) {
-        temp.gradient = 0;
-        temp.offset = 0;
-    } else if (input.gradient == 0) {
-        temp.gradient = std::numeric_limits<double>::infinity();
-    } else {
+    if (std::isinf(input.gradient)) temp.gradient = 0;
+    else if (input.gradient == 0) temp.gradient = std::numeric_limits<double>::infinity();
+    else {
         temp.gradient = -1 / input.gradient;
-        temp.offset = temp.midpoint.y - temp.gradient * temp.midpoint.x;
     }
     return temp;
 }
@@ -125,14 +121,10 @@ circle option2() {
 
     ab.midpoint = {(a.x + b.x) / 2, (a.y + b.y) / 2};
     ab.gradient = get_gradient(a, b);
-    if (std::isinf(ab.gradient)) ab.offset = 0;
-    else ab.offset = ab.midpoint.y - ab.gradient * ab.midpoint.x;
     perp_ab = get_perpendicular(ab);
 
     bc.midpoint = {(b.x + c.x) / 2, (b.y + c.y) / 2};
     bc.gradient = get_gradient(b, c);
-    if (std::isinf(bc.gradient)) bc.offset = 0;
-    else bc.offset = bc.midpoint.y - bc.gradient * bc.midpoint.x;
     perp_bc = get_perpendicular(bc);
 
     temp.center = get_intersection(perp_ab, perp_bc);
