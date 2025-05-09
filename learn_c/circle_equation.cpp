@@ -222,7 +222,7 @@ std::string option2(circle prev) {
 
     if (distance > prev.r) return "the line is outside of the circle";
     else if (std::abs(distance - prev.r) < 1e-6) return "the line is tangent to the circle";
-    else return "the line intesects the circle";
+    else return "the line intersects the circle";
 }
 
 int main() {
@@ -234,7 +234,7 @@ int main() {
               << "3. center and one point on the circle" << '\n'
               << "4. diameter endpoints" << '\n'
               << "5. exit" << '\n'
-              << "enter one of the option above: ";
+              << "enter one of the options above: ";
 
     choice = static_cast<int>(std::floor(get_num()));
 
@@ -253,7 +253,7 @@ int main() {
               << "1. check where a coordinate is on the circle" << '\n'
               << "2. check where a line is on the circle" << '\n'
               << "3. exit" << '\n'
-              << "enter one of the option above: ";
+              << "enter one of the options above: ";
     option = static_cast<int>(std::floor(get_num()));
 
     if (option == 1) result2 = option1(result);
