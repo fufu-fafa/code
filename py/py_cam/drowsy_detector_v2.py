@@ -95,9 +95,9 @@ while True:
             else:
                 yawn_counter = 0
 
-        cv2.putText(frame, f"EAR: {ear:.2f}", (10, 30),
+        cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, 30),
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-        cv2.putText(frame, f"MAR: {mar:.2f}", (200, 30),
+        cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (200, 30),
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
     cv2.imshow("Drowsy Detector", frame)
