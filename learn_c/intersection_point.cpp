@@ -1,22 +1,22 @@
 #include <iostream>
 #include <limits>
 
-struct vec2 {
+struct coordinate {
     double x, y;
 };
 
 struct line {
-    vec2 start, end;
+    coordinate start, end;
     double gradient;
 };
 
-double get_gradient(vec2 start, vec2 end) {
+double get_gradient(coordinate start, coordinate end) {
     if (end.x == start.x) return std::numeric_limits<double>::infinity();
     else return (end.y - start.y) / (end.x - start.x);
 }
 
-vec2 get_vec() {
-    vec2 temp;
+coordinate get_vec() {
+    coordinate temp;
     while (true) {
         std::cin >> temp.x >> temp.y;
         if (std::cin.fail()) {
@@ -45,8 +45,8 @@ line get_line(std::string which) {
     return temp;
 }
 
-vec2 calculate(line line1, line line2) {
-    vec2 result;
+coordinate calculate(line line1, line line2) {
+    coordinate result;
     double offset1, offset2;
     if (line1.gradient == line2.gradient) {
         result.x = result.y = std::numeric_limits<double>::quiet_NaN();
@@ -71,7 +71,7 @@ int main() {
     line line1 = get_line("first");
     line line2 = get_line("second");
 
-    vec2 result = calculate(line1, line2);
+    coordinate result = calculate(line1, line2);
     if (std::isnan(result.x) || std::isnan(result.y)) std::cout << "lines do not intersect" << '\n';
     else std::cout << "intersection point: (" << result.x << ", " << result.y << ")" << '\n';
 
