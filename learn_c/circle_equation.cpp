@@ -109,6 +109,7 @@ circle option1() {
 
 circle option2() {
     circle temp;
+    double determinant;
     coordinate a, b, c, result;
     line ab, bc, perp_ab, perp_bc;
 
@@ -118,6 +119,15 @@ circle option2() {
     b = get_coordinate();
     std::cout << "enter the third point (format: x y):" << '\n';
     c = get_coordinate();
+    determinant = (a.x * (b.y - c.y) + b.y * (c.y - a.y) + c.y * (a.y - b.y));
+
+    if ((a.x == b.x && a.y == b.y) || (b.x == c.x && b.y == c.y) || (c.x == a.x && c.y == a.y)) {
+        std::cout << "points must be distinct" << '\n';
+        exit(1);
+    } else if (determinant == 0) {
+        std::cout << "points are collinear, unable to form circle" << '\n';
+        exit(1);
+    }
 
     ab.midpoint = {(a.x + b.x) / 2, (a.y + b.y) / 2};
     ab.gradient = get_gradient(a, b);
