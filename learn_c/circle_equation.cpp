@@ -104,6 +104,10 @@ circle option1() {
     temp.center = get_coordinate();
     std::cout << "enter the radius of the circle: ";
     temp.r = get_num();
+    if (temp.r <= 0) {
+        std::cout << "radius cannot be lower or equal to 0" << '\n';
+        exit(1);
+    }
     return temp;
 }
 
@@ -166,6 +170,10 @@ circle option4() {
     endpoint1 = get_coordinate();
     std::cout << "enter the second diameter endpoint (format: x y):" << '\n';
     endpoint2 = get_coordinate();
+    if (endpoint1.x == endpoint2.x && endpoint1.y == endpoint2.y) {
+        std::cout << "both coordinate must be different" << '\n';
+        exit(1);
+    }
     temp.center.x = (endpoint1.x + endpoint2.x) / 2;
     temp.center.y = (endpoint1.y + endpoint2.y) / 2;
     temp.r = sqrt(std::pow(endpoint2.x - endpoint1.x, 2) + std::pow(endpoint2.y - endpoint1.y, 2)) / 2;
