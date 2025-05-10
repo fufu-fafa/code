@@ -5,7 +5,7 @@ from imutils import face_utils
 
 # config
 mirror = True
-verbose_eye = False
+verbose_eye = True
 verbose_mouth = True
 file_location = './shape_predictor_68_face_landmarks.dat'
 
