@@ -70,7 +70,9 @@ coordinate get_coordinate() {
 coordinate get_intersection(line line1, line line2) {
     coordinate result;
     double offset1, offset2;
-    if (std::isinf(line1.gradient)) {
+    if (line1.gradient == line2.gradient) {
+        result.x = result.y = std::numeric_limits<double>::quiet_NaN();
+    } else if (std::isinf(line1.gradient)) {
         offset2 = line2.midpoint.y - line2.gradient * line2.midpoint.x;
         result.x = line1.midpoint.x;
         result.y = line2.gradient * result.x + offset2;

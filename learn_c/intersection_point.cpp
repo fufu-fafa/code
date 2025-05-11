@@ -20,7 +20,7 @@ coordinate get_vec() {
     while (true) {
         std::cin >> temp.x >> temp.y;
         if (std::cin.fail()) {
-            std::cout << "invalid number, reinput the coordinate (format: x y): " << '\n';
+            std::cout << "invalid number, reinput the coordinate (format: x y):" << '\n';
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
