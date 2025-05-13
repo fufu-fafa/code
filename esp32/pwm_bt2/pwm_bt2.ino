@@ -2,7 +2,7 @@
 
 BluetoothSerial SerialBT;
 int corrected;
-int len = 4;
+int len = 5;
 float gammaVal = 2.2;
 
 void setup() {
