@@ -1,7 +1,7 @@
 #include "BluetoothSerial.h"
 
 BluetoothSerial SerialBT;
-int len = 7;
+int len = 5;
 
 void setup() {
     pinMode(25, OUTPUT);
