@@ -1,7 +1,7 @@
 #include "BluetoothSerial.h"
 
 BluetoothSerial SerialBT;
-int len = 5;
+int len = 4;
 
 void setup() {
     pinMode(25, OUTPUT);
@@ -14,7 +14,7 @@ void loop() {
     if (SerialBT.available()) {
         String input = SerialBT.readStringUntil('\n');
         int newLen = input.toInt();
-        if (newLen > 0 && newLen <= 1000) {  // limit to a reasonable range
+        if (newLen > 0 && newLen <= 1000) {
             len = newLen;
             SerialBT.println("updated delay to: " + String(len));
         } else {
