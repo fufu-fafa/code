@@ -15,6 +15,5 @@ if [ ! -d "$TARGET_DIR" ]; then
 fi
 
 echo "Cleaning .DS_Store and ._* files from '$TARGET_DIR'..."
-find "$TARGET_DIR" -name '.DS_Store' -type f -delete
-find "$TARGET_DIR" -name '._*' -type f -delete
-
+find "$TARGET_DIR" -name '.DS_Store' -type f -print -delete
+find "$TARGET_DIR" -name '._*' -type f -print -delete
