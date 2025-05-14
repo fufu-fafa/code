@@ -227,6 +227,35 @@ std::string option2(circle prev) {
     else return "the line intersects the circle";
 }
 
+std::string option3(circle prev) {
+    line line1;
+    double radius_offset, line1_offset, negative_offset;
+    std::ostringstream str_output;
+    std::string vertical;
+
+    std::cout << "are the lines vertical or gradient = inf: (y/n) ";
+    std::cin >> vertical;
+
+    if (vertical == "y" || vertical == "Y") {
+        double temp1 = prev.center.x + prev.r;
+        double temp2 = prev.center.x - prev.r;
+        str_output << "x = " << temp1 << '\n'
+                   << "x = " << temp2 << '\n';
+        return str_output.str();
+    } else {
+        std::cout << "enter the gradient for the tangent lines: ";
+        line1.gradient = get_num();
+    }
+
+    radius_offset = prev.r * sqrt(pow(line1.gradient, 2) + 1);
+    line1_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y + radius_offset; // -ma + b +- r * sqrt(m * m + 1)
+    negative_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y - radius_offset;
+
+    str_output << "y = " << line1.gradient << "x + " << line1_offset << '\n'
+               << "y = " << line1.gradient << "x + " << negative_offset << '\n';
+    return str_output.str();
+}
+
 int main() {
     std::string equation, result2;
     circle result;
@@ -254,13 +283,17 @@ int main() {
     std::cout << "circle equation: " << equation << '\n' << '\n'
               << "1. check where a coordinate is on the circle" << '\n'
               << "2. check where a line is on the circle" << '\n'
-              << "3. exit" << '\n'
+              << "3. check tangent lines equation with gradient" << '\n'
+              << "4. check tangent line equation with a point on the circle" << '\n'
+              << "5. exit" << '\n'
               << "enter one of the options above: ";
     option = static_cast<int>(std::floor(get_num()));
 
     if (option == 1) result2 = option1(result);
     else if (option == 2) result2 = option2(result);
-    else if (option == 3) return 0;
+    else if (option == 3) result2 = option3(result);
+    else if (option == 4) return 1;
+    else if (option == 5) return 0;
     else {
         std::cout << "not a valid option" << '\n';
         return 1;
