@@ -17,7 +17,7 @@ struct line {
     coordinate midpoint;
 };
 
-std::string format_double(double value) {
+std::string format_for_equation(double value) {
     std::ostringstream temp;
     // reversed to directly input into the equation
     if (value < 0) temp << "+ " << -value;
@@ -27,12 +27,13 @@ std::string format_double(double value) {
 
 std::string get_equation(circle result) {
     std::ostringstream temp;
-    temp << "(x " << format_double(result.center.x) << ")^2 + " 
-         << "(y " << format_double(result.center.y) << ")^2 = " << std::pow(result.r, 2);
+    temp << "(x " << format_for_equation(result.center.x) << ")^2 + " 
+         << "(y " << format_for_equation(result.center.y) << ")^2 = " << std::pow(result.r, 2);
     return temp.str();
 }
 
 double get_gradient(coordinate start, coordinate end) {
+    // m = (y2 - y1) / (x2 - x1)
     if (end.x == start.x) return std::numeric_limits<double>::infinity();
     else return (end.y - start.y) / (end.x - start.x);
 }
@@ -68,6 +69,8 @@ coordinate get_coordinate() {
 }
 
 coordinate get_intersection(line line1, line line2) {
+    // y = mx + c
+    // c = offset
     coordinate result;
     double offset1, offset2;
     if (line1.gradient == line2.gradient) {
@@ -105,6 +108,7 @@ line get_line() {
 }
 
 line get_perpendicular(line input) {
+    // m2 = -1 / m1
     line temp;
     temp.midpoint = input.midpoint;
 
@@ -247,8 +251,9 @@ std::string option3(circle prev) {
         line1.gradient = get_num();
     }
 
+    // -ma + b +- r * sqrt(m * m + 1)
     radius_offset = prev.r * sqrt(pow(line1.gradient, 2) + 1);
-    line1_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y + radius_offset; // -ma + b +- r * sqrt(m * m + 1)
+    line1_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y + radius_offset; 
     negative_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y - radius_offset;
 
     str_output << "y = " << line1.gradient << "x + " << line1_offset << '\n'
@@ -279,6 +284,7 @@ int main() {
         return 1;
     }
 
+    // (x - a)^2 + (y - b)^2 = (radius)^2
     equation = get_equation(result);
     std::cout << "circle equation: " << equation << '\n' << '\n'
               << "1. check where a coordinate is on the circle" << '\n'
