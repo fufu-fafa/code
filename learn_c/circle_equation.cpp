@@ -18,17 +18,20 @@ struct line {
 };
 
 std::string format_for_equation(double value) {
-    std::ostringstream temp;
     // reversed to directly input into the equation
+    std::ostringstream temp;
     if (value < 0) temp << "+ " << -value;
     else temp << "- " << value;
     return temp.str();
 }
 
 std::string get_equation(circle result) {
+    // format into
+    // (x - a)^2 + (y - b)^2 = (radius)^2
     std::ostringstream temp;
+    double r_squared = result.r * result.r;
     temp << "(x " << format_for_equation(result.center.x) << ")^2 + " 
-         << "(y " << format_for_equation(result.center.y) << ")^2 = " << std::pow(result.r, 2);
+         << "(y " << format_for_equation(result.center.y) << ")^2 = " << r_squared;
     return temp.str();
 }
 
@@ -43,7 +46,7 @@ double get_num() {
     while (true) {
         std::cin >> temp;
         if (std::cin.fail()) {
-            std::cout << "invalid number" << '\n';
+            std::cout << "invalid input, reinput the number: ";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
@@ -58,7 +61,7 @@ coordinate get_coordinate() {
     while (true) {
         std::cin >> temp.x >> temp.y;
         if (std::cin.fail()) {
-            std::cout << "invalid number, reinput the coordinate (format: x y):" << '\n';
+            std::cout << "invalid input, reinput the coordinate (format: x y):" << '\n';
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
@@ -164,7 +167,7 @@ circle choice2() {
     perp_bc = get_perpendicular(bc);
 
     temp.center = get_intersection(perp_ab, perp_bc);
-    temp.r = sqrt(std::pow(a.x - temp.center.x, 2) + std::pow(a.y - temp.center.y, 2));
+    temp.r = sqrt((a.x - temp.center.x) * (a.x - temp.center.x) + (a.y - temp.center.y) * (a.y - temp.center.y));
     return temp;
 }
 
@@ -181,7 +184,7 @@ circle choice3() {
         exit(1);
     }
 
-    temp.r = sqrt(std::pow(edge.x - temp.center.x, 2) + std::pow(edge.y - temp.center.y, 2));
+    temp.r = sqrt((edge.x - temp.center.x) * (edge.x - temp.center.x) + (edge.y - temp.center.y) * (edge.y - temp.center.y));
     return temp;
 }
 
@@ -198,19 +201,20 @@ circle choice4() {
     }
     temp.center.x = (endpoint1.x + endpoint2.x) / 2;
     temp.center.y = (endpoint1.y + endpoint2.y) / 2;
-    temp.r = sqrt(std::pow(endpoint2.x - endpoint1.x, 2) + std::pow(endpoint2.y - endpoint1.y, 2)) / 2;
+    temp.r = sqrt((endpoint2.x - endpoint1.x) * (endpoint2.x - endpoint1.x) + (endpoint2.y - endpoint1.y) * (endpoint2.y - endpoint1.y)) / 2;
     return temp;
 }
 
 std::string option1(circle prev) {
     coordinate coordinate1;
     double distance;
+    double r_squared = prev.r * prev.r;
     std::cout << "enter the coordinate to check (format: x y): ";
     coordinate1 = get_coordinate();
-    distance = std::pow(coordinate1.x - prev.center.x, 2) + std::pow(coordinate1.y - prev.center.y, 2);
+    distance = (coordinate1.x - prev.center.x) * (coordinate1.x - prev.center.x) + (coordinate1.y - prev.center.y) * (coordinate1.y - prev.center.y);
 
-    if (distance > prev.r) return "the coordinate is outside of the circle";
-    else if (std::abs(distance - prev.r) < 1e-6) return "the coordinate is on the edge of the circle";
+    if (distance > r_squared) return "the coordinate is outside of the circle";
+    else if (std::abs(distance - r_squared) < 1e-6) return "the coordinate is on the edge of the circle";
     else return "the coordinate is inside of the circle";
 }
 
@@ -252,7 +256,7 @@ std::string option3(circle prev) {
     }
 
     // -ma + b +- r * sqrt(m * m + 1)
-    radius_offset = prev.r * sqrt(pow(line1.gradient, 2) + 1);
+    radius_offset = prev.r * sqrt(line1.gradient * line1.gradient + 1);
     line1_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y + radius_offset; 
     negative_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y - radius_offset;
 
@@ -284,7 +288,6 @@ int main() {
         return 1;
     }
 
-    // (x - a)^2 + (y - b)^2 = (radius)^2
     equation = get_equation(result);
     std::cout << "circle equation: " << equation << '\n' << '\n'
               << "1. check where a coordinate is on the circle" << '\n'
@@ -298,7 +301,7 @@ int main() {
     if (option == 1) result2 = option1(result);
     else if (option == 2) result2 = option2(result);
     else if (option == 3) result2 = option3(result);
-    else if (option == 4) return 1;
+    else if (option == 4) return 1; // unfinished
     else if (option == 5) return 0;
     else {
         std::cout << "not a valid option" << '\n';
