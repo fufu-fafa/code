@@ -17,11 +17,15 @@ struct line {
     coordinate midpoint;
 };
 
-std::string format_for_equation(double value) {
-    // reversed to directly input into the equation
+std::string format_double(double value, bool reversed = false) {
     std::ostringstream temp;
-    if (value < 0) temp << "+ " << -value;
-    else temp << "- " << value;
+    if (reversed) {
+        if (value < 0) temp << "+ " << -value;
+        else temp << "- " << value;
+    } else {
+        if (value < 0) temp << "- " << -value;
+        else temp << "+ " << value;
+    }
     return temp.str();
 }
 
@@ -30,8 +34,8 @@ std::string get_equation(circle result) {
     // (x - a)^2 + (y - b)^2 = (radius)^2
     std::ostringstream temp;
     double r_squared = result.r * result.r;
-    temp << "(x " << format_for_equation(result.center.x) << ")^2 + " 
-         << "(y " << format_for_equation(result.center.y) << ")^2 = " << r_squared;
+    temp << "(x " << format_double(result.center.x, true) << ")^2 + " 
+         << "(y " << format_double(result.center.y, true) << ")^2 = " << r_squared;
     return temp.str();
 }
 
@@ -260,8 +264,32 @@ std::string option3(circle prev) {
     line1_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y + radius_offset; 
     negative_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y - radius_offset;
 
-    str_output << "y = " << line1.gradient << "x + " << line1_offset << '\n'
-               << "y = " << line1.gradient << "x + " << negative_offset << '\n';
+    str_output << "y = " << line1.gradient << "x " << format_double(line1_offset) << '\n'
+               << "y = " << line1.gradient << "x " << format_double(negative_offset) << '\n';
+    return str_output.str();
+}
+
+std::string option4(circle prev) {
+    line line1;
+    coordinate point1;
+    double dist, offset;
+    std::ostringstream str_output;
+
+    std::cout << "enter a point on the edge of the circle (format: x y): ";
+    point1 = get_coordinate();
+    dist = sqrt(pow(prev.center.x - point1.x, 2) + pow(prev.center.y - point1.y, 2));
+    if (dist != prev.r) {
+        std::cout << "the point is not on the edge of the circle" << '\n';
+        exit(1);
+    }
+    line1.midpoint = point1;
+    line1.gradient = -1 / get_gradient(prev.center, point1);
+    if (std::isinf(line1.gradient)) {
+        str_output << "x = " << line1.midpoint.x;
+    } else {
+        offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
+        str_output << "y = " << line1.gradient << "x " << format_double(offset);
+    }
     return str_output.str();
 }
 
@@ -301,7 +329,7 @@ int main() {
     if (option == 1) result2 = option1(result);
     else if (option == 2) result2 = option2(result);
     else if (option == 3) result2 = option3(result);
-    else if (option == 4) return 1; // unfinished
+    else if (option == 4) result2 = option4(result);
     else if (option == 5) return 0;
     else {
         std::cout << "not a valid option" << '\n';
