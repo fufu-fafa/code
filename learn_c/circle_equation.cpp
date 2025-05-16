@@ -319,7 +319,7 @@ std::string option4(circle prev) {
         double temp1 = prev.center.x + prev.r;
         double temp2 = prev.center.x - prev.r;
         str_output << "x = " << temp1 << '\n'
-                   << "x = " << temp2 << '\n';
+                << "x = " << temp2 << '\n';
         return str_output.str();
     } else {
         std::cout << "enter the gradient for the tangent lines: ";
@@ -332,7 +332,7 @@ std::string option4(circle prev) {
     negative_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y - radius_offset;
 
     str_output << "y = " << line1.gradient << "x " << format_double(line1_offset) << '\n'
-               << "y = " << line1.gradient << "x " << format_double(negative_offset) << '\n';
+            << "y = " << line1.gradient << "x " << format_double(negative_offset) << '\n';
     return str_output.str();
 }
 
