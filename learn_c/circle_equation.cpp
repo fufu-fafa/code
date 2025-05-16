@@ -45,10 +45,10 @@ std::string line_circle_intersection(circle circle1, line line1) {
     std::ostringstream temp;
     double offset;
 
-    offset = sqrt(std::pow(circle1.r, 2) - std::pow(line1.midpoint.x - circle.center.x, 2));
+    offset = sqrt(std::pow(circle1.r, 2) - std::pow(line1.midpoint.x - circle1.center.x, 2));
     if (std::isinf(line1.gradient)) {
-        point1 = {line1.midpoint.x, circle1.center.y + square_root};
-        point2 = {line1.midpoint.x, circle1.center.y - square_root};
+        point1 = {line1.midpoint.x, circle1.center.y + offset};
+        point2 = {line1.midpoint.x, circle1.center.y - offset};
         temp << "line intercepts the circle at:" << '\n'
              << "(" << point1.x << ", " << point1.y << ") and (" << point2.x << ", " << point2.y << ")";
     }
