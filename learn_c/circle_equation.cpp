@@ -3,6 +3,8 @@
 #include <limits>
 #include <cmath>
 
+const double epsilon = 1e-9;
+
 struct coordinate {
     double x, y;
 };
@@ -155,7 +157,7 @@ line get_perpendicular(line input) {
     temp.midpoint = input.midpoint;
 
     if (std::isinf(input.gradient)) temp.gradient = 0;
-    else if (input.gradient == 0) temp.gradient = std::numeric_limits<double>::infinity();
+    else if (std::abs(input.gradient) < epsilon) temp.gradient = std::numeric_limits<double>::infinity();
     else {
         temp.gradient = -1 / input.gradient;
     }
@@ -193,7 +195,7 @@ circle choice2() {
     if ((a.x == b.x && a.y == b.y) || (b.x == c.x && b.y == c.y) || (c.x == a.x && c.y == a.y)) {
         std::cout << "points must be distinct" << '\n';
         exit(1);
-    } else if (determinant == 0) {
+    } else if (std::abs(determinant) < epsilon) {
         std::cout << "points are collinear, unable to form circle" << '\n';
         exit(1);
     }
@@ -257,7 +259,7 @@ std::string option1(circle prev) {
     distance = std::pow(coordinate1.x - prev.center.x, 2) + std::pow(coordinate1.y - prev.center.y, 2);
 
     if (distance > r_squared) return "the coordinate is outside of the circle";
-    else if (std::abs(distance - r_squared) < 1e-6) return "the coordinate is on the edge of the circle";
+    else if (std::abs(distance - r_squared) < epsilon) return "the coordinate is on the edge of the circle";
     else return "the coordinate is inside of the circle";
 }
 
@@ -275,13 +277,13 @@ std::string option2(circle prev) {
     }
 
     if (distance > prev.r) str_output = "the line is outside of the circle";
-    else if (std::abs(distance - prev.r) < 1e-6) str_output = "the line is tangent to the circle";
+    else if (std::abs(distance - prev.r) < epsilon) str_output = "the line is tangent to the circle";
     else str_output = line_circle_intersection(prev, line1);
     return str_output;
 }
 
 std::string option3(circle prev) {
-    line line1;
+    line line1, radius_line;
     coordinate point1;
     double dist, offset;
     std::ostringstream str_output;
@@ -290,14 +292,19 @@ std::string option3(circle prev) {
         std::cout << "enter a point on the edge of the circle (format: x y): ";
         point1 = get_coordinate();
         dist = sqrt(std::pow(prev.center.x - point1.x, 2) + std::pow(prev.center.y - point1.y, 2));
-        if (dist != prev.r) {
+        if (std::abs(dist - prev.r) > epsilon) {
             std::cout << "the point is not on the edge of the circle" << '\n';
             continue;
         }
-        line1.midpoint = point1;
-        line1.gradient = -1 / get_gradient(prev.center, point1);
+
+        radius_line.midpoint = point1;
+        radius_line.gradient = get_gradient(prev.center, point1);
+        line1 = get_perpendicular(radius_line);
+
         if (std::isinf(line1.gradient)) {
             str_output << "x = " << line1.midpoint.x;
+        } else if (std::abs(line1.gradient) < epsilon) {
+            str_output << "y = " << line1.midpoint.y;
         } else {
             offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
             str_output << "y = " << line1.gradient << "x " << format_double(offset);
@@ -356,7 +363,7 @@ int main() {
     else if (choice == 5) return 0;
     else {
         std::cout << "not a valid option" << '\n'
-                << "exiting..";
+                << "exiting.." << '\n';
         return 1;
     }
 
@@ -377,7 +384,7 @@ int main() {
     else if (option == 5) return 0;
     else {
         std::cout << "not a valid option" << '\n'
-                << "exiting..";
+                << "exiting.." << '\n';
         return 1;
     }
     std::cout << result2 << '\n';
