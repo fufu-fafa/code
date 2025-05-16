@@ -39,6 +39,24 @@ std::string get_equation(circle result) {
     return temp.str();
 }
 
+std::string line_circle_intersection(circle circle1, line line1) {
+    // y = k +- sqrt(r^2 - (x - h)^2)
+    coordinate point1, point2;
+    std::ostringstream temp;
+    double offset;
+
+    offset = sqrt(std::pow(circle1.r, 2) - std::pow(line1.midpoint.x - circle.center.x, 2));
+    if (std::isinf(line1.gradient)) {
+        point1 = {line1.midpoint.x, circle1.center.y + square_root};
+        point2 = {line1.midpoint.x, circle1.center.y - square_root};
+        temp << "line intercepts the circle at:" << '\n'
+             << "(" << point1.x << ", " << point1.y << ") and (" << point2.x << ", " << point2.y << ")";
+    }
+    else {
+        // unfinished
+    }
+}
+
 double get_gradient(coordinate start, coordinate end) {
     // m = (y2 - y1) / (x2 - x1)
     if (end.x == start.x) return std::numeric_limits<double>::infinity();
@@ -225,6 +243,7 @@ std::string option1(circle prev) {
 std::string option2(circle prev) {
     line line1;
     double distance, offset;
+    std::string str_output;
 
     line1 = get_line();
     if (std::isinf(line1.gradient)) {
@@ -234,9 +253,10 @@ std::string option2(circle prev) {
         distance = std::abs(line1.gradient * prev.center.x + -1 * prev.center.y + offset) / sqrt(std::pow(line1.gradient, 2) + 1);
     }
 
-    if (distance > prev.r) return "the line is outside of the circle";
-    else if (std::abs(distance - prev.r) < 1e-6) return "the line is tangent to the circle";
-    else return "the line intersects the circle";
+    if (distance > prev.r) str_output = "the line is outside of the circle";
+    else if (std::abs(distance - prev.r) < 1e-6) str_output = "the line is tangent to the circle";
+    else str_output = line_circle_intersection(prev, line1);
+    return str_output;
 }
 
 std::string option3(circle prev) {
