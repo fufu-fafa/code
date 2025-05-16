@@ -43,18 +43,30 @@ std::string line_circle_intersection(circle circle1, line line1) {
     // y = k +- sqrt(r^2 - (x - h)^2)
     coordinate point1, point2;
     std::ostringstream temp;
-    double offset;
+    double offset, discriminant, a, b, c;
 
     offset = sqrt(std::pow(circle1.r, 2) - std::pow(line1.midpoint.x - circle1.center.x, 2));
     if (std::isinf(line1.gradient)) {
         point1 = {line1.midpoint.x, circle1.center.y + offset};
         point2 = {line1.midpoint.x, circle1.center.y - offset};
-        temp << "line intercepts the circle at:" << '\n'
-             << "(" << point1.x << ", " << point1.y << ") and (" << point2.x << ", " << point2.y << ")";
     }
     else {
-        // unfinished
+        // ax^2 + bx + c = 0
+        a = 1 + std::pow(line1.gradient, 2);
+        b = 2 * (line1.gradient * (line1.midpoint.y - circle1.center.y - line1.gradient * line1.midpoint.x) - circle1.center.x);
+        c = std::pow(circle1.center.x, 2) + std::pow(line1.midpoint.y - circle1.center.y - line1.gradient * line1.midpoint.x, 2) - std::pow(circle1.r, 2);
+
+        // (-b +- sqrt(b^2 - 4ac)) / 2a
+        discriminant = std::pow(b, 2) - 4 * a * c;
+        point1.x = (-b + sqrt(discriminant)) / (2 * a);
+        point2.x = (-b - sqrt(discriminant)) / (2 * a);
+
+        point1.y = line1.gradient * (point1.x - line1.midpoint.x) + line1.midpoint.y;
+        point2.y = line1.gradient * (point2.x - line1.midpoint.x) + line1.midpoint.y;
     }
+    temp << "line intercepts the circle at:\n"
+         << "(" << point1.x << ", " << point1.y << ") and (" << point2.x << ", " << point2.y << ")";
+    return temp.str();
 }
 
 double get_gradient(coordinate start, coordinate end) {
