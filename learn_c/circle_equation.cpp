@@ -19,6 +19,7 @@ struct line {
 
 std::string format_double(double value, bool reversed = false) {
     std::ostringstream temp;
+
     if (reversed) {
         if (value < 0) temp << "+ " << -value;
         else temp << "- " << value;
@@ -34,6 +35,7 @@ std::string get_equation(circle result) {
     // (x - a)^2 + (y - b)^2 = (radius)^2
     std::ostringstream temp;
     double r_squared = result.r * result.r;
+
     temp << "(x " << format_double(result.center.x, true) << ")^2 + " 
          << "(y " << format_double(result.center.y, true) << ")^2 = " << r_squared;
     return temp.str();
@@ -77,6 +79,7 @@ double get_gradient(coordinate start, coordinate end) {
 
 double get_num() {
     double temp;
+
     while (true) {
         std::cin >> temp;
         if (std::cin.fail()) {
@@ -92,6 +95,7 @@ double get_num() {
 
 coordinate get_coordinate() {
     coordinate temp;
+
     while (true) {
         std::cin >> temp.x >> temp.y;
         if (std::cin.fail()) {
@@ -110,6 +114,7 @@ coordinate get_intersection(line line1, line line2) {
     // c = offset
     coordinate result;
     double offset1, offset2;
+
     if (line1.gradient == line2.gradient) {
         result.x = result.y = std::numeric_limits<double>::quiet_NaN();
     } else if (std::isinf(line1.gradient)) {
@@ -159,6 +164,7 @@ line get_perpendicular(line input) {
 
 circle choice1() {
     circle temp;
+
     std::cout << "enter the center point coordinate (format: x y):" << '\n';
     temp.center = get_coordinate();
     std::cout << "enter the radius of the circle: ";
@@ -208,6 +214,7 @@ circle choice2() {
 circle choice3() {
     circle temp;
     coordinate edge;
+
     std::cout << "enter the center point coordinate (format: x y):" << '\n';
     temp.center = get_coordinate();
     std::cout << "enter the coordinate of a point on the circle:" << '\n';
@@ -225,6 +232,7 @@ circle choice3() {
 circle choice4() {
     circle temp;
     coordinate endpoint1, endpoint2;
+
     std::cout << "enter the first diameter endpoint (format: x y):" << '\n';
     endpoint1 = get_coordinate();
     std::cout << "enter the second diameter endpoint (format: x y):" << '\n';
@@ -243,6 +251,7 @@ std::string option1(circle prev) {
     coordinate coordinate1;
     double distance;
     double r_squared = prev.r * prev.r;
+
     std::cout << "enter the coordinate to check (format: x y): ";
     coordinate1 = get_coordinate();
     distance = std::pow(coordinate1.x - prev.center.x, 2) + std::pow(coordinate1.y - prev.center.y, 2);
@@ -277,22 +286,24 @@ std::string option3(circle prev) {
     double dist, offset;
     std::ostringstream str_output;
 
-    std::cout << "enter a point on the edge of the circle (format: x y): ";
-    point1 = get_coordinate();
-    dist = sqrt(std::pow(prev.center.x - point1.x, 2) + std::pow(prev.center.y - point1.y, 2));
-    if (dist != prev.r) {
-        std::cout << "the point is not on the edge of the circle" << '\n';
-        exit(1);
+    while (true) {
+        std::cout << "enter a point on the edge of the circle (format: x y): ";
+        point1 = get_coordinate();
+        dist = sqrt(std::pow(prev.center.x - point1.x, 2) + std::pow(prev.center.y - point1.y, 2));
+        if (dist != prev.r) {
+            std::cout << "the point is not on the edge of the circle" << '\n';
+            continue;
+        }
+        line1.midpoint = point1;
+        line1.gradient = -1 / get_gradient(prev.center, point1);
+        if (std::isinf(line1.gradient)) {
+            str_output << "x = " << line1.midpoint.x;
+        } else {
+            offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
+            str_output << "y = " << line1.gradient << "x " << format_double(offset);
+        }
+        return str_output.str();
     }
-    line1.midpoint = point1;
-    line1.gradient = -1 / get_gradient(prev.center, point1);
-    if (std::isinf(line1.gradient)) {
-        str_output << "x = " << line1.midpoint.x;
-    } else {
-        offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
-        str_output << "y = " << line1.gradient << "x " << format_double(offset);
-    }
-    return str_output.str();
 }
 
 std::string option4(circle prev) {
@@ -330,11 +341,11 @@ int main() {
     circle result;
     int choice, option;
     std::cout << "1. center point and radius" << '\n'
-              << "2. three points on the circle" << '\n'
-              << "3. center and one point on the circle" << '\n'
-              << "4. diameter endpoints" << '\n'
-              << "5. exit" << '\n'
-              << "enter one of the options above: ";
+            << "2. three points on the circle" << '\n'
+            << "3. center and one point on the circle" << '\n'
+            << "4. diameter endpoints" << '\n'
+            << "5. exit" << '\n'
+            << "enter one of the options above: ";
 
     choice = static_cast<int>(std::floor(get_num()));
 
@@ -344,18 +355,19 @@ int main() {
     else if (choice == 4) result = choice4();
     else if (choice == 5) return 0;
     else {
-        std::cout << "not a valid option" << '\n';
+        std::cout << "not a valid option" << '\n'
+                << "exiting..";
         return 1;
     }
 
     equation = get_equation(result);
     std::cout << "circle equation: " << equation << '\n' << '\n'
-              << "1. check where a coordinate is on the circle" << '\n'
-              << "2. check where a line is on the circle" << '\n'
-              << "3. check tangent line equation with a point on the circle" << '\n'
-              << "4. check tangent lines equation with gradient" << '\n'
-              << "5. exit" << '\n'
-              << "enter one of the options above: ";
+            << "1. check where a coordinate is on the circle" << '\n'
+            << "2. check where a line is on the circle" << '\n'
+            << "3. check tangent line equation with a point on the circle" << '\n'
+            << "4. check tangent lines equation with gradient" << '\n'
+            << "5. exit" << '\n'
+            << "enter one of the options above: ";
     option = static_cast<int>(std::floor(get_num()));
 
     if (option == 1) result2 = option1(result);
@@ -364,7 +376,8 @@ int main() {
     else if (option == 4) result2 = option4(result);
     else if (option == 5) return 0;
     else {
-        std::cout << "not a valid option" << '\n';
+        std::cout << "not a valid option" << '\n'
+                << "exiting..";
         return 1;
     }
     std::cout << result2 << '\n';
