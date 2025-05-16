@@ -171,7 +171,7 @@ circle choice2() {
     perp_bc = get_perpendicular(bc);
 
     temp.center = get_intersection(perp_ab, perp_bc);
-    temp.r = sqrt((a.x - temp.center.x) * (a.x - temp.center.x) + (a.y - temp.center.y) * (a.y - temp.center.y));
+    temp.r = sqrt(std::pow(a.x - temp.center.x, 2) + std::pow(a.y - temp.center.y, 2));
     return temp;
 }
 
@@ -188,7 +188,7 @@ circle choice3() {
         exit(1);
     }
 
-    temp.r = sqrt((edge.x - temp.center.x) * (edge.x - temp.center.x) + (edge.y - temp.center.y) * (edge.y - temp.center.y));
+    temp.r = sqrt(std::pow(edge.x - temp.center.x, 2) + std::pow(edge.y - temp.center.y, 2));
     return temp;
 }
 
@@ -205,7 +205,7 @@ circle choice4() {
     }
     temp.center.x = (endpoint1.x + endpoint2.x) / 2;
     temp.center.y = (endpoint1.y + endpoint2.y) / 2;
-    temp.r = sqrt((endpoint2.x - endpoint1.x) * (endpoint2.x - endpoint1.x) + (endpoint2.y - endpoint1.y) * (endpoint2.y - endpoint1.y)) / 2;
+    temp.r = sqrt(std::pow(endpoint2.x - endpoint1.x, 2) + std::pow(endpoint2.y - endpoint1.y, 2)) / 2;
     return temp;
 }
 
@@ -215,7 +215,7 @@ std::string option1(circle prev) {
     double r_squared = prev.r * prev.r;
     std::cout << "enter the coordinate to check (format: x y): ";
     coordinate1 = get_coordinate();
-    distance = (coordinate1.x - prev.center.x) * (coordinate1.x - prev.center.x) + (coordinate1.y - prev.center.y) * (coordinate1.y - prev.center.y);
+    distance = std::pow(coordinate1.x - prev.center.x, 2) + std::pow(coordinate1.y - prev.center.y, 2);
 
     if (distance > r_squared) return "the coordinate is outside of the circle";
     else if (std::abs(distance - r_squared) < 1e-6) return "the coordinate is on the edge of the circle";
@@ -277,7 +277,7 @@ std::string option4(circle prev) {
 
     std::cout << "enter a point on the edge of the circle (format: x y): ";
     point1 = get_coordinate();
-    dist = sqrt(pow(prev.center.x - point1.x, 2) + pow(prev.center.y - point1.y, 2));
+    dist = sqrt(std::pow(prev.center.x - point1.x, 2) + std::pow(prev.center.y - point1.y, 2));
     if (dist != prev.r) {
         std::cout << "the point is not on the edge of the circle" << '\n';
         exit(1);
