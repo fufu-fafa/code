@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <vector>
 #include <limits>
 
 struct coordinate {
@@ -7,7 +8,7 @@ struct coordinate {
 };
 
 struct line {
-    coordinate start, end;
+    coordinate point;
     double gradient, offset;
 };
 
@@ -38,18 +39,63 @@ coordinate get_coordinate() {
     }
 }
 
+std::vector<coordinate> get_points() {
+    std::vector<coordinate> points;
+    coordinate input;
+    char choice;
+
+    while (true) {
+        std::cout << "enter a coordinate (format: x y): ";
+        input = get_coordinate();
+        points.push_back(input);
+        if (points.size() < 2) continue;
+
+        std::cout << "add another coordinate? (y/n): ";
+        std::cin >> choice;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (choice == 'n' || choice == 'N') {
+            return points;
+        }
+    }
+    return points;
+}
+
+line calculate(const std::vector<coordinate>& points) {
+    line temp;
+    double denominator;
+    double sum_x = 0, sum_y = 0, sum_xy = 0, sum_squared_x = 0;
+    int n = points.size();
+
+    for (const coordinate& point : points) {
+        sum_x += point.x;
+        sum_y += point.y;
+        sum_xy += point.x * point.y;
+        sum_squared_x += point.x * point.x;
+    }
+    denominator = n * sum_squared_x - sum_x * sum_x;
+
+    temp.point.x = sum_x / n;
+    temp.point.y = sum_y / n;
+    if (denominator == 0) {
+        temp.gradient = std::numeric_limits<double>::infinity();
+        temp.offset = 0;
+    } else {
+        temp.gradient = (n * sum_xy - sum_x * sum_y) / denominator;
+        temp.offset = temp.point.y - temp.gradient * temp.point.x;
+    }
+    return temp;
+}
+
 int main() {
+    std::vector<coordinate> points;
     line line1;
-    std::cout << "enter the first coordinate for the line (format: x y): " << '\n';
-    line1.start = get_coordinate();
-    std::cout << "enter the second coordinate for the line (format: x y): " << '\n';
-    line1.end = get_coordinate();
-    line1.gradient = get_gradient(line1.start, line1.end);
+
+    points = get_points();
+    line1 = calculate(points);
 
     if (std::isinf(line1.gradient)) {
-        std::cout << "x = " << line1.start.x << '\n';
+        std::cout << "x = " << line1.point.x << '\n';
     } else {
-        line1.offset = line1.start.y - line1.gradient * line1.start.x;
         if (line1.offset == 0) std::cout << "y = " << line1.gradient << "x" << '\n';
         else std::cout << "y = " << line1.gradient << "x " << format_double(line1.offset) << '\n';
     }
