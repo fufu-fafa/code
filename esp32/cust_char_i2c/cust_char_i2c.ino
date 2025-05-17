@@ -30,6 +30,7 @@ void setup() {
 
   lcd.init();
   lcd.backlight();
+  lcd.createChar(0, heart);
 
   lcd.setCursor(0, 0);
   lcd.write(byte(0));
