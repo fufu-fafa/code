@@ -48,16 +48,12 @@ std::vector<coordinate> get_points() {
         std::cout << "enter a coordinate (format: x y): ";
         input = get_coordinate();
         points.push_back(input);
-        if (points.size() < 2) continue;
 
         std::cout << "add another coordinate? (y/n): ";
         std::cin >> choice;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (choice == 'n' || choice == 'N') {
-            return points;
-        }
+        if (choice == 'n' || choice == 'N') return points;
     }
-    return points;
 }
 
 line calculate(const std::vector<coordinate>& points) {
@@ -91,6 +87,11 @@ int main() {
     line line1;
 
     points = get_points();
+    if (points.size() < 2) {
+        std::cout << "unable to get line equation with one coordinate" << '\n';
+        return 1;
+    }
+
     line1 = calculate(points);
 
     if (std::isinf(line1.gradient)) {
