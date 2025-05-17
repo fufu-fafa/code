@@ -12,11 +12,6 @@ struct line {
     double gradient, offset;
 };
 
-double get_gradient(coordinate start, coordinate end) {
-    if (end.x == start.x) return std::numeric_limits<double>::infinity();
-    else return (end.y - start.y) / (end.x - start.x);
-}
-
 std::string format_double(double value) {
     std::ostringstream temp;
     if (value < 0) temp << "- " << -value;
