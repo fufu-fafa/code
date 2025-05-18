@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/blank-console.sh
+ExecStart=setterm --blank 1 --powerdown 0
 RemainAfterExit=yes
 
 [Install]
