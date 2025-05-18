@@ -76,7 +76,7 @@ std::string line_circle_intersection(circle circle1, line line1) {
 
 double get_gradient(coordinate start, coordinate end) {
     // m = (y2 - y1) / (x2 - x1)
-    if (end.x == start.x) return std::numeric_limits<double>::infinity();
+    if (std::abs(end.x - start.x) < epsilon) return std::numeric_limits<double>::infinity();
     else return (end.y - start.y) / (end.x - start.x);
 }
 
@@ -118,7 +118,7 @@ coordinate get_intersection(line line1, line line2) {
     coordinate result;
     double offset1, offset2;
 
-    if (line1.gradient == line2.gradient) {
+    if (std::abs(line1.gradient - line2.gradient) < epsilon) {
         result.x = result.y = std::numeric_limits<double>::quiet_NaN();
     } else if (std::isinf(line1.gradient)) {
         offset2 = line2.midpoint.y - line2.gradient * line2.midpoint.x;
@@ -172,7 +172,7 @@ circle choice1() {
     temp.center = get_coordinate();
     std::cout << "enter the radius of the circle: ";
     temp.r = get_num();
-    if (temp.r <= 0) {
+    if (temp.r < epsilon) {
         std::cout << "radius cannot be lower or equal to 0" << '\n';
         exit(1);
     }
