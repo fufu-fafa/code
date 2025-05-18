@@ -89,6 +89,7 @@ int main() {
 
     line1 = calculate(points);
 
+    std::cout << '\n' << "gradient = " << line1.gradient << '\n';
     if (std::isinf(line1.gradient)) {
         std::cout << "x = " << line1.point.x << '\n';
     } else {
