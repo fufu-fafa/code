@@ -316,7 +316,7 @@ std::string option3(circle prev) {
 
 std::string option4(circle prev) {
     line line1;
-    double radius_offset, line1_offset, negative_offset;
+    double radius_offset, positive_offset, negative_offset;
     std::ostringstream str_output;
     std::string vertical;
 
@@ -336,10 +336,10 @@ std::string option4(circle prev) {
 
     // -ma + b +- r * sqrt(m * m + 1)
     radius_offset = prev.r * sqrt(line1.gradient * line1.gradient + 1);
-    line1_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y + radius_offset; 
+    positive_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y + radius_offset; 
     negative_offset = -1 * (line1.gradient * prev.center.x) + prev.center.y - radius_offset;
 
-    str_output << "y = " << line1.gradient << "x " << format_double(line1_offset) << '\n'
+    str_output << "y = " << line1.gradient << "x " << format_double(positive_offset) << '\n'
             << "y = " << line1.gradient << "x " << format_double(negative_offset) << '\n';
     return str_output.str();
 }
