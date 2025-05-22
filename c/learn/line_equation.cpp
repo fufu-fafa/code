@@ -9,7 +9,7 @@ struct coordinate {
 
 struct line {
     coordinate point;
-    double gradient, offset;
+    double gradient, offset, correlation;
 };
 
 std::string format_double(double value) {
@@ -53,8 +53,8 @@ std::vector<coordinate> get_points() {
 
 line calculate(const std::vector<coordinate>& points) {
     line temp;
-    double denominator;
-    double sum_x = 0, sum_y = 0, sum_xy = 0, sum_squared_x = 0;
+    double denominator, correlation_denominator;
+    double sum_x = 0, sum_y = 0, sum_xy = 0, sum_squared_x = 0, sum_squared_y = 0;
     int n = points.size();
 
     for (const coordinate& point : points) {
@@ -62,8 +62,13 @@ line calculate(const std::vector<coordinate>& points) {
         sum_y += point.y;
         sum_xy += point.x * point.y;
         sum_squared_x += point.x * point.x;
+        sum_squared_y += point.y * point.y;
     }
     denominator = n * sum_squared_x - sum_x * sum_x;
+    correlation_denominator = sqrt(n * sum_squared_x - sum_x * sum_x) * (n * sum_squared_y - sum_y * sum_y);
+
+    if (correlation_denominator == 0) temp.correlation = std::numeric_limits<double>::quiet_NaN();
+    else temp.correlation = (n * sum_xy - sum_x * sum_y) / correlation_denominator;
 
     temp.point.x = sum_x / n;
     temp.point.y = sum_y / n;
@@ -89,7 +94,8 @@ int main() {
 
     line1 = calculate(points);
 
-    std::cout << '\n' << "gradient = " << line1.gradient << '\n';
+    std::cout << '\n' << "pearson correlation = " << line1.correlation << '\n'
+                 << "gradient = " << line1.gradient << '\n';
     if (std::isinf(line1.gradient)) {
         std::cout << "x = " << line1.point.x << '\n';
     } else {
