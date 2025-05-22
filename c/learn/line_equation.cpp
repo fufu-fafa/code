@@ -65,7 +65,7 @@ line calculate(const std::vector<coordinate>& points) {
         sum_squared_y += point.y * point.y;
     }
     denominator = n * sum_squared_x - sum_x * sum_x;
-    correlation_denominator = sqrt(n * sum_squared_x - sum_x * sum_x) * (n * sum_squared_y - sum_y * sum_y);
+    correlation_denominator = sqrt((n * sum_squared_x - sum_x * sum_x) * (n * sum_squared_y - sum_y * sum_y));
 
     if (correlation_denominator == 0) temp.correlation = std::numeric_limits<double>::quiet_NaN();
     else temp.correlation = (n * sum_xy - sum_x * sum_y) / correlation_denominator;
