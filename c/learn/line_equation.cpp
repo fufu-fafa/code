@@ -93,11 +93,14 @@ int main() {
     }
 
     line1 = calculate(points);
+    if (std::isnan(line1.correlation)) std::cout << '\n' << "note: x and y are not correlated" << '\n';
+    else std::cout << '\n' << "pearson correlation = " << line1.correlation << '\n';
 
-    std::cout << '\n' << "pearson correlation = " << line1.correlation << '\n'
-                 << "gradient = " << line1.gradient << '\n';
+    std::cout << "gradient = " << line1.gradient << '\n';
     if (std::isinf(line1.gradient)) {
         std::cout << "x = " << line1.point.x << '\n';
+    } else if (line1.gradient == 0) {
+        std::cout << "y = " << line1.offset << '\n';
     } else {
         if (line1.offset == 0) std::cout << "y = " << line1.gradient << "x" << '\n';
         else std::cout << "y = " << line1.gradient << "x " << format_double(line1.offset) << '\n';
