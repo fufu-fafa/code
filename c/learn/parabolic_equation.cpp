@@ -54,4 +54,5 @@ double get_coordinate() {
 
 int main() {
     parabole result;
+    return 0;
 }
