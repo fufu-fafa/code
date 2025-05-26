@@ -54,7 +54,6 @@ std::string line_circle_intersection(circle circle1, line line1) {
         point1 = {line1.midpoint.x, circle1.center.y + offset};
         point2 = {line1.midpoint.x, circle1.center.y - offset};
     } else {
-        // input is sanitized, line will intersect
         // ax^2 + bx + c = 0
         a = 1 + std::pow(line1.gradient, 2);
         b = 2 * (line1.gradient * (line1.midpoint.y - circle1.center.y - line1.gradient * line1.midpoint.x) - circle1.center.x);
@@ -62,6 +61,8 @@ std::string line_circle_intersection(circle circle1, line line1) {
 
         // (-b +- sqrt(b^2 - 4ac)) / 2a
         discriminant = std::pow(b, 2) - 4 * a * c;
+        if (discriminant <= 0) return "line does not intercept with circle";
+
         point1.x = (-b + sqrt(discriminant)) / (2 * a);
         point2.x = (-b - sqrt(discriminant)) / (2 * a);
 
