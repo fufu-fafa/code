@@ -26,7 +26,7 @@ def mouth_aspect_ratio(mouth):
     return (A + B + C) / (3.0 * D)
 
 EAR_THRESHOLD = 0.25
-CONSEC_FRAMES = 48
+CONSEC_FRAMES = 36
 
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
@@ -99,8 +99,13 @@ while True:
                 if yawn_counter >= YAWN_FRAMES:
                     cv2.putText(frame, "YAWNING!", (10, line(2)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                else:
+                    cv2.putText(frame, "possibly yawning", (10, line(2)),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
             else:
                 yawn_counter = 0
+                cv2.putText(frame, "not yawning", (10, line(2)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
