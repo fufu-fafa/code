@@ -59,7 +59,8 @@ std::string line_circle_intersection(circle circle1, line line1) {
 
         // (-b +- sqrt(b^2 - 4ac)) / 2a
         discriminant = std::pow(b, 2) - 4 * a * c;
-        if (discriminant <= 0) return "line does not intercept with circle";
+        if (discriminant < 0) return "line does not intercept with circle";
+        else if (discriminant == 0) return "line is tangent with the cirlce";
 
         point1.x = (-b + sqrt(discriminant)) / (2 * a);
         point2.x = (-b - sqrt(discriminant)) / (2 * a);
@@ -291,11 +292,7 @@ std::string option3(circle prev) {
     while (true) {
         std::cout << "enter a point on the edge of the circle (format: x y): ";
         point1 = get_coordinate();
-        dist_squared = std::pow(prev.center.x - point1.x, 2) + std::pow(prev.center.y - point1.y, 2);
-
-        // debug
-        std::cout << dist_squared << '\n' << prev.r * prev.r << '\n' << std::abs(dist_squared - prev.r * prev.r) << '\n';
-        
+        dist_squared = std::pow(prev.center.x - point1.x, 2) + std::pow(prev.center.y - point1.y, 2);      
 
         // allow less precise user input
         if (!(std::abs(dist_squared - prev.r * prev.r) < 1e-2)) {
@@ -381,6 +378,7 @@ int main() {
             << "4. check tangent lines equation with gradient" << '\n'
             << "5. exit" << '\n'
             << "enter one of the options above: ";
+
     while (true) {
         option = static_cast<int>(std::floor(get_num()));
 
