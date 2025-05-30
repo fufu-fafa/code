@@ -3,8 +3,6 @@
 #include <limits>
 #include <cmath>
 
-const double epsilon = 1e-9;
-
 struct coordinate {
     double x, y;
 };
@@ -69,14 +67,14 @@ std::string line_circle_intersection(circle circle1, line line1) {
         point1.y = line1.gradient * (point1.x - line1.midpoint.x) + line1.midpoint.y;
         point2.y = line1.gradient * (point2.x - line1.midpoint.x) + line1.midpoint.y;
     }
-    temp << "line intercepts the circle at:\n"
+    temp << "line intercepts the circle at:" << '\n'
          << "(" << point1.x << ", " << point1.y << ") and (" << point2.x << ", " << point2.y << ")";
     return temp.str();
 }
 
 double get_gradient(coordinate start, coordinate end) {
     // m = (y2 - y1) / (x2 - x1)
-    if (std::abs(end.x - start.x) < epsilon) return std::numeric_limits<double>::infinity();
+    if (end.x == start.x) return std::numeric_limits<double>::infinity();
     else return (end.y - start.y) / (end.x - start.x);
 }
 
@@ -118,7 +116,7 @@ coordinate get_intersection(line line1, line line2) {
     coordinate result;
     double offset1, offset2;
 
-    if (std::abs(line1.gradient - line2.gradient) < epsilon) {
+    if (line1.gradient == line2.gradient) {
         result.x = result.y = std::numeric_limits<double>::quiet_NaN();
     } else if (std::isinf(line1.gradient)) {
         offset2 = line2.midpoint.y - line2.gradient * line2.midpoint.x;
@@ -158,7 +156,7 @@ line get_perpendicular(line input) {
     temp.midpoint = input.midpoint;
 
     if (std::isinf(input.gradient)) temp.gradient = 0;
-    else if (std::abs(input.gradient) < epsilon) temp.gradient = std::numeric_limits<double>::infinity();
+    else if (input.gradient == 0) temp.gradient = std::numeric_limits<double>::infinity();
     else {
         temp.gradient = -1 / input.gradient;
     }
@@ -172,7 +170,7 @@ circle choice1() {
     temp.center = get_coordinate();
     std::cout << "enter the radius of the circle: ";
     temp.r = get_num();
-    if (temp.r < epsilon) {
+    if (temp.r <= 0) {
         std::cout << "radius cannot be lower or equal to 0" << '\n';
         exit(1);
     }
@@ -196,7 +194,7 @@ circle choice2() {
     if ((a.x == b.x && a.y == b.y) || (b.x == c.x && b.y == c.y) || (c.x == a.x && c.y == a.y)) {
         std::cout << "points must be distinct" << '\n';
         exit(1);
-    } else if (std::abs(determinant) < epsilon) {
+    } else if (determinant == 0) {
         std::cout << "points are collinear, unable to form circle" << '\n';
         exit(1);
     }
@@ -259,8 +257,9 @@ std::string option1(circle prev) {
     coordinate1 = get_coordinate();
     distance = std::pow(coordinate1.x - prev.center.x, 2) + std::pow(coordinate1.y - prev.center.y, 2);
 
+    // allow less precise user input with "< 1e-2"
     if (distance > r_squared) return "the coordinate is outside of the circle";
-    else if (std::abs(distance - r_squared) < epsilon) return "the coordinate is on the edge of the circle";
+    else if (std::abs(distance - r_squared) < 1e-2) return "the coordinate is on the edge of the circle";
     else return "the coordinate is inside of the circle";
 }
 
@@ -278,7 +277,7 @@ std::string option2(circle prev) {
     }
 
     if (distance > prev.r) str_output = "the line is outside of the circle";
-    else if (std::abs(distance - prev.r) < epsilon) str_output = "the line is tangent to the circle";
+    else if (distance == prev.r) str_output = "the line is tangent to the circle";
     else str_output = line_circle_intersection(prev, line1);
     return str_output;
 }
@@ -286,14 +285,20 @@ std::string option2(circle prev) {
 std::string option3(circle prev) {
     line line1, radius_line;
     coordinate point1;
-    double dist, offset;
+    double dist_squared, offset;
     std::ostringstream str_output;
 
     while (true) {
         std::cout << "enter a point on the edge of the circle (format: x y): ";
         point1 = get_coordinate();
-        dist = sqrt(std::pow(prev.center.x - point1.x, 2) + std::pow(prev.center.y - point1.y, 2));
-        if (std::abs(dist - prev.r) > epsilon) {
+        dist_squared = std::pow(prev.center.x - point1.x, 2) + std::pow(prev.center.y - point1.y, 2);
+
+        // debug
+        std::cout << dist_squared << '\n' << prev.r * prev.r << '\n' << std::abs(dist_squared - prev.r * prev.r) << '\n';
+        
+
+        // allow less precise user input
+        if (!(std::abs(dist_squared - prev.r * prev.r) < 1e-2)) {
             std::cout << "the point is not on the edge of the circle" << '\n';
             continue;
         }
@@ -304,7 +309,7 @@ std::string option3(circle prev) {
 
         if (std::isinf(line1.gradient)) {
             str_output << "x = " << line1.midpoint.x;
-        } else if (std::abs(line1.gradient) < epsilon) {
+        } else if (line1.gradient == 0) {
             str_output << "y = " << line1.midpoint.y;
         } else {
             offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
@@ -320,7 +325,7 @@ std::string option4(circle prev) {
     std::ostringstream str_output;
     std::string vertical;
 
-    std::cout << "are the lines vertical or gradient = inf: (y/n) ";
+    std::cout << "are the lines vertical or infinite gradient: (y/n) ";
     std::cin >> vertical;
 
     if (vertical == "y" || vertical == "Y") {
@@ -376,19 +381,21 @@ int main() {
             << "4. check tangent lines equation with gradient" << '\n'
             << "5. exit" << '\n'
             << "enter one of the options above: ";
-    option = static_cast<int>(std::floor(get_num()));
+    while (true) {
+        option = static_cast<int>(std::floor(get_num()));
 
-    if (option == 1) result2 = option1(result);
-    else if (option == 2) result2 = option2(result);
-    else if (option == 3) result2 = option3(result);
-    else if (option == 4) result2 = option4(result);
-    else if (option == 5) return 0;
-    else {
-        std::cout << "not a valid option" << '\n'
-                << "exiting.." << '\n';
-        return 1;
+        if (option == 1) result2 = option1(result);
+        else if (option == 2) result2 = option2(result);
+        else if (option == 3) result2 = option3(result);
+        else if (option == 4) result2 = option4(result);
+        else if (option == 5) return 0;
+        else {
+            std::cout << "not a valid option, retry: ";
+            continue;
+        }
+        std::cout << result2 << '\n' << '\n';
+        break;
     }
-    std::cout << result2 << '\n';
-
+    std::cout << "might not be fully accurate due to floating point errors" << '\n';
     return 0;
 }

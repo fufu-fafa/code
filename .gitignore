@@ -1,3 +1,5 @@
 .DS_Store
+**/*.swp
+**/*.out
 **/.vscode/
 **/__pycache__/
