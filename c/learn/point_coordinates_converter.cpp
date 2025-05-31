@@ -61,9 +61,12 @@ polar_coord get_polar_coord() {
         failed = std::cin.fail();
         handle_cin("invalid input, reinput the polar coordinate (format: length angle): ");
         if (!failed) {
-            temp.angle = std::fmod(temp.angle, 360.0);
+            temp.angle = std::fmod(temp.angle, 360.0); // normalize
             if (temp.angle < 0) temp.angle += 360.0;
-            if (temp.length < 0) temp.angle += 180.0;
+
+            if (temp.length < 0) temp.angle += 180;
+            temp.angle = std::fmod(temp.angle, 360.0); // renormalize
+            temp.length = std::abs(temp.length);
             return temp;
         }
     }
