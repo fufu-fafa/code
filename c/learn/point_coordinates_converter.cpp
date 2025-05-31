@@ -107,16 +107,15 @@ int main() {
         cartesian = get_cartesian_coord();
         polar = cartesian_to_polar(cartesian);
         result = format_polar(polar);
-        std::cout << "result: " << result << '\n';
     } else if (choice == 2) {
         std::cout << "input the polar coordinate (format: length degrees): "; 
         polar = get_polar_coord();
         cartesian = polar_to_cartesian(polar);
         result = format_cartesian(cartesian);
-        std::cout << "result: " << result << '\n';
     } else {
         std::cout << "invalid option" << '\n';
         return 1;
     }
+    std::cout << "result: " << result << '\n';
     return 0;
 }
