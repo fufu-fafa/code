@@ -26,7 +26,7 @@ c1_vel = [c1_x_startspeed, c1_y_startspeed]
 c2_pos = [random.randint(-17, 0), random.randint(0, 17)]
 c2_vel = [c2_x_startspeed, c2_y_startspeed]
 
-c3_pos = [random.randint(-17, 0), random.randint(-17, -17)]
+c3_pos = [random.randint(-17, 0), random.randint(-17, 0)]
 c3_vel = [c3_x_startspeed, c3_y_startspeed]
 
 c1 = patches.Circle((c1_pos[0], c1_pos[1]), 2.0, color='red', alpha=0.6)
