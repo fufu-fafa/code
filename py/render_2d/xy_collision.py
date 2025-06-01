@@ -67,7 +67,7 @@ def meth(pos1, pos2, vel1, vel2):
 
 def check_circle_collision(pos1, pos2, rad):
     distance = (pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2
-    return distance <= (2 * (rad + 0.2))**2      # 0.2 is margin for error
+    return distance <= (2 * (rad + 0.3))**2      # 0.3 is margin for error
 
 def circle_collision_handler(pos1, pos2, vel1, vel2, rad=2.0):
     if check_circle_collision(pos1, pos2, rad):
