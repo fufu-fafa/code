@@ -4,6 +4,15 @@ from matplotlib.animation import FuncAnimation
 import numpy as np
 import random
 
+# adjustment
+circle_speed = 1.0
+c1_x_startspeed = circle_speed - random.random() * circle_speed
+c1_y_startspeed = circle_speed - c1_x_startspeed
+c2_x_startspeed = circle_speed - random.random() * circle_speed
+c2_y_startspeed = circle_speed - c2_x_startspeed
+c3_x_startspeed = circle_speed - random.random() * circle_speed
+c3_y_startspeed = circle_speed - c3_x_startspeed
+
 # setup
 fig, ax = plt.subplots()
 ax.set_aspect('equal')
@@ -11,47 +20,94 @@ ax.set_xlim(-20, 20)
 ax.set_ylim(-20, 20)
 ax.axis('on')
 
-circle1_pos = [random.randint(0, 18), random.randint(0, 18)]
-circle1_vel = [random.random() * 2, random.random() * 2]
+c1_pos = [random.randint(0, 17), random.randint(0, 17)]
+c1_vel = [c1_x_startspeed, c1_y_startspeed]
 
-circle2_pos = [random.randint(-18, 0), random.randint(-18, 0)]
-circle2_vel = [random.random() * 2, random.random() * 2]
+c2_pos = [random.randint(-17, 0), random.randint(0, 17)]
+c2_vel = [c2_x_startspeed, c2_y_startspeed]
 
-circle1 = patches.Circle((circle1_pos[0], circle1_pos[1]), 2.0, color='blue', alpha=0.6)
-circle2 = patches.Circle((circle2_pos[0], circle2_pos[1]), 2.0, color='red', alpha=0.6)
+c3_pos = [random.randint(-17, 0), random.randint(-17, -17)]
+c3_vel = [c3_x_startspeed, c3_y_startspeed]
 
-circles = [circle1, circle2]
-ax.add_patch(circle1)
-ax.add_patch(circle2)
+c1 = patches.Circle((c1_pos[0], c1_pos[1]), 2.0, color='red', alpha=0.6)
+c2 = patches.Circle((c2_pos[0], c2_pos[1]), 2.0, color='green', alpha=0.6)
+c3 = patches.Circle((c3_pos[0], c3_pos[1]), 2.0, color='blue', alpha=0.6)
 
-def check_circle_collision(pos1, pos2, rad=2.0):
-    distance = ((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)**0.5
-    if distance <= 2 * rad + 0.2:
-        return True
-    else:
-        return False
+ax.add_patch(c1)
+ax.add_patch(c2)
+ax.add_patch(c3)
 
-def check_handle_wall_collision(pos, vel):
+def meth(pos1, pos2, vel1, vel2):
+    # vector12 which is circle 1 -> circle 2 and also the collision axis
+    vector_12 = [pos2[0] - pos1[0], pos2[1] - pos1[1]]
+    vec_length = ((pos2[0] - pos1[0])**2 + (pos2[1] - pos1[1])**2)**0.5
+
+    # normalize vector12 (make the length = 1)
+    normalized_vector = [vector_12[0] / vec_length, vector_12[1] / vec_length]
+
+    # projects circles vector to collision point 
+    v1_proj = vel1[0] * normalized_vector[0] + vel1[1] * normalized_vector[1]
+    v2_proj = vel2[0] * normalized_vector[0] + vel2[1] * normalized_vector[1]
+
+    # transfer vector after elastic collision
+    v1_proj_after = v2_proj
+    v2_proj_after = v1_proj
+
+    # pnv = perpendicular normalized vector
+    pnv = [-normalized_vector[1], normalized_vector[0]]
+
+    # how much vector/energy doesn't affect and affected by collision
+    v1t = vel1[0] * pnv[0] + vel1[1] * pnv[1]
+    v2t = vel2[0] * pnv[0] + vel2[1] * pnv[1]
+    v1_final = [v1_proj_after * normalized_vector[0] + v1t * pnv[0], 
+                v1_proj_after * normalized_vector[1] + v1t * pnv[1]]
+    v2_final = [v2_proj_after * normalized_vector[0] + v2t * pnv[0], 
+                v2_proj_after * normalized_vector[1] + v2t * pnv[1]]
+    return v1_final, v2_final
+
+def check_circle_collision(pos1, pos2, rad):
+    distance = (pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2
+    return distance <= (2 * (rad + 0.2))**2      # 0.2 is margin for error
+
+def circle_collision_handler(pos1, pos2, vel1, vel2, rad=2.0):
+    if check_circle_collision(pos1, pos2, rad):
+        return meth(pos1, pos2, vel1, vel2)
+    return vel1, vel2
+
+def check_wall_collision(pos, bounds):
+    temp = []
     for n in range(2):
-        if pos[n] <= -17.8 or pos[n] >= 17.8:
-            vel[n] = vel[n] * -1
-    return vel
+        temp.append(pos[n] <= -bounds or pos[n] >= bounds)
+    return temp
+
+def wall_collision_handler(pos, vel, bounds=17.8):
+    temp_vel = vel[:]
+    collision_list = check_wall_collision(pos, bounds)
+    for n in range(2):
+        if collision_list[n]:
+            temp_vel[n] = -vel[n]
+    return temp_vel
 
 def update(frame):
-    global circle1_pos, circle1_vel, circle2_pos, circle2_vel
+    global c1_pos, c1_vel, c2_pos, c2_vel, c3_pos, c3_vel
 
-    if check_circle_collision(circle1_pos, circle2_pos):
-        circle1_vel, circle2_vel = circle2_vel, circle1_vel
+    c1_vel, c2_vel = circle_collision_handler(c1_pos, c2_pos, c1_vel, c2_vel)
+    c1_vel, c3_vel = circle_collision_handler(c1_pos, c3_pos, c1_vel, c3_vel)
+    c2_vel, c3_vel = circle_collision_handler(c2_pos, c3_pos, c2_vel, c3_vel)
 
-    circle1_vel = check_handle_wall_collision(circle1_pos, circle1_vel)
-    circle2_vel = check_handle_wall_collision(circle2_pos, circle2_vel)
+    c1_vel = wall_collision_handler(c1_pos, c1_vel)
+    c2_vel = wall_collision_handler(c2_pos, c2_vel)
+    c3_vel = wall_collision_handler(c3_pos, c3_vel)
 
     for n in range(2):
-        circle1_pos[n] = circle1_pos[n] + circle1_vel[n]
-        circle2_pos[n] = circle2_pos[n] + circle2_vel[n]
+        c1_pos[n] = c1_pos[n] + c1_vel[n]
+        c2_pos[n] = c2_pos[n] + c2_vel[n]
+        c3_pos[n] = c3_pos[n] + c3_vel[n]
 
-    circle1.set_center(circle1_pos)
-    circle2.set_center(circle2_pos)
-    return circle1, circle2
+    c1.set_center(c1_pos)
+    c2.set_center(c2_pos)
+    c3.set_center(c3_pos)
+    return c1, c2, c3
+
 ani = FuncAnimation(fig, update, frames=np.arange(0, 200), interval=20, blit=True)
 plt.show()

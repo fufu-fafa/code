@@ -5,12 +5,12 @@
 
 struct coordinate {
     double x, y;
-}
+};
 
 struct parabole {
     double p;
     coordinate focus_point;
-}
+};
 
 std::string format_double(double value) {
     std::ostringstream temp;
@@ -28,15 +28,15 @@ double get_num() {
         if (std::cin.fail()) {
             std::cout << "invalid input, reinput the number: ";
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            std::cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return temp;
         }
     }
 }
 
-double get_coordinate() {
+coordinate get_coordinate() {
     coordinate temp;
 
     while (true) {
