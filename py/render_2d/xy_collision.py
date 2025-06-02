@@ -5,7 +5,7 @@ import numpy as np
 import random
 
 # adjustment
-circle_speed = 0.9
+circle_speed = 0.8
 c1_x_startspeed = circle_speed - random.random() * circle_speed
 c1_y_startspeed = circle_speed - c1_x_startspeed
 c2_x_startspeed = circle_speed - random.random() * circle_speed
