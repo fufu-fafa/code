@@ -5,13 +5,15 @@ import numpy as np
 import random
 
 # adjustment
-circle_speed = 1.0
+circle_speed = 0.9
 c1_x_startspeed = circle_speed - random.random() * circle_speed
 c1_y_startspeed = circle_speed - c1_x_startspeed
 c2_x_startspeed = circle_speed - random.random() * circle_speed
 c2_y_startspeed = circle_speed - c2_x_startspeed
 c3_x_startspeed = circle_speed - random.random() * circle_speed
 c3_y_startspeed = circle_speed - c3_x_startspeed
+c4_x_startspeed = circle_speed - random.random() * circle_speed
+c4_y_startspeed = circle_speed - c4_x_startspeed
 
 # setup
 fig, ax = plt.subplots()
@@ -29,13 +31,18 @@ c2_vel = [c2_x_startspeed, c2_y_startspeed]
 c3_pos = [random.randint(-17, 0), random.randint(-17, 0)]
 c3_vel = [c3_x_startspeed, c3_y_startspeed]
 
+c4_pos = [random.randint(0, 17), random.randint(-17, 0)]
+c4_vel = [c4_x_startspeed, c4_y_startspeed]
+
 c1 = patches.Circle((c1_pos[0], c1_pos[1]), 2.0, color='red', alpha=0.6)
 c2 = patches.Circle((c2_pos[0], c2_pos[1]), 2.0, color='green', alpha=0.6)
 c3 = patches.Circle((c3_pos[0], c3_pos[1]), 2.0, color='blue', alpha=0.6)
+c4 = patches.Circle((c4_pos[0], c4_pos[1]), 2.0, color='black', alpha=0.6)
 
 ax.add_patch(c1)
 ax.add_patch(c2)
 ax.add_patch(c3)
+ax.add_patch(c4)
 
 def meth(pos1, pos2, vel1, vel2):
     # vector12 which is circle 1 -> circle 2 and also the collision axis
@@ -89,25 +96,32 @@ def wall_collision_handler(pos, vel, bounds=17.8):
     return temp_vel
 
 def update(frame):
-    global c1_pos, c1_vel, c2_pos, c2_vel, c3_pos, c3_vel
+    global c1_pos, c1_vel, c2_pos, c2_vel, c3_pos, c3_vel, c4_pos, c4_vel
 
+    # handle all unique pair of circle's collision
     c1_vel, c2_vel = circle_collision_handler(c1_pos, c2_pos, c1_vel, c2_vel)
     c1_vel, c3_vel = circle_collision_handler(c1_pos, c3_pos, c1_vel, c3_vel)
+    c1_vel, c4_vel = circle_collision_handler(c1_pos, c4_pos, c1_vel, c4_vel)
     c2_vel, c3_vel = circle_collision_handler(c2_pos, c3_pos, c2_vel, c3_vel)
+    c2_vel, c4_vel = circle_collision_handler(c2_pos, c4_pos, c2_vel, c4_vel)
+    c3_vel, c4_vel = circle_collision_handler(c3_pos, c4_pos, c3_vel, c4_vel)
 
     c1_vel = wall_collision_handler(c1_pos, c1_vel)
     c2_vel = wall_collision_handler(c2_pos, c2_vel)
     c3_vel = wall_collision_handler(c3_pos, c3_vel)
+    c4_vel = wall_collision_handler(c4_pos, c4_vel)
 
     for n in range(2):
         c1_pos[n] = c1_pos[n] + c1_vel[n]
         c2_pos[n] = c2_pos[n] + c2_vel[n]
         c3_pos[n] = c3_pos[n] + c3_vel[n]
+        c4_pos[n] = c4_pos[n] + c4_vel[n]
 
     c1.set_center(c1_pos)
     c2.set_center(c2_pos)
     c3.set_center(c3_pos)
-    return c1, c2, c3
+    c4.set_center(c4_pos)
+    return c1, c2, c3, c4
 
 ani = FuncAnimation(fig, update, frames=np.arange(0, 200), interval=20, blit=True)
 plt.show()
