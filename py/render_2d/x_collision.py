@@ -12,6 +12,12 @@ def generate_two_floats(total_sum, max_difference_ratio):
     b = total_sum - a
     return [a, b]
 
+def update_x_speed(x_pos, x_speed):
+    if x_pos <= -18.8 or x_pos >= 1.8:
+        return x_speed * -1
+    else:
+        return x_speed
+
 # setup
 sum_speed = 1.2
 fig, ax = plt.subplots()
@@ -28,12 +34,6 @@ circle1 = patches.Circle((circle_midpoint[0], 0), 1, color='blue', alpha=0.6)
 circle2 = patches.Circle((circle_midpoint[1], 0), 1, color='red', alpha=0.6)
 ax.add_patch(circle1)
 ax.add_patch(circle2)
-
-def update_x_speed(x_pos, x_speed):
-    if x_pos <= -19 or x_pos >= 19:
-        return x_speed * -1
-    else:
-        return x_speed
 
 # Animation update function
 def update(frame):
