@@ -2,8 +2,18 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation
 import numpy as np
+import random
+
+def generate_two_floats(total_sum, max_difference_ratio):
+    max_diff = total_sum * max_difference_ratio
+    diff = random.uniform(0, max_diff)
+    
+    a = (total_sum + diff) / 2
+    b = total_sum - a
+    return [a, b]
 
 # setup
+sum_speed = 1.2
 fig, ax = plt.subplots()
 ax.set_aspect('equal')
 ax.set_xlim(-20, 20)
@@ -12,7 +22,7 @@ ax.axis('on')
 
 # create circle
 circle_midpoint = [-4, 4]
-circle_speed = [0.5, -0.4]
+circle_speed = generate_two_floats(sum_speed, 0.4)
 
 circle1 = patches.Circle((circle_midpoint[0], 0), 1, color='blue', alpha=0.6)
 circle2 = patches.Circle((circle_midpoint[1], 0), 1, color='red', alpha=0.6)
@@ -32,6 +42,7 @@ def update(frame):
         circle_midpoint[n] = circle_midpoint[n] + circle_speed[n]
 
     if abs(circle_midpoint[0] - circle_midpoint[1]) <= 2:
+        print((circle_midpoint[0] + circle_midpoint[1])/2)
         temp_x = circle_speed[0]
         circle_speed[0] = circle_speed[1]
         circle_speed[1] = temp_x
