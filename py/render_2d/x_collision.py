@@ -13,7 +13,7 @@ def generate_two_floats(total_sum, max_difference_ratio):
     return [a, b]
 
 def update_x_speed(x_pos, x_speed):
-    if x_pos <= -18.8 or x_pos >= 1.8:
+    if x_pos <= -18.9 or x_pos >= 18.9:
         return x_speed * -1
     else:
         return x_speed
