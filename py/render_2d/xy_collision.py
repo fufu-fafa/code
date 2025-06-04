@@ -5,7 +5,7 @@ import numpy as np
 import random
 
 # adjustment
-circle_speed = 0.8
+circle_speed = 0.75
 c1_x_speed = circle_speed - random.random() * circle_speed
 c1_y_speed = circle_speed - c1_x_speed
 c2_x_speed = circle_speed - random.random() * circle_speed
@@ -20,17 +20,17 @@ c_vels = [[c1_x_speed, c1_y_speed],
          [c3_x_speed, c3_y_speed],
          [c4_x_speed, c4_y_speed]]
 
+c_poss = [[random.randint(0, 17), random.randint(0, 17)],
+          [random.randint(-17, 0), random.randint(0, 17)],
+          [random.randint(-17, 0), random.randint(-17, 0)],
+          [random.randint(0, 17), random.randint(-17, 0)]]
+
 # setup
 fig, ax = plt.subplots()
 ax.set_aspect('equal')
 ax.set_xlim(-20, 20)
 ax.set_ylim(-20, 20)
 ax.axis('on')
-
-c_poss = [[random.randint(0, 17), random.randint(0, 17)],
-          [random.randint(-17, 0), random.randint(0, 17)],
-          [random.randint(-17, 0), random.randint(-17, 0)],
-          [random.randint(0, 17), random.randint(-17, 0)]]
 
 c1 = patches.Circle((c_poss[0]), 2.0, color='red', alpha=0.6)
 c2 = patches.Circle((c_poss[1]), 2.0, color='green', alpha=0.6)
@@ -42,7 +42,7 @@ ax.add_patch(c2)
 ax.add_patch(c3)
 ax.add_patch(c4)
 
-def meth(pos1, pos2, vel1, vel2):
+def calculate(pos1, pos2, vel1, vel2):
     # vector12 which is circle 1 -> circle 2 and also the collision axis
     vector_12 = [pos2[0] - pos1[0], pos2[1] - pos1[1]]
     vec_length = ((pos2[0] - pos1[0])**2 + (pos2[1] - pos1[1])**2)**0.5
@@ -76,7 +76,7 @@ def check_circle_collision(pos1, pos2, rad):
 
 def circle_collision_handler(pos1, pos2, vel1, vel2, rad=2.0):
     if check_circle_collision(pos1, pos2, rad):
-        return meth(pos1, pos2, vel1, vel2)
+        return calculate(pos1, pos2, vel1, vel2)
     return vel1, vel2
 
 def check_wall_collision(pos, bounds):
