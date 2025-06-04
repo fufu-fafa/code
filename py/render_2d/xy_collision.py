@@ -6,14 +6,19 @@ import random
 
 # adjustment
 circle_speed = 0.8
-c1_x_startspeed = circle_speed - random.random() * circle_speed
-c1_y_startspeed = circle_speed - c1_x_startspeed
-c2_x_startspeed = circle_speed - random.random() * circle_speed
-c2_y_startspeed = circle_speed - c2_x_startspeed
-c3_x_startspeed = circle_speed - random.random() * circle_speed
-c3_y_startspeed = circle_speed - c3_x_startspeed
-c4_x_startspeed = circle_speed - random.random() * circle_speed
-c4_y_startspeed = circle_speed - c4_x_startspeed
+c1_x_speed = circle_speed - random.random() * circle_speed
+c1_y_speed = circle_speed - c1_x_speed
+c2_x_speed = circle_speed - random.random() * circle_speed
+c2_y_speed = circle_speed - c2_x_speed
+c3_x_speed = circle_speed - random.random() * circle_speed
+c3_y_speed = circle_speed - c3_x_speed
+c4_x_speed = circle_speed - random.random() * circle_speed
+c4_y_speed = circle_speed - c4_x_speed
+
+c_vels = [[c1_x_speed, c1_y_speed],
+         [c2_x_speed, c2_y_speed],
+         [c3_x_speed, c3_y_speed],
+         [c4_x_speed, c4_y_speed]]
 
 # setup
 fig, ax = plt.subplots()
@@ -22,22 +27,15 @@ ax.set_xlim(-20, 20)
 ax.set_ylim(-20, 20)
 ax.axis('on')
 
-c1_pos = [random.randint(0, 17), random.randint(0, 17)]
-c1_vel = [c1_x_startspeed, c1_y_startspeed]
+c_poss = [[random.randint(0, 17), random.randint(0, 17)],
+          [random.randint(-17, 0), random.randint(0, 17)],
+          [random.randint(-17, 0), random.randint(-17, 0)],
+          [random.randint(0, 17), random.randint(-17, 0)]]
 
-c2_pos = [random.randint(-17, 0), random.randint(0, 17)]
-c2_vel = [c2_x_startspeed, c2_y_startspeed]
-
-c3_pos = [random.randint(-17, 0), random.randint(-17, 0)]
-c3_vel = [c3_x_startspeed, c3_y_startspeed]
-
-c4_pos = [random.randint(0, 17), random.randint(-17, 0)]
-c4_vel = [c4_x_startspeed, c4_y_startspeed]
-
-c1 = patches.Circle((c1_pos[0], c1_pos[1]), 2.0, color='red', alpha=0.6)
-c2 = patches.Circle((c2_pos[0], c2_pos[1]), 2.0, color='green', alpha=0.6)
-c3 = patches.Circle((c3_pos[0], c3_pos[1]), 2.0, color='blue', alpha=0.6)
-c4 = patches.Circle((c4_pos[0], c4_pos[1]), 2.0, color='black', alpha=0.6)
+c1 = patches.Circle((c_poss[0]), 2.0, color='red', alpha=0.6)
+c2 = patches.Circle((c_poss[1]), 2.0, color='green', alpha=0.6)
+c3 = patches.Circle((c_poss[2]), 2.0, color='blue', alpha=0.6)
+c4 = patches.Circle((c_poss[3]), 2.0, color='black', alpha=0.6)
 
 ax.add_patch(c1)
 ax.add_patch(c2)
@@ -96,31 +94,24 @@ def wall_collision_handler(pos, vel, bounds=17.8):
     return temp_vel
 
 def update(frame):
-    global c1_pos, c1_vel, c2_pos, c2_vel, c3_pos, c3_vel, c4_pos, c4_vel
+    global c_poss, c_vels
 
     # handle all unique pair of circle's collision
-    c1_vel, c2_vel = circle_collision_handler(c1_pos, c2_pos, c1_vel, c2_vel)
-    c1_vel, c3_vel = circle_collision_handler(c1_pos, c3_pos, c1_vel, c3_vel)
-    c1_vel, c4_vel = circle_collision_handler(c1_pos, c4_pos, c1_vel, c4_vel)
-    c2_vel, c3_vel = circle_collision_handler(c2_pos, c3_pos, c2_vel, c3_vel)
-    c2_vel, c4_vel = circle_collision_handler(c2_pos, c4_pos, c2_vel, c4_vel)
-    c3_vel, c4_vel = circle_collision_handler(c3_pos, c4_pos, c3_vel, c4_vel)
+    c_vels[0], c_vels[1] = circle_collision_handler(c_poss[0], c_poss[1], c_vels[0], c_vels[1])
+    c_vels[0], c_vels[2] = circle_collision_handler(c_poss[0], c_poss[2], c_vels[0], c_vels[2])
+    c_vels[0], c_vels[3] = circle_collision_handler(c_poss[0], c_poss[3], c_vels[0], c_vels[3])
+    c_vels[1], c_vels[2] = circle_collision_handler(c_poss[1], c_poss[2], c_vels[1], c_vels[2])
+    c_vels[1], c_vels[3] = circle_collision_handler(c_poss[1], c_poss[3], c_vels[1], c_vels[3])
+    c_vels[2], c_vels[3] = circle_collision_handler(c_poss[2], c_poss[3], c_vels[2], c_vels[3])
 
-    c1_vel = wall_collision_handler(c1_pos, c1_vel)
-    c2_vel = wall_collision_handler(c2_pos, c2_vel)
-    c3_vel = wall_collision_handler(c3_pos, c3_vel)
-    c4_vel = wall_collision_handler(c4_pos, c4_vel)
+    for x in range(4):
+        c_vels[x] = wall_collision_handler(c_poss[x], c_vels[x])
+        c_poss[x] = [c_poss[x][0] + c_vels[x][0], c_poss[x][1] + c_vels[x][1]]
 
-    for n in range(2):
-        c1_pos[n] = c1_pos[n] + c1_vel[n]
-        c2_pos[n] = c2_pos[n] + c2_vel[n]
-        c3_pos[n] = c3_pos[n] + c3_vel[n]
-        c4_pos[n] = c4_pos[n] + c4_vel[n]
-
-    c1.set_center(c1_pos)
-    c2.set_center(c2_pos)
-    c3.set_center(c3_pos)
-    c4.set_center(c4_pos)
+    c1.set_center(c_poss[0])
+    c2.set_center(c_poss[1])
+    c3.set_center(c_poss[2])
+    c4.set_center(c_poss[3])
     return c1, c2, c3, c4
 
 ani = FuncAnimation(fig, update, frames=np.arange(0, 200), interval=20, blit=True)
