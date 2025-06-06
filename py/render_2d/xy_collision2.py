@@ -5,8 +5,8 @@ import numpy as np
 import random
 
 # adjustment
-frame_max_col = 2
-circle_speed = 0.75
+frame_max_col = 2       # max collision in one frame
+circle_speed = 1.0
 c1_x_speed = circle_speed - random.random() * circle_speed
 c1_y_speed = circle_speed - c1_x_speed
 c2_x_speed = circle_speed - random.random() * circle_speed
