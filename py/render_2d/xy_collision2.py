@@ -5,6 +5,7 @@ import numpy as np
 import random
 
 # adjustment
+frame_max_col = 2
 circle_speed = 0.75
 c1_x_speed = circle_speed - random.random() * circle_speed
 c1_y_speed = circle_speed - c1_x_speed
@@ -42,6 +43,13 @@ ax.add_patch(c2)
 ax.add_patch(c3)
 ax.add_patch(c4)
 
+def restart():
+    new_poss = [[random.randint(0, 17), random.randint(0, 17)],
+              [random.randint(-17, 0), random.randint(0, 17)],
+              [random.randint(-17, 0), random.randint(-17, 0)],
+              [random.randint(0, 17), random.randint(-17, 0)]]
+    return new_poss
+
 def calculate(pos1, pos2, vel1, vel2):
     # vector12 which is circle 1 -> circle 2 and also the collision axis
     vector_12 = [pos2[0] - pos1[0], pos2[1] - pos1[1]]
@@ -70,40 +78,37 @@ def calculate(pos1, pos2, vel1, vel2):
                 v2_proj_after * normalized_vector[1] + v2t * pnv[1]]
     return v1_final, v2_final
 
-def check_circle_collision(pos1, pos2, rad):
+def check_circle_collision(pos1, pos2, rad=2.0):
     distance = (pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2
     return distance <= (2 * (rad + 0.3))**2      # 0.3 is margin for error
 
-def circle_collision_handler(pos1, pos2, vel1, vel2, rad=2.0):
-    if check_circle_collision(pos1, pos2, rad):
-        return calculate(pos1, pos2, vel1, vel2)
-    return vel1, vel2
-
-def check_wall_collision(pos, bounds):
+def check_wall_collision(pos, bounds=17.8):
     temp = []
     for n in range(2):
         temp.append(pos[n] <= -bounds or pos[n] >= bounds)
     return temp
 
-def wall_collision_handler(pos, vel, bounds=17.8):
-    temp_vel = vel[:]
-    collision_list = check_wall_collision(pos, bounds)
-    for n in range(2):
-        if collision_list[n]:
-            temp_vel[n] = -vel[n]
-    return temp_vel
-
 def update(frame):
     global c_poss, c_vels
+    collision_count = 0
 
     # handle all unique pair of circle's collision
     pairs = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
     for i, j in pairs:
-        c_vels[i], c_vels[j] = circle_collision_handler(c_poss[i], c_poss[j], c_vels[i], c_vels[j])
+        if check_circle_collision(c_poss[i], c_poss[j], 2.0):
+            c_vels[i], c_vels[j] = calculate(c_poss[i], c_poss[j], c_vels[i], c_vels[j])
+            collision_count += 1
 
     for x in range(4):
-        c_vels[x] = wall_collision_handler(c_poss[x], c_vels[x])
+        wall_collision = check_wall_collision(c_poss[x], 17.8)
+        for n in range(2):
+            if wall_collision[n]:
+                c_vels[x][n] = -c_vels[x][n]
+                collision_count += 1
         c_poss[x] = [c_poss[x][0] + c_vels[x][0], c_poss[x][1] + c_vels[x][1]]
+
+    if collision_count > frame_max_col:
+        c_poss = restart()
 
     c1.set_center(c_poss[0])
     c2.set_center(c_poss[1])
