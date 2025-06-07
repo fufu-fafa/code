@@ -5,8 +5,8 @@ import numpy as np
 import random
 
 # adjustment
-frame_max_col = 2       # max collision in one frame
-circle_speed = 1.0
+frame_max_col = 3       # max collision in one frame
+circle_speed = 1.4
 c1_x_speed = circle_speed - random.random() * circle_speed
 c1_y_speed = circle_speed - c1_x_speed
 c2_x_speed = circle_speed - random.random() * circle_speed
@@ -17,9 +17,9 @@ c4_x_speed = circle_speed - random.random() * circle_speed
 c4_y_speed = circle_speed - c4_x_speed
 
 c_vels = [[c1_x_speed, c1_y_speed],
-         [c2_x_speed, c2_y_speed],
-         [c3_x_speed, c3_y_speed],
-         [c4_x_speed, c4_y_speed]]
+          [c2_x_speed, c2_y_speed],
+          [c3_x_speed, c3_y_speed],
+          [c4_x_speed, c4_y_speed]]
 
 c_poss = [[random.randint(0, 17), random.randint(0, 17)],
           [random.randint(-17, 0), random.randint(0, 17)],
@@ -45,18 +45,27 @@ ax.add_patch(c4)
 
 def restart():
     new_poss = [[random.randint(0, 17), random.randint(0, 17)],
-              [random.randint(-17, 0), random.randint(0, 17)],
-              [random.randint(-17, 0), random.randint(-17, 0)],
-              [random.randint(0, 17), random.randint(-17, 0)]]
+                [random.randint(-17, 0), random.randint(0, 17)],
+                [random.randint(-17, 0), random.randint(-17, 0)],
+                [random.randint(0, 17), random.randint(-17, 0)]]
     return new_poss
 
 def calculate(pos1, pos2, vel1, vel2):
-    # vector12 which is circle 1 -> circle 2 and also the collision axis
+    # circle2 relative position and speed to circle1
     vector_12 = [pos2[0] - pos1[0], pos2[1] - pos1[1]]
+    relative_vel_12 = [vel2[0] - vel1[0], vel2[1] - vel1[1]]
+
+    # the distance of circle1 to circle2 (always positive)
     vec_length = ((pos2[0] - pos1[0])**2 + (pos2[1] - pos1[1])**2)**0.5
 
     # normalize vector12 (make the length = 1)
     normalized_vector = [vector_12[0] / vec_length, vector_12[1] / vec_length]
+
+    # handle if the circles are moving apart
+    relative_vel_along_normal = (relative_vel_12[0] * normalized_vector[0] +
+                                 relative_vel_12[1] * normalized_vector[1])
+    if relative_vel_along_normal > 0:
+        return vel1, vel2
 
     # projects circles vector to collision point 
     v1_proj = vel1[0] * normalized_vector[0] + vel1[1] * normalized_vector[1]
