@@ -7,14 +7,14 @@ import random
 # adjustment
 frame_max_col = 3       # max collision in one frame
 circle_speed = 1.4
-c1_x_speed = circle_speed - random.random() * circle_speed
-c1_y_speed = circle_speed - c1_x_speed
+c1_x_speed = (circle_speed - random.random() * circle_speed) * -1
+c1_y_speed = (circle_speed * -1 - c1_x_speed) * -1
 c2_x_speed = circle_speed - random.random() * circle_speed
-c2_y_speed = circle_speed - c2_x_speed
+c2_y_speed = (circle_speed - c2_x_speed) * -1
 c3_x_speed = circle_speed - random.random() * circle_speed
 c3_y_speed = circle_speed - c3_x_speed
-c4_x_speed = circle_speed - random.random() * circle_speed
-c4_y_speed = circle_speed - c4_x_speed
+c4_x_speed = (circle_speed - random.random() * circle_speed) * -1
+c4_y_speed = circle_speed * -1 - c4_x_speed
 
 c_vels = [[c1_x_speed, c1_y_speed],
           [c2_x_speed, c2_y_speed],
