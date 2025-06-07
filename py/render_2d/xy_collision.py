@@ -5,51 +5,32 @@ import numpy as np
 import random
 
 # adjustment
-frame_max_col = 3       # max collision in one frame
+frame_max_col = 5       # max collision in one frame
 circle_speed = 1.4
-c1_x_speed = (circle_speed - random.random() * circle_speed) * -1
-c1_y_speed = (circle_speed * -1 - c1_x_speed) * -1
-c2_x_speed = circle_speed - random.random() * circle_speed
-c2_y_speed = (circle_speed - c2_x_speed) * -1
-c3_x_speed = circle_speed - random.random() * circle_speed
-c3_y_speed = circle_speed - c3_x_speed
-c4_x_speed = (circle_speed - random.random() * circle_speed) * -1
-c4_y_speed = circle_speed * -1 - c4_x_speed
 
-c_vels = [[c1_x_speed, c1_y_speed],
-          [c2_x_speed, c2_y_speed],
-          [c3_x_speed, c3_y_speed],
-          [c4_x_speed, c4_y_speed]]
+def start_vel(circle_speed, x=False, y=False):
+    temp_vel = []
+    temp_vel.append(circle_speed - random.random() * circle_speed)
+    temp_vel.append(circle_speed - temp_vel[0])
+    if x:
+        temp_vel[0] = temp_vel[0] * -1
+    if y:
+        temp_vel[1] = temp_vel[1] * -1
+    return temp_vel
 
-c_poss = [[random.randint(0, 17), random.randint(0, 17)],
-          [random.randint(-17, 0), random.randint(0, 17)],
-          [random.randint(-17, 0), random.randint(-17, 0)],
-          [random.randint(0, 17), random.randint(-17, 0)]]
-
-# setup
-fig, ax = plt.subplots()
-fig.canvas.manager.set_window_title('collision simulation')
-ax.set_aspect('equal')
-ax.set_xlim(-20, 20)
-ax.set_ylim(-20, 20)
-ax.axis('on')
-
-c1 = patches.Circle((c_poss[0]), 2.0, color='red', alpha=0.6)
-c2 = patches.Circle((c_poss[1]), 2.0, color='green', alpha=0.6)
-c3 = patches.Circle((c_poss[2]), 2.0, color='blue', alpha=0.6)
-c4 = patches.Circle((c_poss[3]), 2.0, color='black', alpha=0.6)
-
-ax.add_patch(c1)
-ax.add_patch(c2)
-ax.add_patch(c3)
-ax.add_patch(c4)
-
-def restart():
+def generate_positions():
     new_poss = [[random.randint(0, 17), random.randint(0, 17)],
                 [random.randint(-17, 0), random.randint(0, 17)],
                 [random.randint(-17, 0), random.randint(-17, 0)],
                 [random.randint(0, 17), random.randint(-17, 0)]]
     return new_poss
+
+def generate_velocities():
+    new_vels = [start_vel(circle_speed, True, True),
+                start_vel(circle_speed, False, True),
+                start_vel(circle_speed, False, False),
+                start_vel(circle_speed, True, False)]
+    return new_vels
 
 def calculate(pos1, pos2, vel1, vel2):
     # circle2 relative position and speed to circle1
@@ -118,13 +99,35 @@ def update(frame):
         c_poss[x] = [c_poss[x][0] + c_vels[x][0], c_poss[x][1] + c_vels[x][1]]
 
     if collision_count > frame_max_col:
-        c_poss = restart()
+        c_poss = generate_positions()
+        c_vels = generate_velocities()
 
     c1.set_center(c_poss[0])
     c2.set_center(c_poss[1])
     c3.set_center(c_poss[2])
     c4.set_center(c_poss[3])
     return c1, c2, c3, c4
+
+# setup
+c_poss = generate_positions()
+c_vels = generate_velocities()
+
+fig, ax = plt.subplots()
+fig.canvas.manager.set_window_title('collision simulation')
+ax.set_aspect('equal')
+ax.set_xlim(-20, 20)
+ax.set_ylim(-20, 20)
+ax.axis('on')
+
+c1 = patches.Circle((c_poss[0]), 2.0, color='red', alpha=0.6)
+c2 = patches.Circle((c_poss[1]), 2.0, color='green', alpha=0.6)
+c3 = patches.Circle((c_poss[2]), 2.0, color='blue', alpha=0.6)
+c4 = patches.Circle((c_poss[3]), 2.0, color='black', alpha=0.6)
+
+ax.add_patch(c1)
+ax.add_patch(c2)
+ax.add_patch(c3)
+ax.add_patch(c4)
 
 ani = FuncAnimation(fig, update, frames=np.arange(0, 200), interval=20, blit=True)
 plt.show()
