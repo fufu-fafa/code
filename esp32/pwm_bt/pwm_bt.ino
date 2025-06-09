@@ -1,7 +1,10 @@
 #include "BluetoothSerial.h"
 
 BluetoothSerial SerialBT;
-int len = 4;
+int corrected;
+int len = 5;
+int minVal = 58;
+float gammaVal = 2.2;
 
 void setup() {
     pinMode(25, OUTPUT);
@@ -22,13 +25,14 @@ void loop() {
         }
     }
 
-    for (int x = 0; x <= 255; x++) {
-        analogWrite(25, x);
+    for (int x = minVal; x <= 255; x++) {
+        corrected = pow((float)x / 255.0, gammaVal) * 255;
+        analogWrite(25, corrected);
         delay(len);
     }
-
-    for (int y = 255; y >= 0; y--) {
-        analogWrite(25, y);
+    for (int y = 255; y >= minVal; y--) {
+        corrected = pow((float)y / 255.0, gammaVal) * 255;
+        analogWrite(25, corrected);
         delay(len);
     }
 }
