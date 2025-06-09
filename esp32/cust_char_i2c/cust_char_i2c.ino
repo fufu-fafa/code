@@ -5,7 +5,7 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2); // Adjust if needed
 BluetoothSerial SerialBT;
 
-String header;
+String header = " header line";
 String text = " change text via serial bluetooth terminal";
 String scrollText;
 int scrollIndex = 0;
@@ -34,7 +34,7 @@ void setup() {
 
   lcd.setCursor(0, 0);
   lcd.write(byte(0));
-  lcd.print(" header line");
+  lcd.print(header);
   lcd.setCursor(15, 0);
   lcd.write(byte(0));
 
