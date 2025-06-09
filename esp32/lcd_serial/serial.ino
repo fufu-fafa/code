@@ -3,8 +3,8 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD with I2C address 0x27
 
-String var1 = "config with BT:";
-String var2 = "ESP32_LCD_BT"; 
+String var1 = "config with serial:";
+String var2 = "/dev/tty.usbserial-0001"; 
 
 void updateLCD() {
     lcd.clear();
@@ -25,14 +25,8 @@ void loop() {
     if (Serial.available()) {
         String receivedText = Serial.readStringUntil('\n');
         receivedText.trim();
-
-        if (receivedText.startsWith("1.")) {
-            var1 = receivedText.substring(2);
-            Serial.println("Updated var1: " + var1);
-        } else if (receivedText.startsWith("2.")) {
-            var2 = receivedText.substring(2);
-            Serial.println("Updated var2: " + var2);
-        }
+        if (receivedText.startsWith("1.")) var1 = receivedText.substring(2);
+        else if (receivedText.startsWith("2.")) var2 = receivedText.substring(2);
         updateLCD();
     }
 }
