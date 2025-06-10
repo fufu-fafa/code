@@ -9,7 +9,19 @@ mirror = True
 use_lcd = False
 verbose_eye = True
 verbose_mouth = True
+
 file_location = './shape_predictor_68_face_landmarks.dat'
+EAR_THRESHOLD = 0.25
+CONSEC_FRAMES = 36
+MAR_THRESHOLD = 0.3
+YAWN_FRAMES = 10
+
+counter = 0
+yawn_counter = 0
+ear = 0
+mar = 0
+mouth_state = 0
+eye_state = 0
 
 # esp32 communication port
 if use_lcd:
@@ -17,12 +29,17 @@ if use_lcd:
     baud = 115200
     serial_esp32 = serial.Serial(port, baud, timeout=1)
 
-def line(number):
+def line(number: int):
     return number * 30
 
-def send_message(is_eye, message, state):
+def send_message(is_eye: bool, message: int, state: int):
     if message == state:
         return state
+    if message == 0:
+        serial_esp32.write(b"")
+        state = 0
+        return state
+
     if is_eye:
         # prefix '1.' changing line 1
         if message == 1:
@@ -56,19 +73,6 @@ def mouth_aspect_ratio(mouth):
     C = distance.euclidean(mouth[15], mouth[17])
     D = distance.euclidean(mouth[12], mouth[16])
     return (A + B + C) / (3.0 * D)
-
-EAR_THRESHOLD = 0.25
-CONSEC_FRAMES = 36
-
-MAR_THRESHOLD = 0.3
-YAWN_FRAMES = 10
-
-counter = 0
-yawn_counter = 0
-ear = 0
-mar = 0
-mouth_state = 0
-eye_state = 0
 
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(file_location)
@@ -127,6 +131,8 @@ while True:
                 counter = 0
                 cv2.putText(frame, "not sleepy", (10, line(4)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        else:
+            eye_state = send_message(True, 0, eye_state)
 
         if verbose_mouth:
             mouthHull = cv2.convexHull(mouth)
@@ -152,6 +158,8 @@ while True:
                 yawn_counter = 0
                 cv2.putText(frame, "not yawning", (10, line(2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        else:
+            mouth_state = send_message(False, 0, mouth_state)
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
