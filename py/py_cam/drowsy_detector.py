@@ -132,8 +132,6 @@ while True:
                 counter = 0
                 cv2.putText(frame, "not sleepy", (10, line(4)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-        else:
-            eye_state = send_message(True, 0, eye_state)
 
         if verbose_mouth:
             mouthHull = cv2.convexHull(mouth)
@@ -159,8 +157,6 @@ while True:
                 yawn_counter = 0
                 cv2.putText(frame, "not yawning", (10, line(2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-        else:
-            mouth_state = send_message(False, 0, mouth_state)
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
