@@ -1,18 +1,19 @@
 import cv2
 import dlib
+import time
 import serial
 from scipy.spatial import distance
 from imutils import face_utils
 
 # config
 mirror = True
-use_lcd = False
+use_lcd = True
 verbose_eye = True
 verbose_mouth = True
 
 file_location = './shape_predictor_68_face_landmarks.dat'
 EAR_THRESHOLD = 0.25
-CONSEC_FRAMES = 36
+CONSEC_FRAMES = 32
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
 
@@ -20,24 +21,24 @@ counter = 0
 yawn_counter = 0
 ear = 0
 mar = 0
-mouth_state = 0
 eye_state = 0
+mouth_state = 0
 
 # esp32 communication port
 if use_lcd:
     port = '/dev/tty.usbserial-0001'
     baud = 115200
     serial_esp32 = serial.Serial(port, baud, timeout=1)
+    if not verbose_eye:
+        serial_esp32.write(b"1. ")
+    if not verbose_mouth:
+        serial_esp32.write(b"2. ")
 
 def line(number: int):
     return number * 30
 
 def send_message(is_eye: bool, message: int, state: int):
     if message == state:
-        return state
-    if message == 0:
-        serial_esp32.write(b"")
-        state = 0
         return state
 
     if is_eye:
