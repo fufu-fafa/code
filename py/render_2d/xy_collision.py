@@ -109,25 +109,28 @@ def update(frame):
     return c1, c2, c3, c4
 
 # setup
-c_poss = generate_positions()
-c_vels = generate_velocities()
+try:
+    c_poss = generate_positions()
+    c_vels = generate_velocities()
 
-fig, ax = plt.subplots()
-fig.canvas.manager.set_window_title('collision simulation')
-ax.set_aspect('equal')
-ax.set_xlim(-20, 20)
-ax.set_ylim(-20, 20)
-ax.axis('on')
+    fig, ax = plt.subplots()
+    fig.canvas.manager.set_window_title('collision simulation')
+    ax.set_aspect('equal')
+    ax.set_xlim(-20, 20)
+    ax.set_ylim(-20, 20)
+    ax.axis('on')
 
-c1 = patches.Circle((c_poss[0]), 2.0, color='red', alpha=0.6)
-c2 = patches.Circle((c_poss[1]), 2.0, color='green', alpha=0.6)
-c3 = patches.Circle((c_poss[2]), 2.0, color='blue', alpha=0.6)
-c4 = patches.Circle((c_poss[3]), 2.0, color='black', alpha=0.6)
+    c1 = patches.Circle((c_poss[0]), 2.0, color='red', alpha=0.6)
+    c2 = patches.Circle((c_poss[1]), 2.0, color='green', alpha=0.6)
+    c3 = patches.Circle((c_poss[2]), 2.0, color='blue', alpha=0.6)
+    c4 = patches.Circle((c_poss[3]), 2.0, color='black', alpha=0.6)
 
-ax.add_patch(c1)
-ax.add_patch(c2)
-ax.add_patch(c3)
-ax.add_patch(c4)
+    ax.add_patch(c1)
+    ax.add_patch(c2)
+    ax.add_patch(c3)
+    ax.add_patch(c4)
 
-ani = FuncAnimation(fig, update, frames=np.arange(0, 200), interval=20, blit=True)
-plt.show()
+    ani = FuncAnimation(fig, update, frames=np.arange(0, 200), interval=20, blit=True)
+    plt.show()
+except KeyboardInterrupt:
+    print("\nexiting..")
