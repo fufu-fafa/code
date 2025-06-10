@@ -6,7 +6,7 @@ from imutils import face_utils
 
 # config
 mirror = True
-use_lcd = True
+use_lcd = False
 verbose_eye = True
 verbose_mouth = True
 file_location = './shape_predictor_68_face_landmarks.dat'
@@ -109,19 +109,19 @@ while True:
             cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, line(3)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
-            if ear < EAR_THRESHOLD:
+            if (ear < EAR_THRESHOLD) and (counter >= CONSEC_FRAMES):
+                if use_lcd:
+                    eye_state = send_message(True, 3, eye_state)
+                cv2.putText(frame, "SLEEPY!", (10, line(4)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            if (ear < EAR_THRESHOLD) and not (counter >= CONSEC_FRAMES):
                 counter += 1
-                if counter >= CONSEC_FRAMES:
-                    if use_lcd:
-                        eye_state = send_message(True, 3, eye_state)
-                    cv2.putText(frame, "SLEEPY!", (10, line(4)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                else:
-                    if use_lcd:
-                        eye_state = send_message(True, 2, eye_state)
-                    cv2.putText(frame, "possibly sleepy", (10, line(4)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-            else:
+                if use_lcd:
+                    eye_state = send_message(True, 2, eye_state)
+                cv2.putText(frame, "possibly sleepy", (10, line(4)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+
+            if not (ear < EAR_THRESHOLD) and not (counter >= CONSEC_FRAMES):
                 if use_lcd:
                     eye_state = send_message(True, 1, eye_state)
                 counter = 0
@@ -134,19 +134,19 @@ while True:
             cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (10, line(1)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
-            if mar > MAR_THRESHOLD:
+            if (mar > MAR_THRESHOLD) and (yawn_counter >= YAWN_FRAMES):
+                if use_lcd:
+                    mouth_state = send_message(False, 3, mouth_state)
+                cv2.putText(frame, "YAWNING!", (10, line(2)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            if (mar > MAR_THRESHOLD) and not (yawn_counter >= YAWN_FRAMES):
                 yawn_counter += 1
-                if yawn_counter >= YAWN_FRAMES:
-                    if use_lcd:
-                        mouth_state = send_message(False, 3, mouth_state)
-                    cv2.putText(frame, "YAWNING!", (10, line(2)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                else:
-                    if use_lcd:
-                        mouth_state = send_message(False, 2, mouth_state)
-                    cv2.putText(frame, "possibly yawning", (10, line(2)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-            else:
+                if use_lcd:
+                    mouth_state = send_message(False, 2, mouth_state)
+                cv2.putText(frame, "possibly yawning", (10, line(2)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+
+            if not (mar > MAR_THRESHOLD) and not (yawn_counter >= YAWN_FRAMES):
                 if use_lcd:
                     mouth_state = send_message(False, 1, mouth_state)
                 yawn_counter = 0
