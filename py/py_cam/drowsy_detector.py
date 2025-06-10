@@ -118,14 +118,14 @@ while True:
                     eye_state = send_message(True, 3, eye_state)
                 cv2.putText(frame, "SLEEPY!", (10, line(4)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            if (ear < EAR_THRESHOLD) and not (counter >= CONSEC_FRAMES):
+            elif (ear < EAR_THRESHOLD):
                 counter += 1
                 if use_lcd:
                     eye_state = send_message(True, 2, eye_state)
                 cv2.putText(frame, "possibly sleepy", (10, line(4)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
-            if not (ear < EAR_THRESHOLD) and not (counter >= CONSEC_FRAMES):
+            else:
                 if use_lcd:
                     eye_state = send_message(True, 1, eye_state)
                 counter = 0
@@ -145,14 +145,14 @@ while True:
                     mouth_state = send_message(False, 3, mouth_state)
                 cv2.putText(frame, "YAWNING!", (10, line(2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            if (mar > MAR_THRESHOLD) and not (yawn_counter >= YAWN_FRAMES):
+            elif (mar > MAR_THRESHOLD):
                 yawn_counter += 1
                 if use_lcd:
                     mouth_state = send_message(False, 2, mouth_state)
                 cv2.putText(frame, "possibly yawning", (10, line(2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
-            if not (mar > MAR_THRESHOLD) and not (yawn_counter >= YAWN_FRAMES):
+            else:
                 if use_lcd:
                     mouth_state = send_message(False, 1, mouth_state)
                 yawn_counter = 0
