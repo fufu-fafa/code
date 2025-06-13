@@ -1,13 +1,12 @@
 import sys
 import cv2
 import dlib
-import time
 import serial
 from scipy.spatial import distance
 from imutils import face_utils
 
 # '0' for laptop camera, anything else for external
-camera_used = 1
+camera_used = 0
 
 # config
 mirror = True
@@ -100,7 +99,7 @@ except Exception as e:
     if "landmarks.dat" in str(e):
         print("\nunable to open facial detector model, check file location")
     else:
-        print("\nfailed to initialize, check config")
+        print("\nfailed to initialize, check config and imports")
     sys.exit(1)
 
 while True:
