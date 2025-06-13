@@ -6,7 +6,7 @@ import random
 
 # adjustment
 frame_max_col = 5       # max collision in one frame
-circle_speed = 1.0
+circle_speed = 0.8
 
 def start_vel(circle_speed, x=False, y=False):
     temp_vel = []
