@@ -1,3 +1,4 @@
+import sys
 import cv2
 import dlib
 import time
@@ -5,9 +6,12 @@ import serial
 from scipy.spatial import distance
 from imutils import face_utils
 
+# '0' for laptop camera, anything else for external
+camera_used = 1
+
 # config
 mirror = True
-use_lcd = True
+use_lcd = False
 verbose_eye = True
 verbose_mouth = True
 
@@ -26,9 +30,14 @@ mouth_state = 0
 
 # esp32 communication port
 if use_lcd:
-    port = '/dev/tty.usbserial-0001'
-    baud = 115200
-    serial_esp32 = serial.Serial(port, baud, timeout=1)
+    try:
+        port = '/dev/tty.usbserial-0001'
+        baud = 115200
+        serial_esp32 = serial.Serial(port, baud, timeout=1)
+    except Exception:
+        print("\nerror using esp32 communication port")
+        sys.exit(1)
+
     if not verbose_eye:
         serial_esp32.write(b"1. ")
     if not verbose_mouth:
@@ -75,19 +84,30 @@ def mouth_aspect_ratio(mouth):
     D = distance.euclidean(mouth[12], mouth[16])
     return (A + B + C) / (3.0 * D)
 
-detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor(file_location)
+# check for common errors
+try:
+    detector = dlib.get_frontal_face_detector()
+    predictor = dlib.shape_predictor(file_location)
 
-(lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-(rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
-(mStart, mEnd) = face_utils.FACIAL_LANDMARKS_IDXS["mouth"]
+    (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+    (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+    (mStart, mEnd) = face_utils.FACIAL_LANDMARKS_IDXS["mouth"]
 
-cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(camera_used)
+    ret, frame = cap.read()
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+except Exception as e:
+    if "landmarks.dat" in str(e):
+        print("\nunable to open facial detector model, check file location")
+    else:
+        print("\nfailed to initialize, check config")
+    sys.exit(1)
 
 while True:
     ret, frame = cap.read()
     if mirror:
         frame = cv2.flip(frame, 1)
+
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     faces = detector(gray)
