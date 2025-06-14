@@ -15,7 +15,7 @@ int is_valid_op(const char in_char, const char valid_char[], int arr_len) {
 double get_num() {
     double temp;
 
-    while (true) {
+    while (1) {
         int is_valid = scanf("%lf", &temp);
         clear_stdin();
         if (is_valid == 1) return temp;
@@ -26,7 +26,7 @@ double get_num() {
 char get_op() {
     const char valid_op[4] = {'+', '-', '*', '/'};
     char temp;
-    while (true) {
+    while (1) {
         scanf("%c", &temp);
         clear_stdin();
         if (is_valid_op(temp, valid_op, 4)) return temp;
