@@ -10,16 +10,16 @@ camera_used = 0
 
 # config
 mirror = True
-use_lcd = False
+use_lcd = True
 verbose_mouth = True
 
 file_location = './shape_predictor_68_face_landmarks.dat'
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
 
-yawn_counter = 0
 mar = 0
 mouth_state = 0
+yawn_counter = 0
 
 # esp32 communication port
 if use_lcd:
@@ -55,6 +55,23 @@ def mouth_aspect_ratio(mouth):
     D = distance.euclidean(mouth[12], mouth[16])
     return (A + B + C) / (3.0 * D)
 
+def draw_mouth(frame, mouth, mar, conditions):
+    mouthHull = cv2.convexHull(mouth)
+    cv2.drawContours(frame, [mouthHull], -1, (0, 255, 255), 1)
+    cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (10, line(1)),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+
+    if conditions[0] and conditions[1]:
+        cv2.putText(frame, "YAWNING!", (10, line(2)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    elif conditions[0]:
+        cv2.putText(frame, "possibly yawning", (10, line(2)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+
+    else:
+        cv2.putText(frame, "not yawning", (10, line(2)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
 # check for common errors
 try:
     detector = dlib.get_frontal_face_detector()
@@ -79,41 +96,32 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     faces = detector(gray)
-    for face in faces:
-        shape = predictor(gray, face)
+    if len(faces) > 0:
+        shape = predictor(gray, faces[0])
         shape = face_utils.shape_to_np(shape)
 
-        # Mouth
         mouth = shape[mStart:mEnd]
         mar = mouth_aspect_ratio(mouth)
+        conditions = [mar > MAR_THRESHOLD, yawn_counter >= YAWN_FRAMES]
+
+        if conditions[0] and conditions[1]:
+            if use_lcd:
+                mouth_state = send_message(3, mouth_state)
+        elif conditions[0]:
+            yawn_counter += 1
+            if use_lcd:
+                mouth_state = send_message(2, mouth_state)
+        else:
+            yawn_counter = 0
+            if use_lcd:
+                mouth_state = send_message(1, mouth_state)
 
         if verbose_mouth:
-            mouthHull = cv2.convexHull(mouth)
-            cv2.drawContours(frame, [mouthHull], -1, (0, 255, 255), 1)
-            cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (10, line(1)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-
-            if (mar > MAR_THRESHOLD) and (yawn_counter >= YAWN_FRAMES):
-                if use_lcd:
-                    mouth_state = send_message(3, mouth_state)
-                cv2.putText(frame, "YAWNING!", (10, line(2)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            elif (mar > MAR_THRESHOLD):
-                yawn_counter += 1
-                if use_lcd:
-                    mouth_state = send_message(2, mouth_state)
-                cv2.putText(frame, "possibly yawning", (10, line(2)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-
-            else:
-                if use_lcd:
-                    mouth_state = send_message(1, mouth_state)
-                yawn_counter = 0
-                cv2.putText(frame, "not yawning", (10, line(2)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            draw_mouth(frame, mouth, mar, conditions)
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        serial_esp32.close()
         break
 
 cap.release()
