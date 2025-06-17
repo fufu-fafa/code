@@ -10,13 +10,10 @@ camera_used = 0
 
 # config
 mirror = True
-use_lcd = True
-verbose_eye = True
+use_lcd = False
 verbose_mouth = True
 
 file_location = './shape_predictor_68_face_landmarks.dat'
-EAR_THRESHOLD = 0.25
-CONSEC_FRAMES = 32
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
 
@@ -37,44 +34,22 @@ if use_lcd:
         print("\nerror using esp32 communication port")
         sys.exit(1)
 
-    if not verbose_eye:
-        serial_esp32.write(b"1. ")
-    if not verbose_mouth:
-        serial_esp32.write(b"2. ")
-
 def line(number: int):
     return number * 30
 
-def send_message(is_eye: bool, message: int, state: int):
+def send_message(message: int, state: int):
     if message == state:
         return state
-
-    if is_eye:
-        # prefix '1.' changing line 1
-        if message == 1:
-            output = "1.awake eyes\n"
-        elif message == 2:
-            output = "1.possibly drowsy\n"
-        else:
-            output = "1.DROWSY EYES\n"
+    if message == 1:
+        output = "1.normal mouth\n"
+    elif message == 2:
+        output = "1.possible yawning\n"
     else:
-        # prefix '2.' changing line 2
-        if message == 1:
-            output = "2.normal mouth\n"
-        elif message == 2:
-            output = "2.possible yawning\n"
-        else:
-            output = "2.YAWNING\n"
+        output = "1.YAWNING\n"
     send = output.encode('utf-8')
     serial_esp32.write(send)
     state = message
     return state
-
-def eye_aspect_ratio(eye):
-    A = distance.euclidean(eye[1], eye[5])
-    B = distance.euclidean(eye[2], eye[4])
-    C = distance.euclidean(eye[0], eye[3])
-    return (A + B) / (2.0 * C)
 
 def mouth_aspect_ratio(mouth):
     A = distance.euclidean(mouth[13], mouth[19])
@@ -87,9 +62,6 @@ def mouth_aspect_ratio(mouth):
 try:
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor(file_location)
-
-    (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-    (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
     (mStart, mEnd) = face_utils.FACIAL_LANDMARKS_IDXS["mouth"]
 
     cap = cv2.VideoCapture(camera_used)
@@ -114,43 +86,9 @@ while True:
         shape = predictor(gray, face)
         shape = face_utils.shape_to_np(shape)
 
-        # Eyes
-        leftEye = shape[lStart:lEnd]
-        rightEye = shape[rStart:rEnd]
-        leftEAR = eye_aspect_ratio(leftEye)
-        rightEAR = eye_aspect_ratio(rightEye)
-        ear = (leftEAR + rightEAR) / 2.0
-
         # Mouth
         mouth = shape[mStart:mEnd]
         mar = mouth_aspect_ratio(mouth)
-
-        if verbose_eye:
-            leftHull = cv2.convexHull(leftEye)
-            rightHull = cv2.convexHull(rightEye)
-            cv2.drawContours(frame, [leftHull], -1, (0, 255, 0), 1)
-            cv2.drawContours(frame, [rightHull], -1, (0, 255, 0), 1)
-            cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, line(3)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-
-            if (ear < EAR_THRESHOLD) and (counter >= CONSEC_FRAMES):
-                if use_lcd:
-                    eye_state = send_message(True, 3, eye_state)
-                cv2.putText(frame, "SLEEPY!", (10, line(4)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            elif (ear < EAR_THRESHOLD):
-                counter += 1
-                if use_lcd:
-                    eye_state = send_message(True, 2, eye_state)
-                cv2.putText(frame, "possibly sleepy", (10, line(4)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-
-            else:
-                if use_lcd:
-                    eye_state = send_message(True, 1, eye_state)
-                counter = 0
-                cv2.putText(frame, "not sleepy", (10, line(4)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         if verbose_mouth:
             mouthHull = cv2.convexHull(mouth)
@@ -160,19 +98,19 @@ while True:
 
             if (mar > MAR_THRESHOLD) and (yawn_counter >= YAWN_FRAMES):
                 if use_lcd:
-                    mouth_state = send_message(False, 3, mouth_state)
+                    mouth_state = send_message(3, mouth_state)
                 cv2.putText(frame, "YAWNING!", (10, line(2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             elif (mar > MAR_THRESHOLD):
                 yawn_counter += 1
                 if use_lcd:
-                    mouth_state = send_message(False, 2, mouth_state)
+                    mouth_state = send_message(2, mouth_state)
                 cv2.putText(frame, "possibly yawning", (10, line(2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
 
             else:
                 if use_lcd:
-                    mouth_state = send_message(False, 1, mouth_state)
+                    mouth_state = send_message(1, mouth_state)
                 yawn_counter = 0
                 cv2.putText(frame, "not yawning", (10, line(2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
