@@ -121,7 +121,8 @@ while True:
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        serial_esp32.close()
+        if use_lcd:
+            serial_esp32.close()
         break
 
 cap.release()
