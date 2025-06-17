@@ -19,9 +19,7 @@ YAWN_FRAMES = 10
 
 counter = 0
 yawn_counter = 0
-ear = 0
 mar = 0
-eye_state = 0
 mouth_state = 0
 
 # esp32 communication port
