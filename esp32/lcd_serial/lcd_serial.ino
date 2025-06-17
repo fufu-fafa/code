@@ -3,8 +3,8 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD with I2C address 0x27
 
-String var1 = "config with serial:";
-String var2 = "/dev/tty.usbserial-0001"; 
+String var1 = "conf w/ serial";
+String var2 = "tty.usbserial"; 
 
 void updateLCD() {
     lcd.clear();
@@ -18,6 +18,10 @@ void setup() {
     Serial.begin(115200);
     lcd.init();
     lcd.backlight();
+    updateLCD();
+    delay(3000);
+    var1 = "";
+    var2 = "";
     updateLCD();
 }
 
