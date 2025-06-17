@@ -17,7 +17,6 @@ file_location = './shape_predictor_68_face_landmarks.dat'
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
 
-counter = 0
 yawn_counter = 0
 mar = 0
 mouth_state = 0
