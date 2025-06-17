@@ -1,9 +1,13 @@
 import serial
+import sys
 
-port = '/dev/tty.usbserial-0001'
-baud = 115200
-
-serial_esp32 = serial.Serial(port, baud, timeout=1)
+try:
+    port = '/dev/tty.usbserial-0001'
+    baud = 115200
+    serial_esp32 = serial.Serial(port, baud, timeout=1)
+except Exception:
+    print("err connecting to the esp32")
+    sys.exit(1)
 
 try:
     while True:
@@ -14,3 +18,4 @@ try:
 except KeyboardInterrupt:
     print("\nexiting..")
     serial_esp32.close()
+    sys.exit(0)
