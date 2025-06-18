@@ -20,13 +20,13 @@ EYE_FRAMES = 32
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
 
-eye_counter = 0
-mouth_counter = 0
 ear = 0
-mar = 0
+eye_counter = 0
 eye_state = 0
-mouth_state = 0
 prev_eye = 0
+mar = 0
+mouth_counter = 0
+mouth_state = 0
 prev_mouth = 0
 
 # esp32 communication port
@@ -116,7 +116,6 @@ def draw_mouth(mouth, frame, mar, mouth_state: int):
         elif mouth_state == 2:
             cv2.putText(frame, "possibly yawning", (10, line(2)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-
         else:
             cv2.putText(frame, "not yawning", (10, line(2)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
@@ -155,11 +154,11 @@ while True:
         # Eyes
         leftEye = shape[lStart:lEnd]
         rightEye = shape[rStart:rEnd]
+        eyes = [leftEye, rightEye]
         leftEAR = eye_aspect_ratio(leftEye)
         rightEAR = eye_aspect_ratio(rightEye)
         ear = (leftEAR + rightEAR) / 2.0
         eye_condition = [ear < EAR_THRESHOLD, eye_counter >= EYE_FRAMES]
-        eyes = [leftEye, rightEye]
 
         # Mouth
         mouth = shape[mStart:mEnd]
