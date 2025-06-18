@@ -10,22 +10,24 @@ camera_used = 0
 
 # config
 mirror = True
-use_lcd = True
+use_lcd = False
 verbose_eye = True
 verbose_mouth = True
 
 file_location = './shape_predictor_68_face_landmarks.dat'
 EAR_THRESHOLD = 0.25
-CONSEC_FRAMES = 32
+EYE_FRAMES = 32
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
 
-counter = 0
-yawn_counter = 0
+eye_counter = 0
+mouth_counter = 0
 ear = 0
 mar = 0
 eye_state = 0
 mouth_state = 0
+prev_eye = 0
+prev_mouth = 0
 
 # esp32 communication port
 if use_lcd:
@@ -45,10 +47,7 @@ if use_lcd:
 def line(number: int):
     return number * 30
 
-def send_message(is_eye: bool, message: int, state: int):
-    if message == state:
-        return state
-
+def send_message(is_eye: bool, message: int):
     if is_eye:
         # prefix '1.' changing line 1
         if message == 1:
@@ -67,7 +66,11 @@ def send_message(is_eye: bool, message: int, state: int):
             output = "2.YAWNING\n"
     send = output.encode('utf-8')
     serial_esp32.write(send)
-    state = message
+
+def lcd_handler(is_eye: bool, prev_state: int, state: int):
+    if prev_state == state:
+        return prev_state
+    send_message(is_eye, state)
     return state
 
 def eye_aspect_ratio(eye):
@@ -82,6 +85,41 @@ def mouth_aspect_ratio(mouth):
     C = distance.euclidean(mouth[15], mouth[17])
     D = distance.euclidean(mouth[12], mouth[16])
     return (A + B + C) / (3.0 * D)
+
+def draw_eyes(eyes, frame, ear, eye_state: int):
+    leftHull = cv2.convexHull(eyes[0])
+    rightHull = cv2.convexHull(eyes[1])
+    cv2.drawContours(frame, [leftHull], -1, (0, 255, 0), 1)
+    cv2.drawContours(frame, [rightHull], -1, (0, 255, 0), 1)
+    cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, line(3)),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+
+    if eye_state == 3:
+        cv2.putText(frame, "SLEEPY!", (10, line(4)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    elif eye_state == 2:
+        cv2.putText(frame, "possibly sleepy", (10, line(4)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+    else:
+        cv2.putText(frame, "not sleepy", (10, line(4)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
+def draw_mouth(mouth, frame, mar, mouth_state: int):
+        mouthHull = cv2.convexHull(mouth)
+        cv2.drawContours(frame, [mouthHull], -1, (0, 255, 255), 1)
+        cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (10, line(1)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+
+        if mouth_state == 3:
+            cv2.putText(frame, "YAWNING!", (10, line(2)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        elif mouth_state == 2:
+            cv2.putText(frame, "possibly yawning", (10, line(2)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+
+        else:
+            cv2.putText(frame, "not yawning", (10, line(2)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
 # check for common errors
 try:
@@ -120,65 +158,46 @@ while True:
         leftEAR = eye_aspect_ratio(leftEye)
         rightEAR = eye_aspect_ratio(rightEye)
         ear = (leftEAR + rightEAR) / 2.0
+        eye_condition = [ear < EAR_THRESHOLD, eye_counter >= EYE_FRAMES]
+        eyes = [leftEye, rightEye]
 
         # Mouth
         mouth = shape[mStart:mEnd]
         mar = mouth_aspect_ratio(mouth)
+        mouth_condition = [mar > MAR_THRESHOLD, mouth_counter >= YAWN_FRAMES]
+
+        if eye_condition[0] and eye_condition[1]:
+            eye_state = 3
+        elif eye_condition[0]:
+            eye_counter += 1
+            eye_state = 2
+        else:
+            eye_counter = 0
+            eye_state = 1
+
+        if mouth_condition[0] and mouth_condition[1]:
+            mouth_state = 3
+        elif mouth_condition[0]:
+            mouth_counter += 1
+            mouth_state = 2
+        else:
+            mouth_counter = 0
+            mouth_state = 1
+
+        if use_lcd:
+            prev_eye = lcd_handler(True, prev_eye, eye_state)
+            prev_mouth = lcd_handler(False, prev_mouth, mouth_state)
 
         if verbose_eye:
-            leftHull = cv2.convexHull(leftEye)
-            rightHull = cv2.convexHull(rightEye)
-            cv2.drawContours(frame, [leftHull], -1, (0, 255, 0), 1)
-            cv2.drawContours(frame, [rightHull], -1, (0, 255, 0), 1)
-            cv2.putText(frame, f"eye aspect ratio: {ear:.2f}", (10, line(3)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-
-            if (ear < EAR_THRESHOLD) and (counter >= CONSEC_FRAMES):
-                if use_lcd:
-                    eye_state = send_message(True, 3, eye_state)
-                cv2.putText(frame, "SLEEPY!", (10, line(4)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            elif (ear < EAR_THRESHOLD):
-                counter += 1
-                if use_lcd:
-                    eye_state = send_message(True, 2, eye_state)
-                cv2.putText(frame, "possibly sleepy", (10, line(4)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-
-            else:
-                if use_lcd:
-                    eye_state = send_message(True, 1, eye_state)
-                counter = 0
-                cv2.putText(frame, "not sleepy", (10, line(4)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            draw_eyes(eyes, frame, ear, eye_state)
 
         if verbose_mouth:
-            mouthHull = cv2.convexHull(mouth)
-            cv2.drawContours(frame, [mouthHull], -1, (0, 255, 255), 1)
-            cv2.putText(frame, f"mouth aspect ratio: {mar:.2f}", (10, line(1)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-
-            if (mar > MAR_THRESHOLD) and (yawn_counter >= YAWN_FRAMES):
-                if use_lcd:
-                    mouth_state = send_message(False, 3, mouth_state)
-                cv2.putText(frame, "YAWNING!", (10, line(2)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            elif (mar > MAR_THRESHOLD):
-                yawn_counter += 1
-                if use_lcd:
-                    mouth_state = send_message(False, 2, mouth_state)
-                cv2.putText(frame, "possibly yawning", (10, line(2)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-
-            else:
-                if use_lcd:
-                    mouth_state = send_message(False, 1, mouth_state)
-                yawn_counter = 0
-                cv2.putText(frame, "not yawning", (10, line(2)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            draw_mouth(mouth, frame, mar, mouth_state)
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        if use_lcd:
+            serial_esp32.close()
         break
 
 cap.release()
