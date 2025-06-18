@@ -134,12 +134,16 @@ class SnakeGame:
         pygame.display.flip()
 
 # Main loop
-game = SnakeGame()
-while game.running:
-    pygame.event.pump()
-    game.ai_move()
-    game.move()
-    game.draw()
-    clock.tick(10)
+if __name__ == '__main__':
+    try:
+        game = SnakeGame()
+        while game.running:
+            pygame.event.pump()
+            game.ai_move()
+            game.move()
+            game.draw()
+            clock.tick(10)
 
-pygame.quit()
+        pygame.quit()
+    except KeyboardInterrupt:
+        print("\nexiting..")
