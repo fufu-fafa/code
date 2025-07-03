@@ -17,6 +17,7 @@ file_location = './shape_predictor_68_face_landmarks.dat'
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
 
+is_face_detected = 0
 mar = 0
 mouth_state = 0
 yawn_counter = 0
@@ -34,19 +35,20 @@ if use_lcd:
 def line(number: int):
     return number * 30
 
-def send_message(message: int, state: int):
+def display_mouth_state(message: int, state: int):
     if message == state:
         return state
     if message == 1:
         output = "1.normal mouth\n"
     elif message == 2:
         output = "1.possible yawning\n"
-    else:
+    elif message == 3:
         output = "1.YAWNING\n"
+    else:
+        output = "1."
     send = output.encode('utf-8')
     serial_esp32.write(send)
-    state = message
-    return state
+    return message
 
 def mouth_aspect_ratio(mouth):
     A = distance.euclidean(mouth[13], mouth[19])
@@ -94,8 +96,8 @@ while True:
         frame = cv2.flip(frame, 1)
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
     faces = detector(gray)
+
     if len(faces) > 0:
         shape = predictor(gray, faces[0])
         shape = face_utils.shape_to_np(shape)
@@ -106,18 +108,22 @@ while True:
 
         if conditions[0] and conditions[1]:
             if use_lcd:
-                mouth_state = send_message(3, mouth_state)
+                mouth_state = display_mouth_state(3, mouth_state)
         elif conditions[0]:
             yawn_counter += 1
             if use_lcd:
-                mouth_state = send_message(2, mouth_state)
+                mouth_state = display_mouth_state(2, mouth_state)
         else:
             yawn_counter = 0
             if use_lcd:
-                mouth_state = send_message(1, mouth_state)
+                mouth_state = display_mouth_state(1, mouth_state)
 
         if verbose_mouth:
             draw_mouth(frame, mouth, mar, conditions)
+
+    else:
+        if use_lcd:
+            mouth_state = display_mouth_state(0, mouth_state)
 
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
