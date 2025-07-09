@@ -10,7 +10,6 @@ from imutils import face_utils
 camera_used = 0
 
 # config
-mirror = True
 use_lcd = True
 verbose_mouth = True  # prints mouth ratio and state to console
 
@@ -77,9 +76,6 @@ try:
         if not ret:
             print("Failed to grab frame")
             break
-
-        if mirror:
-            frame = cv2.flip(frame, 1)
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = detector(gray, 0)
