@@ -45,7 +45,7 @@ def display_mouth_state(message: int, state: int):
     elif message == 3:
         output = "1.YAWNING\n"
     else:
-        output = "1."
+        output = "1.\n"
     send = output.encode('utf-8')
     serial_esp32.write(send)
     return message

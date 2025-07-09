@@ -40,9 +40,9 @@ if use_lcd:
         sys.exit(1)
 
     if not verbose_eye:
-        serial_esp32.write(b"1. ")
+        serial_esp32.write(b"1.\n")
     if not verbose_mouth:
-        serial_esp32.write(b"2. ")
+        serial_esp32.write(b"2.\n")
 
 def line(number: int):
     return number * 30
