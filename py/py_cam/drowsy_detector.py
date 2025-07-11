@@ -32,8 +32,8 @@ prev_mouth = 0
 # esp32 communication port
 if use_lcd:
     try:
-        port = '/dev/tty.usbserial-0001'
-        baud = 115200
+        port = '/dev/tty.usbserial-0001'    # if mac tty.usbserial-0001
+        baud = 115200                       # if linux ttyUSB0
         serial_esp32 = serial.Serial(port, baud, timeout=1)
     except Exception:
         print("\nerror using esp32 communication port")
@@ -54,16 +54,20 @@ def send_message(is_eye: bool, message: int):
             output = "1.awake eyes\n"
         elif message == 2:
             output = "1.possibly drowsy\n"
-        else:
+        elif message == 3:
             output = "1.DROWSY EYES\n"
+        else:
+            output = "1.\n"
     else:
         # prefix '2.' changing line 2
         if message == 1:
             output = "2.normal mouth\n"
         elif message == 2:
             output = "2.possible yawning\n"
-        else:
+        elif message == 3:
             output = "2.YAWNING\n"
+        else:
+            output = "1.\n"
     send = output.encode('utf-8')
     serial_esp32.write(send)
 
@@ -196,6 +200,8 @@ while True:
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         if use_lcd:
+            send_message(0, 0)
+            send_message(1, 0)
             serial_esp32.close()
         break
 

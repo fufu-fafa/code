@@ -24,8 +24,8 @@ yawn_counter = 0
 # esp32 communication port
 if use_lcd:
     try:
-        port = '/dev/tty.usbserial-0001'
-        baud = 115200
+        port = '/dev/tty.usbserial-0001'        # if mac tty.usbserial-0001
+        baud = 115200                           # if linux ttyUSB0
         serial_esp32 = serial.Serial(port, baud, timeout=1)
     except Exception:
         print("\nError: unable to open ESP32 serial port")

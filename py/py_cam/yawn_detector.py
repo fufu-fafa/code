@@ -25,8 +25,8 @@ yawn_counter = 0
 # esp32 communication port
 if use_lcd:
     try:
-        port = '/dev/tty.usbserial-0001'
-        baud = 115200
+        port = '/dev/tty.usbserial-0001'        # if mac tty.usbserial-0001
+        baud = 115200                           # if linux ttyUSB0
         serial_esp32 = serial.Serial(port, baud, timeout=1)
     except Exception:
         print("\nerror using esp32 communication port")
@@ -128,6 +128,7 @@ while True:
     cv2.imshow("Drowsy Detector", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         if use_lcd:
+            display_mouth_state(0, 1)
             serial_esp32.close()
         break
 
