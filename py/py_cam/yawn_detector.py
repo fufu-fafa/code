@@ -10,8 +10,10 @@ camera_used = 0
 
 # config
 mirror = True
-use_lcd = True
+use_lcd = False
 verbose_mouth = True
+travel_dist = 36
+max_dist = 35     # kilometer
 
 file_location = './shape_predictor_68_face_landmarks.dat'
 MAR_THRESHOLD = 0.3
@@ -105,6 +107,13 @@ while True:
         mouth = shape[mStart:mEnd]
         mar = mouth_aspect_ratio(mouth)
         conditions = [mar > MAR_THRESHOLD, yawn_counter >= YAWN_FRAMES]
+
+        if travel_dist > max_dist:
+            cv2.putText(frame, "AWAS MENGANTUK!", (10, line(5)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        else:
+            cv2.putText(frame, "dalam jarak aman", (10, line(5)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         if conditions[0] and conditions[1]:
             if use_lcd:

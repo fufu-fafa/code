@@ -10,7 +10,7 @@ camera_used = 0
 
 # config
 mirror = True
-use_lcd = True
+use_lcd = False
 verbose_eye = True
 verbose_mouth = True
 
