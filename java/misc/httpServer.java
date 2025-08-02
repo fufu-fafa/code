@@ -42,6 +42,7 @@ class StaticFileHandler implements HttpHandler {
             if (filePath.endsWith(".css")) contentType = "text/css";
             else if (filePath.endsWith(".js")) contentType = "application/javascript";
             else if (filePath.endsWith(".png")) contentType = "image/png";
+            else if (filePath.endsWith(".svg")) contentType = "image/svg+xml";
             else if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) contentType = "image/jpeg";
 
             exchange.getResponseHeaders().set("Content-Type", contentType);
