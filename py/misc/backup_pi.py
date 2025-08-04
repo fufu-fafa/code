@@ -30,7 +30,7 @@ with subprocess.Popen(cmd, stderr=subprocess.PIPE, text=True) as proc:
         match = progress_pattern.search(line)
         if match and (now - last_print_time) >= interval:
             amount_1, unit_1, amount_2, unit_2 = match.groups()
-            output = f"2.{amount_1} {unit_1} / {amount_2} {unit_2}\n"
+            output = f"2.{amount_1} {unit_1}\n"
             send = output.encode('utf-8')
             serial_esp32.write(send)
             last_print_time = now
