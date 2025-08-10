@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PGN Viewer</title>
+  <style>
+    :root{
+      --bg:#0b0f12;
+      --card:#0f1518;
+      --muted:#93a1a1;
+      --accent:#7dd3fc;
+      --glass: rgba(255,255,255,0.03);
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,var(--bg),#051216 90%);
+      color:#e6eef0;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:28px;
+    }
+
+    .wrapper{
+      max-width:1000px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:20px;
+      align-items:start;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6), inset 0 1px rgba(255,255,255,0.02);
+    }
+
+    h1{margin:0 0 8px 0;font-size:18px}
+    p.muted{color:var(--muted);margin:0 0 12px 0;font-size:13px}
+
+    .board{
+      width:320px;
+      height:320px;
+      display:grid;
+      grid-template-columns:repeat(8,1fr);
+      gap:0;
+      border-radius:10px;
+      overflow:hidden;
+      background:var(--glass);
+      margin-bottom:12px;
+    }
+    .square{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      user-select:none;
+    }
+    .square.light{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));}
+    .square.dark{background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.5));}
+    .square.highlight{outline:3px solid rgba(125,211,252,0.12);}
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .btn{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.06);
+      color:inherit;
+      padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;
+    }
+    .btn.primary{border-color:transparent;background:linear-gradient(90deg, rgba(125,211,252,0.12), rgba(125,211,252,0.06));}
+
+    .moves{max-height:520px;overflow:auto;padding:8px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .moves ol{margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;list-style:none}
+    .moves li{padding:6px 8px;border-radius:6px;background:transparent;cursor:pointer;font-size:13px}
+    .moves li.active{background:rgba(125,211,252,0.08);}
+
+    .right-top{display:flex;gap:12px;align-items:center}
+
+    .meta{display:flex;flex-direction:column;gap:8px}
+    .meta .tag{font-size:13px;color:var(--muted)}
+
+    @media (max-width:880px){
+      .wrapper{grid-template-columns:1fr;}
+      .board{width:100%;height:300px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <h1>PGN Viewer</h1>
+      <p class="muted">Place a PGN file named <code>/game.pgn</code> at the server root and this page will load it automatically.</p>
+
+      <div id="board" class="board" aria-hidden="false"></div>
+
+      <div class="controls">
+        <button id="firstBtn" class="btn">⏮ First</button>
+        <button id="prevBtn" class="btn">◀ Prev</button>
+        <button id="playBtn" class="btn primary">▶ Play</button>
+        <button id="nextBtn" class="btn">Next ▶</button>
+        <button id="lastBtn" class="btn">Last ⏭</button>
+        <button id="resetBtn" class="btn">Reset</button>
+      </div>
+
+      <div class="moves card" id="movesPane">
+        <div id="movesInner">Loading PGN…</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="right-top">
+        <div class="meta">
+          <div class="tag" id="eventTag">Event: —</div>
+          <div class="tag" id="siteTag">Site: —</div>
+          <div class="tag" id="dateTag">Date: —</div>
+          <div class="tag" id="roundTag">Round: —</div>
+          <div class="tag" id="playersTag">White — Black</div>
+        </div>
+      </div>
+
+      <hr style="opacity:0.06;margin:12px 0">
+      <p class="muted">PGN (raw)</p>
+      <pre id="rawpgn" style="white-space:pre-wrap;overflow:auto;max-height:360px;padding:10px;background:transparent;border-radius:8px;font-size:13px;color:var(--muted)">—</pre>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js" integrity="" crossorigin="anonymous"></script>
+  <script>
+    const UNICODE = {
+      p:'♟', r:'♜', n:'♞', b:'♝', q:'♛', k:'♚',
+      P:'♙', R:'♖', N:'♘', B:'♗', Q:'♕', K:'♔'
+    };
+
+    const boardEl = document.getElementById('board');
+    const movesInner = document.getElementById('movesInner');
+    const rawEl = document.getElementById('rawpgn');
+
+    function buildBoard(){
+      boardEl.innerHTML='';
+      for(let r=8;r>=1;r--){
+        for(let f=0;f<8;f++){
+          const file = String.fromCharCode(97+f);
+          const sq = file + r;
+          const div = document.createElement('div');
+          div.className = 'square ' + (((f + r) % 2 === 0) ? 'light':'dark');
+          div.setAttribute('data-square', sq);
+          boardEl.appendChild(div);
+        }
+      }
+    }
+
+    function renderFromFen(fen){
+      const parts = fen.split(' ')[0];
+      const ranks = parts.split('/');
+      let idx=0;
+      for(let r=0;r<8;r++){
+        const rank = ranks[r];
+        for(let i=0;i<rank.length;i++){
+          const ch = rank[i];
+          if(/[0-9]/.test(ch)){
+            const n = parseInt(ch,10);
+            for(let z=0;z<n;z++){ putPieceByIndex(idx, ''); idx++; }
+          } else {
+            putPieceByIndex(idx, UNICODE[ch]||''); idx++;
+          }
+        }
+      }
+    }
+    function putPieceByIndex(idx, symbol){
+      const el = boardEl.children[idx];
+      el.textContent = symbol;
+    }
+
+    buildBoard();
+
+    // fetch PGN
+    async function loadPgn(){
+      try{
+        const res = await fetch('/game.pgn');
+        if(!res.ok) throw new Error('Not found');
+        const text = await res.text();
+        rawEl.textContent = text.trim();
+        parseAndInit(text);
+      }catch(e){
+        movesInner.innerHTML = '<div class="muted">Could not load /game.pgn — place your PGN at server root. <br><small>'+e.message+'</small></div>';
+      }
+    }
+
+    function parseTags(pgn){
+      const tags = {};
+      pgn.replace(/\[([^\s]+)\s+\"([^\"]*)\"\]/g,(m,k,v)=>{tags[k]=v;return ''});
+      return tags;
+    }
+
+    function extractMovesText(pgn){
+      // remove tags
+      const noTags = pgn.replace(/\[.*?\][\r\n]*/gs,'');
+      // remove comments {...} and ; comments and NAGs ($12)
+      const noComments = noTags.replace(/\{[^}]*\}|;[^\n]*|\$\d+/g,'');
+      // collapse whitespace
+      const cleaned = noComments.replace(/\s+/g,' ').trim();
+      // remove result at end (1-0 etc)
+      return cleaned.replace(/\s*(1-0|0-1|1\/2-1\/2|\*)\s*$/,'').trim();
+    }
+
+    // init chess.js and UI
+    let game = null;
+    let moves = []; // SAN moves sequence
+    let curIndex = 0; // number of half-moves applied
+    let playTimer = null;
+
+    function parseAndInit(pgnText){
+      const tags = parseTags(pgnText);
+      document.getElementById('eventTag').textContent = 'Event: ' + (tags.Event||'—');
+      document.getElementById('siteTag').textContent = 'Site: ' + (tags.Site||'—');
+      document.getElementById('dateTag').textContent = 'Date: ' + (tags.Date||'—');
+      document.getElementById('roundTag').textContent = 'Round: ' + (tags.Round||'—');
+      document.getElementById('playersTag').textContent = (tags.White||'White') + ' — ' + (tags.Black||'Black');
+
+      const movetext = extractMovesText(pgnText);
+      if(!window.Chess){
+        movesInner.textContent = 'chess.js not loaded — moves list shown only.';
+        moves = movetext.split(/\d+\.\s*/).filter(Boolean).map(p=>p.trim());
+        movesInner.textContent = moves.join('\n');
+        return;
+      }
+
+      game = new Chess();
+      // Use chess.js PGN loader
+      try{
+        game.load_pgn(pgnText);
+      }catch(e){
+        // fallback: split SAN tokens
+        console.warn('pgn load failed',e);
+      }
+
+      // Build moves array via history()
+      const fullHistory = game.history({verbose:true});
+      // Reinitialize and step through progressively
+      game.reset();
+      moves = fullHistory.map(h => h.san);
+
+      renderFromFen(game.fen());
+      buildMovesList();
+    }
+
+    function buildMovesList(){
+      if(moves.length===0){ movesInner.innerHTML = '<div class="muted">No moves found in PGN.</div>'; return }
+      const ol = document.createElement('ol');
+      // create numbered pairs
+      for(let i=0;i<moves.length;i+=2){
+        const li = document.createElement('li');
+        const num = Math.floor(i/2)+1;
+        const w = moves[i] || '';
+        const b = moves[i+1] || '';
+        li.innerHTML = `<strong>${num}.</strong> <span data-midx="${i}">${w}</span> <span data-midx="${i+1}">${b}</span>`;
+        li.addEventListener('click', (e)=>{
+          // if clicked on a span, go to that half-move index
+          const target = e.target.closest('[data-midx]');
+          if(!target) return;
+          const idx = parseInt(target.getAttribute('data-midx'),10);
+          gotoIndex(idx+1); // apply idx+1 half-moves
+        });
+        ol.appendChild(li);
+      }
+      movesInner.innerHTML='';
+      movesInner.appendChild(ol);
+      updateActiveMove();
+    }
+
+    function applyMoveBySAN(san){
+      const res = game.move(san, {sloppy:true});
+      if(!res){ console.warn('illegal or unparsable SAN:', san); return false }
+      return true;
+    }
+
+    function gotoIndex(targetHalfMoveCount){
+      if(!game) return;
+      // clamp
+      if(targetHalfMoveCount<0) targetHalfMoveCount=0;
+      if(targetHalfMoveCount>moves.length) targetHalfMoveCount = moves.length;
+      // reset and apply
+      game.reset();
+      for(let i=0;i<targetHalfMoveCount;i++){
+        applyMoveBySAN(moves[i]);
+      }
+      curIndex = targetHalfMoveCount;
+      renderFromFen(game.fen());
+      updateActiveMove();
+    }
+
+    function updateActiveMove(){
+      // highlight in move list
+      const spans = movesInner.querySelectorAll('[data-midx]');
+      spans.forEach(s=>s.classList.remove('active'));
+      const idx = curIndex-1; // last applied
+      if(idx>=0){
+        const el = movesInner.querySelector(`[data-midx="${idx}"]`);
+        if(el) el.classList.add('active');
+      }
+      document.getElementById('playBtn').textContent = playTimer ? '⏸ Pause' : (curIndex>=moves.length ? '⏻ Restart':'▶ Play');
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', ()=>{
+      if(curIndex < moves.length){ applyMoveBySAN(moves[curIndex]); curIndex++; renderFromFen(game.fen()); updateActiveMove(); }
+    });
+    document.getElementById('prevBtn').addEventListener('click', ()=>{ gotoIndex(curIndex-1); });
+    document.getElementById('firstBtn').addEventListener('click', ()=>{ gotoIndex(0); });
+    document.getElementById('lastBtn').addEventListener('click', ()=>{ gotoIndex(moves.length); });
+    document.getElementById('resetBtn').addEventListener('click', ()=>{ if(game){game.reset(); curIndex=0; renderFromFen(game.fen()); updateActiveMove();} });
+
+    document.getElementById('playBtn').addEventListener('click', ()=>{
+      if(playTimer){ clearInterval(playTimer); playTimer=null; updateActiveMove(); return; }
+      // start playing
+      playTimer = setInterval(()=>{
+        if(curIndex < moves.length){ applyMoveBySAN(moves[curIndex]); curIndex++; renderFromFen(game.fen()); updateActiveMove(); }
+        else { clearInterval(playTimer); playTimer=null; updateActiveMove(); }
+      }, 700);
+      updateActiveMove();
+    });
+
+    loadPgn();
+
+    window._pgnViewer = { gotoIndex, moves };
+  </script>
+</body>
+</html>
+
