@@ -45,12 +45,18 @@ std::string line_circle_intersection(circle circle1, line line1) {
     // y = k +- sqrt(r^2 - (x - h)^2)
     coordinate point1, point2;
     std::ostringstream temp;
-    double offset, discriminant, a, b, c;
+    double offset_squared, discriminant, a, b, c;
 
-    offset = sqrt(std::pow(circle1.r, 2) - std::pow(line1.midpoint.x - circle1.center.x, 2));
     if (std::isinf(line1.gradient)) {
-        point1 = {line1.midpoint.x, circle1.center.y + offset};
-        point2 = {line1.midpoint.x, circle1.center.y - offset};
+        offset_squared = std::pow(circle1.r, 2) - std::pow(line1.midpoint.x - circle1.center.x, 2);
+        if (offset_squared < 0) return "line does not intercept with circle";
+        else if (offset_squared == 0) {
+            temp << "line is tangent with the circle at:" << '\n'
+                << "(" << line1.midpoint.x << ", " << circle1.center.y << ")";
+            return temp.str();
+        }
+        point1 = {line1.midpoint.x, circle1.center.y + sqrt(offset_squared)};
+        point2 = {line1.midpoint.x, circle1.center.y - sqrt(offset_squared)};
     } else {
         // ax^2 + bx + c = 0
         a = 1 + std::pow(line1.gradient, 2);
@@ -60,7 +66,13 @@ std::string line_circle_intersection(circle circle1, line line1) {
         // (-b +- sqrt(b^2 - 4ac)) / 2a
         discriminant = std::pow(b, 2) - 4 * a * c;
         if (discriminant < 0) return "line does not intercept with circle";
-        else if (discriminant == 0) return "line is tangent with the cirlce";
+        else if (discriminant == 0) {
+            point1.x = -b/2*a;
+            point1.y = line1.gradient * (point1.x - line1.midpoint.x) + line1.midpoint.y;
+            temp << "line is tangent with the circle at:" << '\n'
+                << "(" << point1.x << ", " << (line1.gradient * (point1.x - line1.midpoint.x) + line1.midpoint.y) << ")";
+            return temp.str();
+        }
 
         point1.x = (-b + sqrt(discriminant)) / (2 * a);
         point2.x = (-b - sqrt(discriminant)) / (2 * a);
@@ -69,7 +81,7 @@ std::string line_circle_intersection(circle circle1, line line1) {
         point2.y = line1.gradient * (point2.x - line1.midpoint.x) + line1.midpoint.y;
     }
     temp << "line intercepts the circle at:" << '\n'
-         << "(" << point1.x << ", " << point1.y << ") and (" << point2.x << ", " << point2.y << ")";
+        << "(" << point1.x << ", " << point1.y << ") and (" << point2.x << ", " << point2.y << ")";
     return temp.str();
 }
 
@@ -270,16 +282,7 @@ std::string option2(circle prev) {
     std::string str_output;
 
     line1 = get_line();
-    if (std::isinf(line1.gradient)) {
-        distance = std::abs(line1.midpoint.x - prev.center.x);
-    } else {
-        offset = line1.midpoint.y - line1.gradient * line1.midpoint.x;
-        distance = std::abs(line1.gradient * prev.center.x + -1 * prev.center.y + offset) / sqrt(std::pow(line1.gradient, 2) + 1);
-    }
-
-    if (distance > prev.r) str_output = "the line is outside of the circle";
-    else if (distance == prev.r) str_output = "the line is tangent to the circle";
-    else str_output = line_circle_intersection(prev, line1);
+    str_output = line_circle_intersection(prev, line1);
     return str_output;
 }
 

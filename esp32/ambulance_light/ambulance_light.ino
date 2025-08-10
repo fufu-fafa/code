@@ -1,13 +1,23 @@
+const int pins[4] = {27, 26, 25, 33};
+const int delay_ms = 100;
+
 void setup() {
-    pinMode(5, OUTPUT);
-    pinMode(18, OUTPUT);
+    for (int x = 0; x < 4; x++) {
+        pinMode(pins[x], OUTPUT);
+    }
 }
 
 void loop() {
-    digitalWrite(5, HIGH);
-    delay(250);
-    digitalWrite(5, LOW);
-    digitalWrite(18, HIGH);
-    delay(250);
-    digitalWrite(18, LOW);
+    digitalWrite(pins[0], HIGH);
+    digitalWrite(pins[3], HIGH);
+    digitalWrite(pins[1], LOW);
+    digitalWrite(pins[2], LOW);
+    delay(delay_ms);
+
+
+    digitalWrite(pins[0], LOW);
+    digitalWrite(pins[3], LOW);
+    digitalWrite(pins[1], HIGH);
+    digitalWrite(pins[2], HIGH);
+    delay(delay_ms);
 }
