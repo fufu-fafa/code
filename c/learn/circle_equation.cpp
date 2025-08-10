@@ -394,9 +394,8 @@ int main() {
             std::cout << "not a valid option, retry: ";
             continue;
         }
-        std::cout << result2 << '\n' << '\n';
+        std::cout << result2 << '\n';
         break;
     }
-    std::cout << "might not be fully accurate due to floating point errors" << '\n';
     return 0;
 }
