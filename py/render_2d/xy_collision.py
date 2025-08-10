@@ -115,15 +115,26 @@ try:
 
     fig, ax = plt.subplots()
     fig.canvas.manager.set_window_title('collision simulation')
+
+    # bg color
+    fig.patch.set_facecolor('black')
+    ax.set_facecolor('black')
+    ax.tick_params(colors='white')  
+    for spine in ax.spines.values():
+        spine.set_color('white')
+    ax.title.set_color('white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+
     ax.set_aspect('equal')
     ax.set_xlim(-20, 20)
     ax.set_ylim(-20, 20)
     ax.axis('on')
 
-    c1 = patches.Circle((c_poss[0]), 2.0, color='red', alpha=0.6)
-    c2 = patches.Circle((c_poss[1]), 2.0, color='green', alpha=0.6)
-    c3 = patches.Circle((c_poss[2]), 2.0, color='blue', alpha=0.6)
-    c4 = patches.Circle((c_poss[3]), 2.0, color='black', alpha=0.6)
+    c1 = patches.Circle((c_poss[0]), 2.0, color='red', alpha=0.75)
+    c2 = patches.Circle((c_poss[1]), 2.0, color='green', alpha=0.75)
+    c3 = patches.Circle((c_poss[2]), 2.0, color='blue', alpha=0.75)
+    c4 = patches.Circle((c_poss[3]), 2.0, color='white', alpha=0.75)
 
     ax.add_patch(c1)
     ax.add_patch(c2)
