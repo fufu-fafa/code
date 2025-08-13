@@ -9,11 +9,11 @@ void clear_stdin() {
 void print_board(int board[3][3]) {
     const char arr[3] = {' ', 'X', 'O'};
 
-    for (int r = 0; r < 3; r++) {
-        for (int c = 0; c < 3; c++) {
-            printf(" %c ", arr[board[r][c]]);
-            if (c != 2) printf("|");
-            else if (r == 2) printf("\n");
+    for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < 3; x++) {
+            printf(" %c ", arr[board[y][x]]);
+            if (x != 2) printf("|");
+            else if (y == 2) printf("\n");
             else printf("\n---+---+---\n");
         }
     }
