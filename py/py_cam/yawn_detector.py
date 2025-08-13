@@ -2,6 +2,7 @@ import sys
 import cv2
 import dlib
 import serial
+import requests
 from scipy.spatial import distance
 from imutils import face_utils
 
@@ -12,8 +13,9 @@ camera_used = 0
 mirror = True
 use_lcd = False
 verbose_mouth = True
-travel_dist = 36
+travel_dist = 0
 max_dist = 35     # kilometer
+location_url = "http://127.0.0.1:8000/location.json"
 
 file_location = './shape_predictor_68_face_landmarks.dat'
 MAR_THRESHOLD = 0.3
@@ -33,6 +35,19 @@ if use_lcd:
     except Exception:
         print("\nerror using esp32 communication port")
         sys.exit(1)
+
+def fetch_loc(arr):
+    try:
+        response = requests.get(url)
+        data = response.json()
+        arr[0] = data["latitude"]
+        arr[1] = data["longitude"]
+
+    except requests.exceptions.RequestException as e:
+        return 1
+
+    except (ValueError, KeyError):
+        return 2
 
 def line(number: int):
     return number * 30
@@ -109,10 +124,10 @@ while True:
         conditions = [mar > MAR_THRESHOLD, yawn_counter >= YAWN_FRAMES]
 
         if travel_dist > max_dist:
-            cv2.putText(frame, "AWAS MENGANTUK!", (10, line(5)),
+            cv2.putText(frame, "EXCEEDED MAX RANGE", (10, line(5)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         else:
-            cv2.putText(frame, "dalam jarak aman", (10, line(5)),
+            cv2.putText(frame, "in safe range", (10, line(5)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         if conditions[0] and conditions[1]:

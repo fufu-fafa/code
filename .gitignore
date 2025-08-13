@@ -2,5 +2,6 @@
 **/*.swp
 **/*.out
 **/.vscode/
+**/location.json
 **/__pycache__/
 **/shape_predictor_68_face_landmarks.dat
