@@ -1,6 +1,7 @@
 import sys
 import cv2
 import dlib
+import math
 import time
 import serial
 import requests
@@ -41,12 +42,13 @@ if use_lcd:
 def line(number: int):
     return number * 30
 
-def fetch_loc(arr):
+def fetch_loc(arr, url):
     try:
         response = requests.get(url)
         data = response.json()
         arr[0] = data["latitude"]
         arr[1] = data["longitude"]
+        return 0
 
     except requests.exceptions.RequestException as e:
         return 1
@@ -54,27 +56,26 @@ def fetch_loc(arr):
     except (ValueError, KeyError):
         return 2
 
-def update_dist(dist_traveled, prev):
-    now[2] = []
-    fetch_loc(now)
+def update_dist(dist_traveled, prev, url):
+    now = [0.00, 0.00]
+    status = fetch_loc(now, url)
+    if status != 0:
+        return dist_traveled
     ddist = get_dist(prev, now)
     prev[0] = now[0]
     prev[1] = now[1]
     return dist_traveled + ddist
 
 def get_dist(prev, now):
-    # decimal degrees to radians
-    prev[0], prev[1], now[0], now[1] = map(math.radians, [prev[0], prev[1], now[0], now[1]])
+    lat1, lon1 = map(math.radians, (prev[0], prev[1]))
+    lat2, lon2 = map(math.radians, (now[0], now[1]))
 
-    # haversine formula
-    dlat = now[0] - prev[0]
-    dlon = now[1] - prev[1]
-    a = math.sin(dlat/2)**2 + math.cos(prev[0]) * math.cos(now[0]) * math.sin(dlon/2)**2
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
     c = 2 * math.asin(math.sqrt(a))
-
-    # times earth radius
-    result = c * 6371
-    return result
+    R_km = 6371.0
+    return c * R_km
 
 def display_mouth_state(message: int, state: int):
     if message == state:
