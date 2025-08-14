@@ -1,6 +1,7 @@
 import sys
 import cv2
 import dlib
+import time
 import serial
 import requests
 from scipy.spatial import distance
@@ -14,12 +15,13 @@ mirror = True
 use_lcd = False
 verbose_mouth = True
 travel_dist = 0
-max_dist = 35     # kilometer
+max_dist = 35
 location_url = "http://127.0.0.1:8000/location.json"
 
 file_location = './shape_predictor_68_face_landmarks.dat'
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
+prev_time = time.time()
 
 is_face_detected = 0
 mar = 0
@@ -36,6 +38,9 @@ if use_lcd:
         print("\nerror using esp32 communication port")
         sys.exit(1)
 
+def line(number: int):
+    return number * 30
+
 def fetch_loc(arr):
     try:
         response = requests.get(url)
@@ -49,8 +54,27 @@ def fetch_loc(arr):
     except (ValueError, KeyError):
         return 2
 
-def line(number: int):
-    return number * 30
+def update_dist(dist_traveled, prev):
+    now[2] = []
+    fetch_loc(now)
+    ddist = get_dist(prev, now)
+    prev[0] = now[0]
+    prev[1] = now[1]
+    return dist_traveled + ddist
+
+def get_dist(prev, now):
+    # decimal degrees to radians
+    prev[0], prev[1], now[0], now[1] = map(math.radians, [prev[0], prev[1], now[0], now[1]])
+
+    # haversine formula
+    dlat = now[0] - prev[0]
+    dlon = now[1] - prev[1]
+    a = math.sin(dlat/2)**2 + math.cos(prev[0]) * math.cos(now[0]) * math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a))
+
+    # times earth radius
+    result = c * 6371
+    return result
 
 def display_mouth_state(message: int, state: int):
     if message == state:
@@ -93,6 +117,7 @@ def draw_mouth(frame, mouth, mar, conditions):
 
 # check for common errors
 try:
+    test_run = requests.get(location_url)
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor(file_location)
     (mStart, mEnd) = face_utils.FACIAL_LANDMARKS_IDXS["mouth"]
@@ -103,17 +128,32 @@ try:
 except Exception as e:
     if "landmarks.dat" in str(e):
         print("\nunable to open facial detector model, check file location")
+    elif "url" in str(e):
+        print("\nunable to fetch location data, check url")
     else:
+        print(f"{e}")
         print("\nfailed to initialize, check config and imports")
     sys.exit(1)
 
 while True:
     ret, frame = cap.read()
+    if not ret:
+        break
     if mirror:
         frame = cv2.flip(frame, 1)
 
+    # calculate fps
+    curr_time = time.time()
+    fps = 1 / (curr_time - prev_time)
+    prev_time = curr_time
+    cv2.putText(frame, f"FPS: {fps:.2f}", (10, line(6)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = detector(gray)
+
+    # if get_dist_now:
+    #     travel_dist = update_dist()
 
     if len(faces) > 0:
         shape = predictor(gray, faces[0])
