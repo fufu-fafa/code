@@ -47,9 +47,9 @@ int main() {
         for (int j = i + 1; j < amount; j++) {
             f_on_pair[pair_idx] = get_coulomb_force(&particles[i], &particles[j], k);
             get_force_vector(temp_vecs, f_on_pair[pair_idx], particles[i].pos, particles[j].pos);
-            printf("coulomb force on particle %d due to particle %d: %e\n", i+1, j+1, f_on_pair[pair_idx]);
-            printf("vec forces on %d: (%e, %e)\n", i+1, temp_vecs[0], temp_vecs[1]);
-            printf("vec forces on %d: (%e, %e)\n\n", j+1, -temp_vecs[0], -temp_vecs[1]);
+            printf("coulomb force on pair %d (particle %d and %d): %g\n", pair_idx+1, i+1, j+1, f_on_pair[pair_idx]);
+            printf("vec forces on %d: (%g, %g)\n", i+1, temp_vecs[0], temp_vecs[1]);
+            printf("vec forces on %d: (%g, %g)\n\n", j+1, -temp_vecs[0], -temp_vecs[1]);
             pair_idx++;
 
             
