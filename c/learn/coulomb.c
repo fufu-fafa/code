@@ -18,11 +18,11 @@ void get_force_vector(double fvec[2], double force, double pos1[2], double pos2[
     double dx = pos2[0] - pos1[0];
     double dy = pos2[1] - pos1[1];
     double r = sqrt(dx * dx + dy * dy);
-    double nd_vec[2] = {dx/r, dy/r};                            // normalized direction vector
     if (r == 0) {
         fvec[0] = fvec[1] = 0;
         return;
     }
+    double nd_vec[2] = {dx/r, dy/r};                            // normalized direction vector
     fvec[0] = force * nd_vec[0];
     fvec[1] = force * nd_vec[1];
 }
