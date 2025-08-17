@@ -28,6 +28,7 @@ int main() {
     const int HEIGHT = 400;
     const int WIDTH = 800;
     sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "sfml test");
+    window.setFramerateLimit(120);
     const float rads[2] = {25.f, 25.f};
     float speeds[2] = {-120.f, 200.f};
     sf::Vector2f poss[2];
