@@ -17,55 +17,48 @@ int main() {
     const int HEIGHT = 400;
     const int WIDTH = 800;
     sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "sfml test");
+    const float rads[2] = {25.f, 25.f};
+    float speeds[2] = {0.05f, -0.07f};
+    sf::Vector2f poss[2];
+    sf::CircleShape circles[2];
 
-    // circle1
-    const float c1Rad = 25.f;
-    float c1Speed = 0.05;
-    sf::CircleShape c1(c1Rad);
-    sf::Vector2f c1Pos(WIDTH/2.f - 300.f, HEIGHT/2.f);
-    c1.setOrigin(sf::Vector2f(c1.getRadius(), c1.getRadius()));
-    c1.setPosition(c1Pos);
-    c1.setFillColor(sf::Color::Green);
+    for (int n = 0; n < 2; n++) {
+        poss[n] = {WIDTH/2.f - ((n-1.f) * 600.f + 300.f), HEIGHT/2.f};
+        circles[n].setRadius(rads[n]);
+        circles[n].setOrigin(sf::Vector2f(rads[n], rads[n]));
+        circles[n].setPosition(poss[n]);
+    }
 
-    // circle2
-    const float c2Rad = 25.f;
-    float c2Speed = -0.07;
-    sf::CircleShape c2(c2Rad);
-    sf::Vector2f c2Pos(WIDTH/2.f + 300.f, HEIGHT/2.f);
-    c2.setOrigin(sf::Vector2f(c2.getRadius(), c2.getRadius()));
-    c2.setPosition(c2Pos);
-    c2.setFillColor(sf::Color::Red);
+    circles[0].setFillColor(sf::Color::Blue);
+    circles[1].setFillColor(sf::Color::Red);
 
     float temp;
-    int coll, c1EdgeColl, c2EdgeColl;
+    int coll;
+    int edgeColls[2];
     while (window.isOpen()) {
         while (auto event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
                 window.close();
         }
+        window.clear(sf::Color::Black);
 
-        window.clear();
-
-        coll = detectCollision(c1Pos.x, c2Pos.x, c1Rad, c2Rad);
-        c1EdgeColl = detectEdgeColl(c1Pos.x, c1Rad, WIDTH);
-        c2EdgeColl = detectEdgeColl(c2Pos.x, c2Rad, WIDTH);
-
-        if (c1EdgeColl) c1Speed *= -1;
-        if (c2EdgeColl) c2Speed *= -1;
-
-        if (detectCollision(c1Pos.x, c2Pos.x, c1Rad, c2Rad)) {
-            temp = c1Speed;
-            c1Speed = c2Speed;
-            c2Speed = temp;
+        for (int n = 0; n < 2; n++) {
+            edgeColls[n] = detectEdgeColl(poss[n].x, rads[n], WIDTH);
+            if (edgeColls[n]) speeds[n] *= -1;
         }
 
-        c1Pos.x += c1Speed;
-        c2Pos.x += c2Speed;
+        coll = detectCollision(poss[0].x, poss[1].x, rads[0], rads[1]);
+        if (coll) {
+            temp = speeds[0];
+            speeds[0] = speeds[1];
+            speeds[1] = temp;
+        }
 
-        c1.setPosition(c1Pos);
-        c2.setPosition(c2Pos);
-        window.draw(c1);
-        window.draw(c2);
+        for (int n = 0; n < 2; n++) {
+            poss[n].x += speeds[n];
+            circles[n].setPosition(poss[n]);
+            window.draw(circles[n]);
+        }
         window.display();
     }
 }
