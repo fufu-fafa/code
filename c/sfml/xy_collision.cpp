@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <sstream>
+#include <iomanip>
 #include <random>
 #include <cmath>
 
@@ -24,27 +25,25 @@ int genRandInt(int min, int max) {
 }
 
 void handleCircleColl(circ &circle1, circ &circle2) {
-    float temp, overlap, distChange, distSquared, velProj1, velProj2, perpVelProj1, perpVelProj2;
-    float relVel[2], relVec[2], norVec[2], perpNorVec[2];
+    sf::Vector2f relVel, relVec, norVec, perpNorVec;
+    float temp, overlap, dist, distSquared, distChangeSquared, velProj1, velProj2, perpVelProj1, perpVelProj2;
 
-    relVel[0] = circle2.spd.x - circle1.spd.x;
-    relVel[1] = circle2.spd.y - circle1.spd.y;
-
-    relVec[0] = circle2.pos.x - circle1.pos.x;
-    relVec[1] = circle2.pos.y - circle1.pos.y;
+    relVel = circle2.spd - circle1.spd;
+    relVec = circle2.pos - circle1.pos;
 
     // skip if separating
-    distChange = relVel[0] * relVec[0] + relVel[1] * relVec[1];
-    if (distChange > 0.f) return;
+    distChangeSquared = relVel.x * relVec.x + relVel.y * relVec.y;
+    if (distChangeSquared > 0.f) return;
 
-    distSquared = relVec[0]*relVec[0] + relVec[1]*relVec[1];
+    distSquared = relVec.x * relVec.x + relVec.y * relVec.y;
+    if (distSquared == 0.f) return;
     if (distSquared > ((circle1.rad + circle2.rad) * (circle1.rad + circle2.rad))) return;
+    dist = std::sqrt(distSquared);
 
     // circle velocity projection along collision vector
-    norVec[0] = relVec[0] / std::sqrt(distSquared);
-    norVec[1] = relVec[1] / std::sqrt(distSquared);
-    velProj1 = circle1.spd.x * norVec[0] + circle1.spd.y * norVec[1];
-    velProj2 = circle2.spd.x * norVec[0] + circle2.spd.y * norVec[1];
+    norVec = relVec / dist;
+    velProj1 = circle1.spd.x * norVec.x + circle1.spd.y * norVec.y;
+    velProj2 = circle2.spd.x * norVec.x + circle2.spd.y * norVec.y;
 
     // swap after collision
     temp = velProj1;
@@ -52,24 +51,20 @@ void handleCircleColl(circ &circle1, circ &circle2) {
     velProj2 = temp;
 
     // perpendicular circle velocity projection along collision vector
-    perpNorVec[0] = -norVec[1];
-    perpNorVec[1] = norVec[0];
-    perpVelProj1 = circle1.spd.x * perpNorVec[0] + circle1.spd.y * perpNorVec[1];
-    perpVelProj2 = circle2.spd.x * perpNorVec[0] + circle2.spd.y * perpNorVec[1];
+    perpNorVec.x = -norVec.y;
+    perpNorVec.y = norVec.x;
+    perpVelProj1 = circle1.spd.x * perpNorVec.x + circle1.spd.y * perpNorVec.y;
+    perpVelProj2 = circle2.spd.x * perpNorVec.x + circle2.spd.y * perpNorVec.y;
 
     // push back the circles so that it's not overlapping
-    overlap = circle1.rad + circle2.rad - std::sqrt(distSquared);
+    overlap = circle1.rad + circle2.rad - dist;
     if (overlap > 0.f) {
-        circle1.pos.x -= norVec[0] * (overlap/2.f);
-        circle1.pos.y -= norVec[1] * (overlap/2.f);
-        circle2.pos.x += norVec[0] * (overlap/2.f);
-        circle2.pos.y += norVec[1] * (overlap/2.f);
+        circle1.pos -= norVec * (overlap/2.f);
+        circle2.pos += norVec * (overlap/2.f);
     }
 
-    circle1.spd.x = velProj1 * norVec[0] + perpVelProj1 * perpNorVec[0];
-    circle1.spd.y = velProj1 * norVec[1] + perpVelProj1 * perpNorVec[1];
-    circle2.spd.x = velProj2 * norVec[0] + perpVelProj2 * perpNorVec[0];
-    circle2.spd.y = velProj2 * norVec[1] + perpVelProj2 * perpNorVec[1];
+    circle1.spd = velProj1 * norVec + perpVelProj1 * perpNorVec;
+    circle2.spd = velProj2 * norVec + perpVelProj2 * perpNorVec;
 }
 
 void handleEdgeColl(sf::Vector2f &spd, sf::Vector2f &pos, float rad, const int WIDTH, const int HEIGHT) {
@@ -116,7 +111,6 @@ int main() {
     window.setFramerateLimit(120);
 
     const int amount = 4;
-    const int pair = amount * (amount-1) / 2;
     const float rads[amount] = {30.f, 30.f, 30.f, 30.f};
     float cSpeed = 360.f;
     sf::Vector2f startSpd[amount];
@@ -139,7 +133,6 @@ int main() {
     circles[2].shape.setFillColor(sf::Color::Blue);
     circles[3].shape.setFillColor(sf::Color::White);
 
-    float temp;
     float fps;
     float dt;
     sf::Clock clock;
@@ -171,8 +164,7 @@ int main() {
         }
 
         for (int n = 0; n < amount; n++) {
-            circles[n].pos.x += circles[n].spd.x * dt;
-            circles[n].pos.y += circles[n].spd.y * dt;
+            circles[n].pos += circles[n].spd * dt;
             circles[n].shape.setPosition(circles[n].pos);
             window.draw(circles[n].shape);
         }
