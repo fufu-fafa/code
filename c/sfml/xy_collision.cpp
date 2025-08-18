@@ -73,10 +73,10 @@ void handleCircleColl(circ &circle1, circ &circle2) {
 }
 
 void handleEdgeColl(sf::Vector2f &spd, sf::Vector2f &pos, float rad, const int WIDTH, const int HEIGHT) {
-    int lEdgeColl = 0.2f > (pos.x - rad);
-    int rEdgeColl = 0.2f > (WIDTH - (pos.x + rad));
-    int tEdgeColl = 0.2f > (pos.y - rad);
-    int bEdgeColl = 0.2f > (HEIGHT - (pos.y + rad));
+    int lEdgeColl = 1.f > (pos.x - rad);
+    int rEdgeColl = 1.f > (WIDTH - (pos.x + rad));
+    int tEdgeColl = 1.f > (pos.y - rad);
+    int bEdgeColl = 1.f > (HEIGHT - (pos.y + rad));
     if ((lEdgeColl && (spd.x < 0.f)) || (rEdgeColl && (spd.x > 0.f))) spd.x *= -1;
     if ((tEdgeColl && (spd.y < 0.f)) || (bEdgeColl && (spd.y > 0.f))) spd.y *= -1;
 }
@@ -113,7 +113,7 @@ int main() {
     const int HEIGHT = 600;
     const int WIDTH = 600;
     sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "sfml test");
-    // window.setFramerateLimit(120);
+    window.setFramerateLimit(120);
 
     const int amount = 4;
     const int pair = amount * (amount-1) / 2;
@@ -166,7 +166,6 @@ int main() {
         for (int i = 0; i < amount; i++) {
             for (int j = i+1; j < amount; j++) {
                 handleCircleColl(circles[i], circles[j]);
-                if (before != after) printf("dirChange\n");
                 circles[i].shape.setPosition(circles[i].pos);
             }
         }
