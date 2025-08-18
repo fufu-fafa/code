@@ -108,7 +108,7 @@ int main() {
     const int HEIGHT = 600;
     const int WIDTH = 600;
     sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "sfml test");
-    window.setFramerateLimit(120);
+    window.setFramerateLimit(512);
 
     const int amount = 4;
     const float rads[amount] = {30.f, 30.f, 30.f, 30.f};
