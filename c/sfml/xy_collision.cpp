@@ -24,7 +24,7 @@ int genRandInt(int min, int max) {
 }
 
 void handleCircleColl(circ &circle1, circ &circle2) {
-    float temp, dist, distChange, velProj1, velProj2, perpVelProj1, perpVelProj2;
+    float temp, overlap, distChange, distSquared, velProj1, velProj2, perpVelProj1, perpVelProj2;
     float relVel[2], relVec[2], norVec[2], perpNorVec[2];
 
     relVel[0] = circle2.spd.x - circle1.spd.x;
@@ -37,12 +37,12 @@ void handleCircleColl(circ &circle1, circ &circle2) {
     distChange = relVel[0] * relVec[0] + relVel[1] * relVec[1];
     if (distChange > 0.f) return;
 
-    dist = std::sqrt(relVec[0]*relVec[0] + relVec[1]*relVec[1]);
-    if (dist > (circle1.rad + circle2.rad + 5)) return;
+    distSquared = relVec[0]*relVec[0] + relVec[1]*relVec[1];
+    if (distSquared > ((circle1.rad + circle2.rad) * (circle1.rad + circle2.rad))) return;
 
     // circle velocity projection along collision vector
-    norVec[0] = relVec[0]/dist;
-    norVec[1] = relVec[1]/dist;
+    norVec[0] = relVec[0] / std::sqrt(distSquared);
+    norVec[1] = relVec[1] / std::sqrt(distSquared);
     velProj1 = circle1.spd.x * norVec[0] + circle1.spd.y * norVec[1];
     velProj2 = circle2.spd.x * norVec[0] + circle2.spd.y * norVec[1];
 
@@ -56,6 +56,15 @@ void handleCircleColl(circ &circle1, circ &circle2) {
     perpNorVec[1] = norVec[0];
     perpVelProj1 = circle1.spd.x * perpNorVec[0] + circle1.spd.y * perpNorVec[1];
     perpVelProj2 = circle2.spd.x * perpNorVec[0] + circle2.spd.y * perpNorVec[1];
+
+    // push back the circles so that it's not overlapping
+    overlap = circle1.rad + circle2.rad - std::sqrt(distSquared);
+    if (overlap > 0.f) {
+        circle1.pos.x -= norVec[0] * (overlap/2.f);
+        circle1.pos.y -= norVec[1] * (overlap/2.f);
+        circle2.pos.x += norVec[0] * (overlap/2.f);
+        circle2.pos.y += norVec[1] * (overlap/2.f);
+    }
 
     circle1.spd.x = velProj1 * norVec[0] + perpVelProj1 * perpNorVec[0];
     circle1.spd.y = velProj1 * norVec[1] + perpVelProj1 * perpNorVec[1];
@@ -104,7 +113,7 @@ int main() {
     const int HEIGHT = 600;
     const int WIDTH = 600;
     sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "sfml test");
-    window.setFramerateLimit(120);
+    // window.setFramerateLimit(120);
 
     const int amount = 4;
     const int pair = amount * (amount-1) / 2;
@@ -149,7 +158,6 @@ int main() {
             clock2.restart();
         }
         sf::Text text(font, textStr, 24);
-        window.draw(text);
 
         for (int n = 0; n < amount; n++) {
             handleEdgeColl(circles[n].spd, circles[n].pos, circles[n].rad, WIDTH, HEIGHT);
@@ -158,6 +166,8 @@ int main() {
         for (int i = 0; i < amount; i++) {
             for (int j = i+1; j < amount; j++) {
                 handleCircleColl(circles[i], circles[j]);
+                if (before != after) printf("dirChange\n");
+                circles[i].shape.setPosition(circles[i].pos);
             }
         }
 
@@ -167,6 +177,7 @@ int main() {
             circles[n].shape.setPosition(circles[n].pos);
             window.draw(circles[n].shape);
         }
+        window.draw(text);
         window.display();
     }
 }
