@@ -190,7 +190,7 @@ int main() {
             cx = static_cast<int>(circles[n].pos.x / GRIDSIZE);
             cy = static_cast<int>(circles[n].pos.y / GRIDSIZE);
             cx = std::clamp(cx, 0, COLS - 1);
-            cy = std::clamp(cx, 0, ROWS - 1);
+            cy = std::clamp(cy, 0, ROWS - 1);
             grids[cy * COLS + cx].push_back(n);
             atHorizontalEdge = ((cy == 0) || (cy == ROWS-1));
             atVerticalEdge = ((cx == 0) || (cx == COLS-1));
