@@ -4,6 +4,13 @@
 #include <random>
 #include <cmath>
 
+// config
+const int HEIGHT = 600;
+const int WIDTH = 600;
+const int AMOUNT = 256;
+const int RAD = 7.f;
+const int CSPEED = 80.f;
+
 struct circ {
     sf::CircleShape shape;
     sf::Vector2f spd;
@@ -125,14 +132,9 @@ int main() {
     if (!font.openFromFile("SpaceMono-Regular.ttf")) return 1;
     std::string textStr;
 
-    const int HEIGHT = 600;
-    const int WIDTH = 600;
     sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "sfml test");
-    window.setFramerateLimit(512);
+    window.setFramerateLimit(256);
 
-    const int AMOUNT = 16;
-    const int RAD = 28.f;
-    const int CSPEED = 360.f;
     sf::Color circlesColors[AMOUNT];
     sf::Vector2f startSpd[AMOUNT];
     sf::Vector2f startPos[AMOUNT];
@@ -155,6 +157,7 @@ int main() {
     float dt;
     sf::Clock clock;
     sf::Clock clock2;
+    sf::Text text(font, textStr, 20);
     while (window.isOpen()) {
         while (auto event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
@@ -166,9 +169,9 @@ int main() {
         if (clock2.getElapsedTime().asSeconds() >= 1.0f) {
             fps = 1.0f / dt;
             textStr = " FPS: " + numToStr(fps);
+            text.setString(textStr);
             clock2.restart();
         }
-        sf::Text text(font, textStr, 24);
 
         for (int n = 0; n < AMOUNT; n++) {
             handleEdgeColl(circles[n].spd, circles[n].pos, circles[n].rad, WIDTH, HEIGHT);
