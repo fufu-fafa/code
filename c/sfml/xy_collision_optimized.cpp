@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 #include <random>
@@ -8,9 +9,9 @@
 // config
 const float WIDTH = 800.f;
 const float HEIGHT = 600.f;
-const int AMOUNT = 2048;
+const int AMOUNT = 4096;
 const int RAD = 2.f;
-const int CSPEED = 120.f;
+const int CSPEED = 20.f;
 const float GRIDSIZE = 2 * RAD;
 const int COLS = (WIDTH + GRIDSIZE -1) / GRIDSIZE;
 const int ROWS = (HEIGHT + GRIDSIZE -1) / GRIDSIZE;
