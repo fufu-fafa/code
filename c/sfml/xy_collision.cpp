@@ -17,11 +17,16 @@ std::string numToStr(float num) {
     return temp.str();
 }
 
+static std::mt19937& globalRng() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    return gen;
+}
+
 int genRandInt(int min, int max) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    if (min > max) std::swap(min, max);
     std::uniform_int_distribution<> distrib(min, max);
-    return distrib(gen);
+    return distrib(globalRng());
 }
 
 void handleCircleColl(circ &circle1, circ &circle2) {
@@ -67,36 +72,51 @@ void handleCircleColl(circ &circle1, circ &circle2) {
     circle2.spd = velProj2 * norVec + perpVelProj2 * perpNorVec;
 }
 
-void handleEdgeColl(sf::Vector2f &spd, sf::Vector2f &pos, float rad, const int WIDTH, const int HEIGHT) {
-    int lEdgeColl = 1.f > (pos.x - rad);
-    int rEdgeColl = 1.f > (WIDTH - (pos.x + rad));
-    int tEdgeColl = 1.f > (pos.y - rad);
-    int bEdgeColl = 1.f > (HEIGHT - (pos.y + rad));
+void handleEdgeColl(sf::Vector2f &spd, sf::Vector2f &pos, float RAD, const int WIDTH, const int HEIGHT) {
+    int lEdgeColl = 1.f > (pos.x - RAD);
+    int rEdgeColl = 1.f > (static_cast<float>(WIDTH) - (pos.x + RAD));
+    int tEdgeColl = 1.f > (pos.y - RAD);
+    int bEdgeColl = 1.f > (static_cast<float>(HEIGHT) - (pos.y + RAD));
     if ((lEdgeColl && (spd.x < 0.f)) || (rEdgeColl && (spd.x > 0.f))) spd.x *= -1;
     if ((tEdgeColl && (spd.y < 0.f)) || (bEdgeColl && (spd.y > 0.f))) spd.y *= -1;
 }
 
-void randSpd(sf::Vector2f spdVec[4], const float startSpd) {
+void randSpd(sf::Vector2f spdVec[], const float startSpd, const int AMOUNT) {
     int xSign[4] = {-1, +1, +1, -1};
     int ySign[4] = {+1, +1, -1, -1};
+    int dir;
     float xRatio, xSquared;
-    for (int n = 0; n < 4; n++) {
-        xRatio = genRandInt(0, 20)/20.f;
-        spdVec[n].x = xRatio * startSpd * xSign[n];
-        spdVec[n].y = std::sqrt(1 - xRatio*xRatio) * startSpd * ySign[n];
+    for (int n = 0; n < AMOUNT; n++) {
+        xRatio = genRandInt(0, 90)/90.f;
+        dir = genRandInt(0, 3);
+        spdVec[n].x = xRatio * startSpd * xSign[dir];
+        spdVec[n].y = std::sqrt(1 - xRatio*xRatio) * startSpd * ySign[dir];
     }
 }
 
-void randPos(sf::Vector2f poss[4], const float rads[4], const int WIDTH, const int HEIGHT) {
-    int xOffset;
-    int yOffset;
-    int xSign[4] = {+1, -1, -1, +1};
-    int ySign[4] = {-1, -1, +1, +1};
-    for (int n = 0; n < 4; n++) {
-        xOffset = genRandInt(rads[n], WIDTH/2 - rads[n]);
-        yOffset = genRandInt(rads[n], HEIGHT/2 - rads[n]);
-        poss[n].x = WIDTH/2 + xSign[n] * xOffset;
-        poss[n].y = HEIGHT/2 + ySign[n] * yOffset;
+void randPos(sf::Vector2f poss[], const float RAD, const int AMOUNT, const int WIDTH, const int HEIGHT) {
+    int min[2], max[2];
+    min[0] = min[1] = static_cast<int>(RAD);
+    max[0] = WIDTH - static_cast<int>(RAD);
+    max[1] = HEIGHT - static_cast<int>(RAD);
+    for (int n = 0; n < AMOUNT; n++) {
+        poss[n].x = genRandInt(min[0], max[0]);
+        poss[n].y = genRandInt(min[1], max[1]);
+    }
+}
+
+void randColors(sf::Color *colors, const int AMOUNT) {
+    const sf::Color available[7] = {
+        sf::Color::White,
+        sf::Color::Red,
+        sf::Color::Green,
+        sf::Color::Blue,
+        sf::Color::Yellow,
+        sf::Color::Magenta,
+        sf::Color::Cyan,
+    };
+    for (int n = 0; n < AMOUNT; n++) {
+        colors[n] = available[genRandInt(0, 6)];
     }
 }
 
@@ -110,28 +130,26 @@ int main() {
     sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "sfml test");
     window.setFramerateLimit(512);
 
-    const int amount = 4;
-    const float rads[amount] = {30.f, 30.f, 30.f, 30.f};
-    float cSpeed = 360.f;
-    sf::Vector2f startSpd[amount];
-    sf::Vector2f startPos[amount];
-    randSpd(startSpd, cSpeed);
-    randPos(startPos, rads, WIDTH, HEIGHT);
-    circ circles[amount];
+    const int AMOUNT = 16;
+    const int RAD = 28.f;
+    const int CSPEED = 360.f;
+    sf::Color circlesColors[AMOUNT];
+    sf::Vector2f startSpd[AMOUNT];
+    sf::Vector2f startPos[AMOUNT];
+    randSpd(startSpd, CSPEED, AMOUNT);
+    randPos(startPos, RAD, AMOUNT, WIDTH, HEIGHT);
+    randColors(circlesColors, AMOUNT);
+    circ circles[AMOUNT];
 
-    for (int n = 0; n < amount; n++) {
-        circles[n].shape.setRadius(rads[n]);
-        circles[n].shape.setOrigin(sf::Vector2f(rads[n], rads[n]));
-        circles[n].shape.setPosition(startPos[n]);
+    for (int n = 0; n < AMOUNT; n++) {
+        circles[n].rad = RAD;
         circles[n].spd = startSpd[n];
         circles[n].pos = startPos[n];
-        circles[n].rad = rads[n];
+        circles[n].shape.setRadius(circles[n].rad);
+        circles[n].shape.setOrigin(sf::Vector2f(RAD, RAD));
+        circles[n].shape.setPosition(circles[n].pos);
+        circles[n].shape.setFillColor(circlesColors[n]);
     }
-
-    circles[0].shape.setFillColor(sf::Color::Red);
-    circles[1].shape.setFillColor(sf::Color::Green);
-    circles[2].shape.setFillColor(sf::Color::Blue);
-    circles[3].shape.setFillColor(sf::Color::White);
 
     float fps;
     float dt;
@@ -152,17 +170,17 @@ int main() {
         }
         sf::Text text(font, textStr, 24);
 
-        for (int n = 0; n < amount; n++) {
+        for (int n = 0; n < AMOUNT; n++) {
             handleEdgeColl(circles[n].spd, circles[n].pos, circles[n].rad, WIDTH, HEIGHT);
         }
 
-        for (int i = 0; i < amount; i++) {
-            for (int j = i+1; j < amount; j++) {
+        for (int i = 0; i < AMOUNT; i++) {
+            for (int j = i+1; j < AMOUNT; j++) {
                 handleCircleColl(circles[i], circles[j]);
             }
         }
 
-        for (int n = 0; n < amount; n++) {
+        for (int n = 0; n < AMOUNT; n++) {
             circles[n].pos += circles[n].spd * dt;
             circles[n].shape.setPosition(circles[n].pos);
             window.draw(circles[n].shape);
