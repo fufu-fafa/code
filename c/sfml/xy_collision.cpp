@@ -159,7 +159,6 @@ int main() {
         for (int i = 0; i < amount; i++) {
             for (int j = i+1; j < amount; j++) {
                 handleCircleColl(circles[i], circles[j]);
-                circles[i].shape.setPosition(circles[i].pos);
             }
         }
 
