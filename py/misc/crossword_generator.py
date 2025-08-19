@@ -1,7 +1,7 @@
 import csv
 import random
 
-def create_crossword(word_list, size=15):
+def create_crossword(word_list, size=32):
     words = sorted(word_list, key=len, reverse=True)
 
     grid = [["." for _ in range(size)] for _ in range(size)]
@@ -110,7 +110,9 @@ def print_grid(grid):
     for y in range(size):
         for x in range(size):
             if x == size-1:
-                continue
+                if grid[y][x] == ".":
+                    continue
+                print(f" {grid[y][x]}", end="")
             elif grid[y][x] == ".":
                 print("   |", end="")
             else:
@@ -160,7 +162,7 @@ def save_to_file(grid, outfile="output.csv"):
 if __name__ == "__main__":
     words = []
     get_words(words, "words.txt")
-    grid, placed, unplaced = create_crossword(words, size=36)
+    grid, placed, unplaced = create_crossword(words, 128)
     cropped = crop_grid(grid)
     print_grid(cropped)
     save_to_file(cropped)
