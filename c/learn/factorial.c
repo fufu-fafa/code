@@ -21,6 +21,7 @@ int get_num() {
 
 unsigned long long get_factorial(int num) {
     unsigned long long result = 1;
+    if (num == 0) return 1;
     for (int x = num; x > 1; x--) {
         result *= x;
     }

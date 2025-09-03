@@ -9,9 +9,9 @@
 // config
 const float WIDTH = 800.f;
 const float HEIGHT = 600.f;
-const int AMOUNT = 4096;
-const int RAD = 2.f;
-const float CSPEED = 20.f;
+const int AMOUNT = 16;
+const int RAD = 25.f;
+const float CSPEED = 200.f;
 const float GRIDSIZE = 2 * RAD;
 const int COLS = (WIDTH + GRIDSIZE -1) / GRIDSIZE;
 const int ROWS = (HEIGHT + GRIDSIZE -1) / GRIDSIZE;
