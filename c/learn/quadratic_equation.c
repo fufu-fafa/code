@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,8 +8,9 @@ void clearStdin() {
 }
 
 int isInvalid(double p1[2], double p2[2]) {
-    if (fabs(p1[0] - p2[0] < EPS) && (fabs(p1[1] - p2[1] < EPS))) return 1;
-    if (fabs(p1[0] - p2[0] < EPS)) return 2;
+    const double EPS = 1e-6;
+    if ((fabs(p1[0] - p2[0]) < EPS) && (fabs(p1[1] - p2[1]) < EPS)) return 2;
+    if (fabs(p1[0] - p2[0]) < EPS) return 1;
     return 0;
 }
 
