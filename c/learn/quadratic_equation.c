@@ -7,8 +7,9 @@ void clearStdin() {
 }
 
 int isInvalid(double p1[2], double p2[2]) {
-    if (p1[0] == p2[0]) return 2;
-    else return ((p1[0] == p2[0]) && (p1[1] == p2[1]));
+    if (fabs(p1[0] - p2[0] < EPS) && (fabs(p1[1] - p2[1] < EPS))) return 1;
+    if (fabs(p1[0] - p2[0] < EPS)) return 2;
+    return 0;
 }
 
 double det3(double m[3][3]) {
