@@ -16,7 +16,10 @@ mirror = True
 use_lcd = False
 verbose_mouth = True
 max_dist = 35
-location_url = "http://127.0.0.1:8000/location.json"
+location_url = "http://127.0.0.1:8080/location.json"
+CLOCK_INTERVAL = 3 * 60.0  # seconds
+last_clock = time.time()
+
 
 file_location = './shape_predictor_68_face_landmarks.dat'
 MAR_THRESHOLD = 0.3
@@ -149,8 +152,28 @@ while True:
     cv2.putText(frame, f"FPS: {fps:.2f}", (10, line(4)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-    # if get_dist_now:
-    #     travel_dist = update_dist(travel_dist, loc_coord, location_url)
+    elapsed_since_clock = curr_time - last_clock
+    time_to_next = max(0, CLOCK_INTERVAL - elapsed_since_clock)
+
+    # show countdown on frame
+    cv2.putText(frame, f"Next dist update in: {int(time_to_next)}s", (10, line(5)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+
+    if elapsed_since_clock >= CLOCK_INTERVAL:
+        try:
+            travel_dist = update_dist(travel_dist, loc_coord, location_url)
+        except Exception as e:
+            print("update_dist error:", e)
+
+        # reset clock
+        last_clock = curr_time
+
+    if travel_dist > max_dist:
+        cv2.putText(frame, f"EXCEEDED MAX RANGE, {int(travel_dist)}km traveled", (10, line(3)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    else:
+        cv2.putText(frame, f"in safe range, {int(travel_dist)}km traveled", (10, line(3)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = detector(gray)
@@ -162,13 +185,6 @@ while True:
         mouth = shape[mStart:mEnd]
         mar = mouth_aspect_ratio(mouth)
         conditions = [mar > MAR_THRESHOLD, yawn_counter >= YAWN_FRAMES]
-
-        if travel_dist > max_dist:
-            cv2.putText(frame, "EXCEEDED MAX RANGE", (10, line(3)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        else:
-            cv2.putText(frame, "in safe range", (10, line(3)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         if conditions[0] and conditions[1]:
             if use_lcd:
