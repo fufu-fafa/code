@@ -15,12 +15,10 @@ camera_used = 0
 mirror = True
 use_lcd = False
 verbose_mouth = True
-max_dist = 35
-location_url = "http://127.0.0.1:8080/location.json"
-CLOCK_INTERVAL = 3 * 60.0  # seconds
+max_dist = 35               # kilometers
+CLOCK_INTERVAL = 3 * 60.0   # seconds
 last_clock = time.time()
-
-
+location_url = "http://127.0.0.1:8080/location.json"
 file_location = './shape_predictor_68_face_landmarks.dat'
 MAR_THRESHOLD = 0.3
 YAWN_FRAMES = 10
@@ -28,7 +26,6 @@ prev_time = time.time()
 
 loc_coord = [0.00, 0.00]
 travel_dist = 0
-is_face_detected = 0
 mar = 0
 mouth_state = 0
 yawn_counter = 0
