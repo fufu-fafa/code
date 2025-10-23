@@ -15,8 +15,8 @@ camera_used = 0
 mirror = True
 use_lcd = False
 verbose_mouth = True
-max_dist = 35               # kilometers
-CLOCK_INTERVAL = 3 * 60.0   # seconds
+max_dist = 5               # kilometers
+CLOCK_INTERVAL = 1 * 60.0   # seconds
 last_clock = time.time()
 location_url = "http://127.0.0.1:8080/location.json"
 file_location = './shape_predictor_68_face_landmarks.dat'
@@ -166,7 +166,7 @@ while True:
         last_clock = curr_time
 
     if travel_dist > max_dist:
-        cv2.putText(frame, f"EXCEEDED MAX RANGE, {int(travel_dist)}km traveled", (10, line(3)),
+        cv2.putText(frame, f"EXCEEDED MAX RANGE, {int(travel_dist)}km traveled, segera ke Rest Area KM 125 B Cipularang", (10, line(3)),
             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
     else:
         cv2.putText(frame, f"in safe range, {int(travel_dist)}km traveled", (10, line(3)),
