@@ -10,11 +10,11 @@ void clear_stdin() {
     while ((x = getchar()) != '\n' && x != EOF);
 }
 
-void swap2(double x1, double x2) {
+void swap2(double *x1, double *x2) {
     double temp;
-    temp = x1;
-    x1 = x2;
-    x2 = temp;
+    temp = *x1;
+    *x1 = *x2;
+    *x2 = temp;
 }
 
 void eq_parse(term eq[], int n) {
@@ -32,8 +32,8 @@ void eq_parse(term eq[], int n) {
         if (eq[x].coeff != 0) continue;
         for (int y = x+1; y < n; y++) {
             if (eq[y].coeff == 0) continue;
-            swap2(eq[x].coeff, eq[y].coeff);
-            swap2(eq[x].exp, eq[y].exp);
+            swap2(&eq[x].coeff, &eq[y].coeff);
+            swap2(&eq[x].exp, &eq[y].exp);
             break;
         }
     }
