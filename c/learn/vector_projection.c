@@ -29,6 +29,6 @@ int main() {
     dot = vec1[0]*vec2[0] + vec1[1]*vec2[1];
     theta = acos(dot/(len1*len2));
     printf("projected vector: %lf %lf\n", dot*vec2[0]/len2, dot*vec2[1]/len2);
-    printf("angle in rad: %lf\n angle in deg: %lf\n", theta, theta*180/M_PI);
+    printf("angle in rad: %lf\nangle in deg: %lf\n", theta, theta*180/M_PI);
     return 0;
 }
