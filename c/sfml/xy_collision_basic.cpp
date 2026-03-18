@@ -6,15 +6,16 @@
 
 // config
 const int HEIGHT = 600;
-const int WIDTH = 600;
-const int AMOUNT = 256;
-const int RAD = 7.f;
-const int CSPEED = 80.f;
+const int WIDTH = 800;
+const int AMOUNT = 64;
+const int CSPEED = 100.f;
+const float MAXRAD = 40.f;
 
 struct circ {
     sf::CircleShape shape;
     sf::Vector2f spd;
     sf::Vector2f pos;
+    float mass;
     float rad;
 };
 
@@ -38,8 +39,10 @@ int genRandInt(int min, int max) {
 
 void handleCircleColl(circ &circle1, circ &circle2) {
     sf::Vector2f relVel, relVec, norVec, perpNorVec;
-    float temp, overlap, dist, distSquared, distChangeSquared, velProj1, velProj2, perpVelProj1, perpVelProj2;
+    float temp1, temp2, m1, m2, overlap, dist, distSquared, distChangeSquared, velProj1, velProj2, perpVelProj1, perpVelProj2;
 
+    m1 = circle1.mass;
+    m2 = circle2.mass;
     relVel = circle2.spd - circle1.spd;
     relVec = circle2.pos - circle1.pos;
 
@@ -57,10 +60,11 @@ void handleCircleColl(circ &circle1, circ &circle2) {
     velProj1 = circle1.spd.x * norVec.x + circle1.spd.y * norVec.y;
     velProj2 = circle2.spd.x * norVec.x + circle2.spd.y * norVec.y;
 
-    // swap after collision
-    temp = velProj1;
-    velProj1 = velProj2;
-    velProj2 = temp;
+    // swap after collision according to mass
+    temp1 = ((m1-m2)/(m1+m2))*velProj1 + (2.f*m2/(m1+m2))*velProj2;
+    temp2 = ((m2-m1)/(m2+m1))*velProj2 + (2.f*m1/(m2+m1))*velProj1;
+    velProj1 = temp1;
+    velProj2 = temp2;
 
     // perpendicular circle velocity projection along collision vector
     perpNorVec.x = -norVec.y;
@@ -79,13 +83,19 @@ void handleCircleColl(circ &circle1, circ &circle2) {
     circle2.spd = velProj2 * norVec + perpVelProj2 * perpNorVec;
 }
 
-void handleEdgeColl(sf::Vector2f &spd, sf::Vector2f &pos, float RAD, const int WIDTH, const int HEIGHT) {
-    int lEdgeColl = 1.f > (pos.x - RAD);
-    int rEdgeColl = 1.f > (static_cast<float>(WIDTH) - (pos.x + RAD));
-    int tEdgeColl = 1.f > (pos.y - RAD);
-    int bEdgeColl = 1.f > (static_cast<float>(HEIGHT) - (pos.y + RAD));
+void handleEdgeColl(sf::Vector2f &spd, sf::Vector2f &pos, float rad, const int WIDTH, const int HEIGHT) {
+    int lEdgeColl = 1.f > (pos.x - rad);
+    int rEdgeColl = 1.f > (static_cast<float>(WIDTH) - (pos.x + rad));
+    int tEdgeColl = 1.f > (pos.y - rad);
+    int bEdgeColl = 1.f > (static_cast<float>(HEIGHT) - (pos.y + rad));
     if ((lEdgeColl && (spd.x < 0.f)) || (rEdgeColl && (spd.x > 0.f))) spd.x *= -1;
     if ((tEdgeColl && (spd.y < 0.f)) || (bEdgeColl && (spd.y > 0.f))) spd.y *= -1;
+}
+
+void randMass(float masses[], const float MAXRAD, const int AMOUNT) {
+    for (int n = 0; n < AMOUNT; n++) {
+        masses[n] = static_cast<float>(genRandInt(5, MAXRAD));
+    }
 }
 
 void randSpd(sf::Vector2f spdVec[], const float startSpd, const int AMOUNT) {
@@ -101,11 +111,11 @@ void randSpd(sf::Vector2f spdVec[], const float startSpd, const int AMOUNT) {
     }
 }
 
-void randPos(sf::Vector2f poss[], const float RAD, const int AMOUNT, const int WIDTH, const int HEIGHT) {
+void randPos(sf::Vector2f poss[], const float MAXRAD, const int AMOUNT, const int WIDTH, const int HEIGHT) {
     int min[2], max[2];
-    min[0] = min[1] = static_cast<int>(RAD);
-    max[0] = WIDTH - static_cast<int>(RAD);
-    max[1] = HEIGHT - static_cast<int>(RAD);
+    min[0] = min[1] = static_cast<int>(MAXRAD);
+    max[0] = WIDTH - static_cast<int>(MAXRAD);
+    max[1] = HEIGHT - static_cast<int>(MAXRAD);
     for (int n = 0; n < AMOUNT; n++) {
         poss[n].x = genRandInt(min[0], max[0]);
         poss[n].y = genRandInt(min[1], max[1]);
@@ -138,17 +148,19 @@ int main() {
     sf::Color circlesColors[AMOUNT];
     sf::Vector2f startSpd[AMOUNT];
     sf::Vector2f startPos[AMOUNT];
+    float cMass[AMOUNT];
+    randMass(cMass, MAXRAD, AMOUNT);
     randSpd(startSpd, CSPEED, AMOUNT);
-    randPos(startPos, RAD, AMOUNT, WIDTH, HEIGHT);
+    randPos(startPos, MAXRAD, AMOUNT, WIDTH, HEIGHT);
     randColors(circlesColors, AMOUNT);
     circ circles[AMOUNT];
 
     for (int n = 0; n < AMOUNT; n++) {
-        circles[n].rad = RAD;
+        circles[n].rad = circles[n].mass = cMass[n];
         circles[n].spd = startSpd[n];
         circles[n].pos = startPos[n];
         circles[n].shape.setRadius(circles[n].rad);
-        circles[n].shape.setOrigin(sf::Vector2f(RAD, RAD));
+        circles[n].shape.setOrigin(sf::Vector2f(circles[n].rad, circles[n].rad));
         circles[n].shape.setPosition(circles[n].pos);
         circles[n].shape.setFillColor(circlesColors[n]);
     }
