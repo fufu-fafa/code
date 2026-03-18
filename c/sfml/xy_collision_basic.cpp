@@ -7,10 +7,10 @@
 // config
 const int HEIGHT = 600;
 const int WIDTH = 800;
-const int AMOUNT = 32;
+const int AMOUNT = 64;
 const int CSPEED = 100.f;
 const float MINRAD = 10.f;
-const float MAXRAD = 30.f;
+const float MAXRAD = 20.f;
 
 struct circ {
     sf::CircleShape shape;
@@ -158,7 +158,7 @@ int main() {
 
     for (int n = 0; n < AMOUNT; n++) {
         circles[n].rad = cMass[n];
-        circles[n].mass = cMass[n]*4;
+        circles[n].mass = cMass[n]*cMass[n];
         circles[n].spd = startSpd[n];
         circles[n].pos = startPos[n];
         circles[n].shape.setRadius(circles[n].rad);
