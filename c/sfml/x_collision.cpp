@@ -29,8 +29,10 @@ int main() {
     const int WIDTH = 800;
     sf::RenderWindow window(sf::VideoMode({WIDTH, HEIGHT}), "sfml test");
     window.setFramerateLimit(120);
-    const float rads[2] = {25.f, 25.f};
+    const float mass[2] = {2.f, 20.f};
+    const float rads[2] = {mass[0]*5, mass[1]*5};
     float speeds[2] = {-120.f, 200.f};
+    float vel1, vel2;
     sf::Vector2f poss[2];
     sf::CircleShape circles[2];
 
@@ -73,10 +75,11 @@ int main() {
         }
 
         coll = detectCollision(poss[0].x, poss[1].x, rads[0], rads[1]);
-        if (coll) {
-            temp = speeds[0];
-            speeds[0] = speeds[1];
-            speeds[1] = temp;
+        if (coll && (speeds[1] - speeds[0]) > 0) {
+            vel1 = (mass[0]-mass[1])/(mass[0]+mass[1])*speeds[0] + 2*mass[1]/(mass[0]+mass[1])*speeds[1];
+            vel2 = (mass[1]-mass[0])/(mass[1]+mass[0])*speeds[1] + 2*mass[0]/(mass[1]+mass[0])*speeds[0];
+            speeds[0] = vel1;
+            speeds[1] = vel2;
         }
 
         for (int n = 0; n < 2; n++) {
