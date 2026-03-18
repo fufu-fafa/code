@@ -7,9 +7,10 @@
 // config
 const int HEIGHT = 600;
 const int WIDTH = 800;
-const int AMOUNT = 64;
+const int AMOUNT = 32;
 const int CSPEED = 100.f;
-const float MAXRAD = 40.f;
+const float MINRAD = 10.f;
+const float MAXRAD = 30.f;
 
 struct circ {
     sf::CircleShape shape;
@@ -94,7 +95,7 @@ void handleEdgeColl(sf::Vector2f &spd, sf::Vector2f &pos, float rad, const int W
 
 void randMass(float masses[], const float MAXRAD, const int AMOUNT) {
     for (int n = 0; n < AMOUNT; n++) {
-        masses[n] = static_cast<float>(genRandInt(5, MAXRAD));
+        masses[n] = static_cast<float>(genRandInt(MINRAD, MAXRAD));
     }
 }
 
@@ -156,7 +157,8 @@ int main() {
     circ circles[AMOUNT];
 
     for (int n = 0; n < AMOUNT; n++) {
-        circles[n].rad = circles[n].mass = cMass[n];
+        circles[n].rad = cMass[n];
+        circles[n].mass = cMass[n]*4;
         circles[n].spd = startSpd[n];
         circles[n].pos = startPos[n];
         circles[n].shape.setRadius(circles[n].rad);
