@@ -5,8 +5,8 @@
 #include <cmath>
 
 // config
-const int HEIGHT = 600;
-const int WIDTH = 800;
+const int HEIGHT = 800;
+const int WIDTH = 1000;
 const int AMOUNT = 64;
 const int CSPEED = 100.f;
 const float MINRAD = 10.f;
