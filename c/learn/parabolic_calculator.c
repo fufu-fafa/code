@@ -50,7 +50,7 @@ int main() {
 
     time = v[1]/9.8;
     height = v[1]*time - (9.8 * time * time)/2;
-    dist = v[0]*time;
+    dist = 2*v[0]*time;
 
     printf("time to reach max height, max height: %lf %lf\n", time, height);
     printf("time to landing, distance reached: %lf %lf\n", time*2.f, dist);
