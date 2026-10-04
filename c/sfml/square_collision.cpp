@@ -8,7 +8,7 @@
 
 // config
 const float WIDTH = 1000.f;
-const float HEIGHT = 800.f;
+const float HEIGHT = 700.f;
 const int AMOUNT = 64;
 const float SPEED = 100.f;
 const float MINLEN = 20.f;
