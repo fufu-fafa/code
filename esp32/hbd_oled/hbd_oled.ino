@@ -277,6 +277,8 @@ uint32_t msUntilAudioEvent(uint32_t now) {
 #define CHAR_W1   6     // text size 1 cell width
 #define CHAR_W2   12    // text size 2 cell width
 #define BAR_Y     54
+#define HL_PAD_L  2     // highlight box padding left of the syllable
+#define HL_PAD_R  1     // ...and right (keeps a 1px gap to the next glyph)
 #if SHOW_PROGRESS_BAR
   #define LYRIC_Y 19    // vertically centred in the space above the bar
 #else
@@ -335,11 +337,12 @@ bool drawLyrics() {
     target = 0.0f;
   } else {
     // Scroll so the highlighted syllable stays near the centre.
-    baseX = 0;
+    baseX = HL_PAD_L;   // leave room for the highlight box at the left edge
     float center = (hl >= 0) ? (hlStart + hlLen / 2.0f) * CHAR_W2 : 0.0f;
     target = center - SCREEN_W / 2.0f;
     if (target < 0) target = 0;
-    if (target > textW - SCREEN_W) target = (float)(textW - SCREEN_W);
+    int16_t maxScroll = textW + 2 * HL_PAD_L - SCREEN_W;
+    if (target > maxScroll) target = (float)maxScroll;
   }
 
   bool animating = false;
@@ -364,8 +367,8 @@ bool drawLyrics() {
 
   if (hl >= 0 && hlLen > 0) {
     // Inverted box behind the current syllable.
-    display.fillRect(x0 + (int16_t)(hlStart * CHAR_W2) - 2, LYRIC_Y - 2,
-                     (int16_t)(hlLen * CHAR_W2) + 2, 18, SSD1306_INVERSE);
+    display.fillRect(x0 + (int16_t)(hlStart * CHAR_W2) - HL_PAD_L, LYRIC_Y - 2,
+                     (int16_t)(hlLen * CHAR_W2) - 2 + HL_PAD_L + HL_PAD_R, 18, SSD1306_INVERSE);
   }
 
   return animating;
